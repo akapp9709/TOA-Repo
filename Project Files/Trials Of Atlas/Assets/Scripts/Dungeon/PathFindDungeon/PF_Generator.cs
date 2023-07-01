@@ -1,11 +1,21 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Graphs;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class PF_Generator : MonoBehaviour
 {
+    private class RoomSpace
+    {
+        public RectInt bounds;
+
+        public RoomSpace(Vector2Int location, Vector2Int size)
+        {
+            bounds = new RectInt(location, size);
+        }
+    }
     public enum CellType
     {
         None,
@@ -18,11 +28,22 @@ public class PF_Generator : MonoBehaviour
     private PF_Grid<CellType> _grid;
     public Vector2Int maxSize, offset, roomBuffer;
     public int dungeonLength;
+
+    #region Debugging Variables
+    
     private List<Vector3> _testPoints = new List<Vector3>();
     private List<RectInt> _testRects = new List<RectInt>();
     private List<RectInt> _testBuffer = new List<RectInt>();
+    private List<Vertex> _vertices;
+    private List<PF_Delauney.Edge> _edges;
 
+    #endregion
+    
     private Vector2Int _rectOffset;
+    private List<GameObject> _placedRooms = new List<GameObject>();
+    private List<RoomSpace> _rooms = new List<RoomSpace>();
+    private PF_Delauney _delauney;
+    private HashSet<Prim.Edge> _selectedEdges = new HashSet<Prim.Edge>();
 
     private void OnDrawGizmos()
     {
@@ -57,6 +78,33 @@ public class PF_Generator : MonoBehaviour
                 Gizmos.DrawCube(pos, 0.4f*Vector3.one);
             }
         }
+        
+        Gizmos.color = Color.green;
+        if (_vertices != null)
+        {
+            foreach (var vert in _vertices)
+            {
+                Gizmos.DrawSphere(vert.Position, 1f);
+            }
+        }
+
+        if (_delauney.Edges.Count != 0 && _delauney != null)
+        {
+            foreach (var edge in _delauney.Edges)
+            {
+                Gizmos.DrawLine(edge.U.Position, edge.V.Position);
+            }
+        }
+        
+        Gizmos.color = Color.red;
+        if (_selectedEdges.Count != 0)
+        {
+            foreach (var edge in _selectedEdges)
+            {
+                Gizmos.DrawLine(edge.U.Position, edge.V.Position);
+            }
+        }
+        
     }
 
 
@@ -67,7 +115,8 @@ public class PF_Generator : MonoBehaviour
         _rectOffset = new Vector2Int(1, 0);
         
         PlaceRooms();
-        
+        Triangulate();
+        CreateHallways();
     }
 
     // Update is called once per frame
@@ -76,6 +125,7 @@ public class PF_Generator : MonoBehaviour
         
     }
 
+    #region RoomPlacement
     private void PlaceRooms()
     {
         for (int i = 0; i < dungeonLength; i++)
@@ -93,6 +143,8 @@ public class PF_Generator : MonoBehaviour
             
             var roomVar = room.GetComponent<PF_Room>();
             var roomRect = new RectInt(roomVar.Location2D, roomVar.Size2D + Vector2Int.one);
+            var rs = new RoomSpace(roomRect.position, roomRect.size);
+            
             var roomBufferRect = new RectInt(roomRect.position - _rectOffset, roomRect.size + _rectOffset*2);
 
             bool safe = true;
@@ -112,13 +164,13 @@ public class PF_Generator : MonoBehaviour
                 _testBuffer.Add(roomBufferRect);
                 _testRects.Add(roomRect);
                 FinalizeRoom(roomRect);
-                Debug.Log("No Problems here");
+                _placedRooms.Add(room);
+                _rooms.Add(rs);
             }
             else
             {
                 Destroy(room);
                 i--;
-                Debug.Log("Resetting");
             }
         }
     }
@@ -186,7 +238,6 @@ public class PF_Generator : MonoBehaviour
         {
             if (_grid[vec] == CellType.Room && _grid.InBounds(vec))
             {
-                Debug.Log("Intersection Present");
                 return false;
             }
         }
@@ -201,4 +252,51 @@ public class PF_Generator : MonoBehaviour
             _grid[pos] = CellType.Room;
         }
     }
+    #endregion
+
+    #region Triangulation
+    private void Triangulate()
+    {
+        _vertices = new List<Vertex>();
+        _edges = new List<PF_Delauney.Edge>();
+        foreach (var room in _rooms)
+        {
+            _vertices.Add(new Vertex<RoomSpace>((Vector2)room.bounds.position + ((Vector2) room.bounds.size / 2), room));
+        }
+
+        _delauney = PF_Delauney.Triangulate(_vertices);
+        _edges = _delauney.Edges;
+    }
+    #endregion
+
+    #region Hallways
+
+    private void CreateHallways()
+    {
+        List<Prim.Edge> pEdges = new List<Prim.Edge>();
+
+        foreach (var edge in _delauney.Edges)
+        {
+            pEdges.Add(new Prim.Edge(edge.U, edge.V));
+        }
+
+        List<Prim.Edge> mst = Prim.MinimumSpanningTree(pEdges, pEdges[0].U);
+
+        _selectedEdges = new HashSet<Prim.Edge>(mst);
+        var remainingEdges = new HashSet<Prim.Edge>(pEdges);
+        remainingEdges.ExceptWith(_selectedEdges);
+
+        // foreach (var edge in remainingEdges)
+        // {
+        //     if (Random.Range(0, 1f) < 0.0f)
+        //     {
+        //         _selectedEdges.Add(edge);
+        //     }
+        // }
+    }
+    
+    
+
+
+    #endregion
 }

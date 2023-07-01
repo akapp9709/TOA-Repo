@@ -35,7 +35,6 @@ public class PF_Room : MonoBehaviour
 
     private void FindRoomCorners()
     {
-        Debug.Log("Trying to Find Corners");
         var arr = GameObject.FindGameObjectsWithTag("RoomCorner");
 
         foreach (var x in arr)
