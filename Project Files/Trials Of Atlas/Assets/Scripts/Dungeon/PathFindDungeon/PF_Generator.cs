@@ -61,6 +61,7 @@ public class PF_Generator : MonoBehaviour
     }
     
     [SerializeField] private List<GameObject> roomPrefabs;
+    [SerializeField] private GameObject floorTile;
     private PF_Grid<CellType> _grid;
     public Vector2Int maxSize, offset, roomBuffer;
     public int dungeonLength;
@@ -154,13 +155,6 @@ public class PF_Generator : MonoBehaviour
                 Gizmos.DrawLine(edge.U.Position, edge.V.Position);
             }
         }
-        
-        Gizmos.color = Color.magenta;
-        foreach (var pos in _hallPos)
-        {
-            Gizmos.DrawCube(pos, Vector3.one);
-        }
-        
     }
     
     // Start is called before the first frame update
@@ -424,6 +418,7 @@ public class PF_Generator : MonoBehaviour
     {
         var vec = new Vector3(pos.x, 0f, pos.y);
         _hallPos.Add(vec);
+        Instantiate(floorTile, vec, Quaternion.identity);
     }
     #endregion
 }

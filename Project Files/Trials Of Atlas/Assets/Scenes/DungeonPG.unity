@@ -156,6 +156,8 @@ MonoBehaviour:
   - {fileID: 1945851118416578769, guid: c57770c2532e8c641a82f0e54c56bb9e, type: 3}
   - {fileID: 9208261320795417126, guid: f1437e1dfd1b2ba4fa50df9105e35809, type: 3}
   - {fileID: 2798345999979673915, guid: 767a66917d7fe1046909d6c9ef317bca, type: 3}
+  floorTile: {fileID: 1737668697740606141, guid: 2bca100583303d24ba543b4e3609ae82,
+    type: 3}
   maxSize: {x: 100, y: 100}
   offset: {x: 0, y: 0}
   roomBuffer: {x: 3, y: 3}

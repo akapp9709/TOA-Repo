@@ -11,24 +11,24 @@ public class PF_Room : MonoBehaviour
 
     private float runTimes;
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(
-            roomSizeOffset + transform.position
-            , roomSize
-        );
-
-        foreach (var x in roomCorners)
-        {
-            Gizmos.DrawWireSphere(x.transform.position, 0.2f);
-        }
-
-        foreach (var pos in entrancePositions)
-        {
-            Gizmos.DrawSphere(pos.position, 1f);
-        }
-    }
+    // private void OnDrawGizmos()
+    // {
+    //     Gizmos.color = Color.red;
+    //     Gizmos.DrawWireCube(
+    //         roomSizeOffset + transform.position
+    //         , roomSize
+    //     );
+    //
+    //     foreach (var x in roomCorners)
+    //     {
+    //         Gizmos.DrawWireSphere(x.transform.position, 0.2f);
+    //     }
+    //
+    //     foreach (var pos in entrancePositions)
+    //     {
+    //         Gizmos.DrawSphere(pos.position, 1f);
+    //     }
+    // }
 
     private void Awake()
     {
