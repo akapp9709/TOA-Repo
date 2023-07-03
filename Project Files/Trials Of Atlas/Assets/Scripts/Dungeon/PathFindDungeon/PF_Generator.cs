@@ -1,5 +1,11 @@
-using System;
-using System.Collections;
+/*
+ * Adapted from https://github.com/vazgriz/DungeonGenerator
+ *
+ * Has been modified to make use of room prefabs instead of randomly sized cubes, and to have additional visual aids
+ * through Gizmos
+ * Documentation and algorithm details can be found here: https://vazgriz.com/119/procedurally-generated-dungeons/
+ */
+
 using System.Collections.Generic;
 using Graphs;
 using UnityEngine;
@@ -156,8 +162,7 @@ public class PF_Generator : MonoBehaviour
         }
         
     }
-
-
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -168,12 +173,6 @@ public class PF_Generator : MonoBehaviour
         Triangulate();
         CreateHallways();
         PathFindHallways();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     #region RoomPlacement
@@ -347,10 +346,6 @@ public class PF_Generator : MonoBehaviour
             }
         }
     }
-    
-    
-
-
     #endregion
 
     #region Pathfinding Hallways

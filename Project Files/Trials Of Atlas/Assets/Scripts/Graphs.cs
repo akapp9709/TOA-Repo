@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*
+ * Adapted from https://github.com/vazgriz/DungeonGenerator
+ *
+ * Documentation and algorithm details can be found here: https://vazgriz.com/119/procedurally-generated-dungeons/
+ */
+
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
