@@ -98,6 +98,7 @@ Transform:
   - {fileID: 8013327686051822059}
   - {fileID: 4771102291915741353}
   - {fileID: 4153268379987935236}
+  - {fileID: 3469014434032654922}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -179,6 +180,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   roomSize: {x: 30, y: 4, z: 18}
   roomSizeOffset: {x: 0, y: 2, z: 9}
+  entrancePositions:
+  - {fileID: 3469014434032654922}
   pivotCorner: {fileID: 0}
   firstCorner: {fileID: 8520569913792179433}
   secondCorner: {fileID: 8013327686051822059}
@@ -244,4 +247,35 @@ Transform:
   m_Children: []
   m_Father: {fileID: 5892048790621004872}
   m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5958240555499004937
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3469014434032654922}
+  m_Layer: 0
+  m_Name: Entrance
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3469014434032654922
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5958240555499004937}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5892048790621004872}
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

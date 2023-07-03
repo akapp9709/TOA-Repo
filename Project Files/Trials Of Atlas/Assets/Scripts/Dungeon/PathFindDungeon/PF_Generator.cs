@@ -10,10 +10,40 @@ public class PF_Generator : MonoBehaviour
     private class RoomSpace
     {
         public RectInt bounds;
+        public List<Vector2Int> roomEntrances = new List<Vector2Int>();
 
         public RoomSpace(Vector2Int location, Vector2Int size)
         {
             bounds = new RectInt(location, size);
+        }
+
+        public void AddEntrances(List<Transform> positions)
+        {
+            foreach (var t in positions)
+            {
+                TranslateAndAddPosition(t.position);
+            }
+        }
+
+        public void TranslateAndAddPosition(Vector3 v)
+        {
+            var vec = new Vector2Int((int) v.x, (int) v.z);
+            roomEntrances.Add(vec);
+        }
+
+        public Vector2Int GetClosestEntrance(Vector2Int pos)
+        {
+            var vec = roomEntrances[0];
+
+            foreach (var v in roomEntrances)
+            {
+                if (Vector2Int.Distance(v, pos) <= Vector2Int.Distance(vec, pos))
+                {
+                    vec = v;
+                }
+            }
+
+            return vec;
         }
     }
     public enum CellType
@@ -32,6 +62,8 @@ public class PF_Generator : MonoBehaviour
     #region Debugging Variables
     
     private List<Vector3> _testPoints = new List<Vector3>();
+    private List<Vector3> _hallPos = new List<Vector3>();
+    private List<Vector3> _entrances = new List<Vector3>();
     private List<RectInt> _testRects = new List<RectInt>();
     private List<RectInt> _testBuffer = new List<RectInt>();
     private List<Vertex> _vertices;
@@ -88,7 +120,19 @@ public class PF_Generator : MonoBehaviour
             }
         }
 
-        if (_delauney.Edges.Count != 0 && _delauney != null)
+        if (_rooms.Count > 0)
+        {
+            foreach (var room in _rooms)
+            {
+                foreach (var pos in room.roomEntrances)
+                {
+                    var vec = new Vector3(pos.x, 0f, pos.y) + Vector3.up;
+                    Gizmos.DrawSphere(vec, 1.2f);
+                }
+            }
+        }
+
+        if ( _delauney != null && _delauney.Edges.Count != 0)
         {
             foreach (var edge in _delauney.Edges)
             {
@@ -105,6 +149,12 @@ public class PF_Generator : MonoBehaviour
             }
         }
         
+        Gizmos.color = Color.magenta;
+        foreach (var pos in _hallPos)
+        {
+            Gizmos.DrawCube(pos, Vector3.one);
+        }
+        
     }
 
 
@@ -117,6 +167,7 @@ public class PF_Generator : MonoBehaviour
         PlaceRooms();
         Triangulate();
         CreateHallways();
+        PathFindHallways();
     }
 
     // Update is called once per frame
@@ -165,6 +216,7 @@ public class PF_Generator : MonoBehaviour
                 _testRects.Add(roomRect);
                 FinalizeRoom(roomRect);
                 _placedRooms.Add(room);
+                rs.AddEntrances(roomVar.entrancePositions);
                 _rooms.Add(rs);
             }
             else
@@ -252,6 +304,7 @@ public class PF_Generator : MonoBehaviour
             _grid[pos] = CellType.Room;
         }
     }
+    
     #endregion
 
     #region Triangulation
@@ -286,17 +339,96 @@ public class PF_Generator : MonoBehaviour
         var remainingEdges = new HashSet<Prim.Edge>(pEdges);
         remainingEdges.ExceptWith(_selectedEdges);
 
-        // foreach (var edge in remainingEdges)
-        // {
-        //     if (Random.Range(0, 1f) < 0.0f)
-        //     {
-        //         _selectedEdges.Add(edge);
-        //     }
-        // }
+        foreach (var edge in remainingEdges)
+        {
+            if (Random.Range(0, 1f) < 0.2f)
+            {
+                _selectedEdges.Add(edge);
+            }
+        }
     }
     
     
 
 
+    #endregion
+
+    #region Pathfinding Hallways
+
+    private void PathFindHallways()
+    {
+        var aStar = new PF_Pathfinder(maxSize);
+
+        foreach (var edge in _selectedEdges)
+        {
+            var startRoom = (edge.U as Vertex<RoomSpace>).Item;
+            var endRoom = (edge.V as Vertex<RoomSpace>).Item;
+
+            var startPosf = startRoom.bounds.center;
+            var endPosf = endRoom.bounds.center;
+
+            var startPos = startRoom.GetClosestEntrance(Vector2Int.FloorToInt(startPosf));
+            var endPos = endRoom.GetClosestEntrance(startPos);
+
+            var path = aStar.FindPath(startPos, endPos, (PF_Pathfinder.Node a, PF_Pathfinder.Node b) =>
+            {
+                var cost = new PF_Pathfinder.PathCost();
+
+                switch (_grid[b.Position])
+                {
+                    case CellType.None:
+                        cost.cost += 5;
+                        break;
+                    case CellType.Buffer:
+                        cost.cost += 6;
+                        break;
+                    case CellType.Hallway:
+                        cost.cost += 1;
+                        break;
+                    case CellType.Room:
+                        cost.cost += 20;
+                        break;
+                    default:
+                        break;
+                }
+
+                cost.traversable = true;
+
+                return cost;
+            });
+            
+            if(path != null)
+            {
+                for (int i = 0; i < path.Count; i++)
+                {
+                    var current = path[i];
+                    if (_grid[current] == CellType.None)
+                    {
+                        _grid[current] = CellType.Hallway;
+                    }
+
+                    if (i > 0)
+                    {
+                        var prev = path[i - 1];
+                        var delta = current - prev;
+                    }
+                }
+                
+                foreach (var pos in path)
+                {
+                    if (_grid[pos] == CellType.Hallway)
+                    {
+                        PlaceHallway(pos);
+                    }
+                }
+            }
+        }
+    }
+
+    private void PlaceHallway(Vector2Int pos)
+    {
+        var vec = new Vector3(pos.x, 0f, pos.y);
+        _hallPos.Add(vec);
+    }
     #endregion
 }

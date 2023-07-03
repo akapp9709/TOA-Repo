@@ -8,6 +8,7 @@ using UnityEngine.Rendering;
 public class PF_Room : MonoBehaviour
 {
     public Vector3 roomSize, roomSizeOffset;
+    public List<Transform> entrancePositions = new List<Transform>();
     public Transform pivotCorner;
     public Transform firstCorner, secondCorner;
     public List<GameObject> roomCorners;
@@ -25,6 +26,11 @@ public class PF_Room : MonoBehaviour
         foreach (var x in roomCorners)
         {
             Gizmos.DrawWireSphere(x.transform.position, 0.2f);
+        }
+
+        foreach (var pos in entrancePositions)
+        {
+            Gizmos.DrawSphere(pos.position, 1f);
         }
     }
 
