@@ -81,7 +81,7 @@ public class PF_Generator : MonoBehaviour
     private Vector2Int _rectOffset;
     private List<GameObject> _placedRooms = new List<GameObject>();
     private List<RoomSpace> _rooms = new List<RoomSpace>();
-    private PF_Delauney _delauney;
+    private PF_Delauney _delaunay;
     private HashSet<Prim.Edge> _selectedEdges = new HashSet<Prim.Edge>();
 
     private void OnDrawGizmos()
@@ -117,15 +117,6 @@ public class PF_Generator : MonoBehaviour
                 Gizmos.DrawCube(pos, 0.4f*Vector3.one);
             }
         }
-        
-        Gizmos.color = Color.green;
-        if (_vertices != null)
-        {
-            foreach (var vert in _vertices)
-            {
-                Gizmos.DrawSphere(vert.Position, 1f);
-            }
-        }
 
         if (_rooms.Count > 0)
         {
@@ -139,17 +130,29 @@ public class PF_Generator : MonoBehaviour
             }
         }
 
-        if ( _delauney != null && _delauney.Edges.Count != 0)
+        Gizmos.color = Color.red;
+        if (_hallPos.Count > 0)
         {
-            foreach (var edge in _delauney.Edges)
+            foreach (var v in _hallPos)
+            {
+                Gizmos.DrawCube(v, Vector3.one);
+            }
+        }
+
+        if (_delaunay != null && _delaunay.Edges.Count > 0 && _selectedEdges.Count > 0)
+        {
+            Gizmos.color = Color.green;
+            foreach (var x in _vertices)
+            {
+                Gizmos.DrawSphere(x.Position, 0.5f);
+            }
+
+            foreach (var edge in _delaunay.Edges)
             {
                 Gizmos.DrawLine(edge.U.Position, edge.V.Position);
             }
-        }
-        
-        Gizmos.color = Color.red;
-        if (_selectedEdges.Count != 0)
-        {
+            
+            Gizmos.color = Color.red;
             foreach (var edge in _selectedEdges)
             {
                 Gizmos.DrawLine(edge.U.Position, edge.V.Position);
@@ -310,8 +313,8 @@ public class PF_Generator : MonoBehaviour
             _vertices.Add(new Vertex<RoomSpace>((Vector2)room.bounds.position + ((Vector2) room.bounds.size / 2), room));
         }
 
-        _delauney = PF_Delauney.Triangulate(_vertices);
-        _edges = _delauney.Edges;
+        _delaunay = PF_Delauney.Triangulate(_vertices);
+        _edges = _delaunay.Edges;
     }
     #endregion
 
@@ -321,7 +324,7 @@ public class PF_Generator : MonoBehaviour
     {
         List<Prim.Edge> pEdges = new List<Prim.Edge>();
 
-        foreach (var edge in _delauney.Edges)
+        foreach (var edge in _delaunay.Edges)
         {
             pEdges.Add(new Prim.Edge(edge.U, edge.V));
         }
@@ -405,9 +408,13 @@ public class PF_Generator : MonoBehaviour
                 
                 foreach (var pos in path)
                 {
-                    if (_grid[pos] == CellType.Hallway)
+                    foreach (var offset in hallOffset)
                     {
-                        PlaceHallway(pos);
+                        var x = _grid[pos + offset];
+                        if (x is CellType.Buffer or CellType.Hallway or CellType.None)
+                        {
+                            PlaceHallway(pos + offset);
+                        }
                     }
                 }
             }
@@ -418,7 +425,21 @@ public class PF_Generator : MonoBehaviour
     {
         var vec = new Vector3(pos.x, 0f, pos.y);
         _hallPos.Add(vec);
-        Instantiate(floorTile, vec, Quaternion.identity);
+        //Instantiate(floorTile, vec, Quaternion.identity);
     }
+
+    private Vector2Int[] hallOffset =
+    {
+        new Vector2Int(-1,1),
+        new Vector2Int(-1,0),
+        new Vector2Int(-1, -1),
+        new Vector2Int(0,1),
+        new Vector2Int(0,0),
+        new Vector2Int(0, -1),
+        new Vector2Int(1,1),
+        new Vector2Int(1,0),
+        new Vector2Int(1, -1)
+    };
+
     #endregion
 }
