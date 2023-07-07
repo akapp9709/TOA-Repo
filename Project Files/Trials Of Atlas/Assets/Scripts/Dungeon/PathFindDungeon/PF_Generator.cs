@@ -6,11 +6,13 @@
  * Documentation and algorithm details can be found here: https://vazgriz.com/119/procedurally-generated-dungeons/
  */
 
+using System.Collections;
 using System.Collections.Generic;
 using Graphs;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
+[RequireComponent(typeof(MeshFilter))]
 public class PF_Generator : MonoBehaviour
 {
     private class RoomSpace
@@ -84,80 +86,81 @@ public class PF_Generator : MonoBehaviour
     private PF_Delauney _delaunay;
     private HashSet<Prim.Edge> _selectedEdges = new HashSet<Prim.Edge>();
 
+    private List<MeshFilter> _floorMeshes = new List<MeshFilter>();
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.green;
-        var offPos = new Vector3(offset.x, 0f, offset.y);
-        var gridSize = new Vector3(maxSize.x, 0f, maxSize.y);
-        Gizmos.DrawWireCube(gridSize/2, gridSize);
-
-        foreach (var x in _testPoints)
-        {
-            Gizmos.DrawWireSphere(x, 0.4f);
-        }
-        
-        Gizmos.color = Color.yellow;
-        foreach (var x in _testBuffer)
-        {
-            Gizmos.DrawSphere(new Vector3(x.position.x, 0f, x.position.y), 0.5f);
-            foreach (var y in x.allPositionsWithin)
-            {
-                var pos = new Vector3(y.x, 0f, y.y);
-                Gizmos.DrawCube(pos, 0.4f*Vector3.one);
-            }
-        }
-        
-        Gizmos.color = Color.blue;
-        foreach (var x in _testRects)
-        {
-            Gizmos.DrawSphere(new Vector3(x.position.x, 0f, x.position.y), 0.5f);
-            foreach (var y in x.allPositionsWithin)
-            {
-                var pos = new Vector3(y.x, 0f, y.y);
-                Gizmos.DrawCube(pos, 0.4f*Vector3.one);
-            }
-        }
-
-        if (_rooms.Count > 0)
-        {
-            foreach (var room in _rooms)
-            {
-                foreach (var pos in room.roomEntrances)
-                {
-                    var vec = new Vector3(pos.x, 0f, pos.y) + Vector3.up;
-                    Gizmos.DrawSphere(vec, 1.2f);
-                }
-            }
-        }
-
-        Gizmos.color = Color.red;
-        if (_hallPos.Count > 0)
-        {
-            foreach (var v in _hallPos)
-            {
-                Gizmos.DrawCube(v, Vector3.one);
-            }
-        }
-
-        if (_delaunay != null && _delaunay.Edges.Count > 0 && _selectedEdges.Count > 0)
-        {
-            Gizmos.color = Color.green;
-            foreach (var x in _vertices)
-            {
-                Gizmos.DrawSphere(x.Position, 0.5f);
-            }
-
-            foreach (var edge in _delaunay.Edges)
-            {
-                Gizmos.DrawLine(edge.U.Position, edge.V.Position);
-            }
-            
-            Gizmos.color = Color.red;
-            foreach (var edge in _selectedEdges)
-            {
-                Gizmos.DrawLine(edge.U.Position, edge.V.Position);
-            }
-        }
+        // Gizmos.color = Color.green;
+        // var offPos = new Vector3(offset.x, 0f, offset.y);
+        // var gridSize = new Vector3(maxSize.x, 0f, maxSize.y);
+        // Gizmos.DrawWireCube(gridSize/2, gridSize);
+        //
+        // foreach (var x in _testPoints)
+        // {
+        //     Gizmos.DrawWireSphere(x, 0.4f);
+        // }
+        //
+        // Gizmos.color = Color.yellow;
+        // foreach (var x in _testBuffer)
+        // {
+        //     Gizmos.DrawSphere(new Vector3(x.position.x, 0f, x.position.y), 0.5f);
+        //     foreach (var y in x.allPositionsWithin)
+        //     {
+        //         var pos = new Vector3(y.x, 0f, y.y);
+        //         Gizmos.DrawCube(pos, 0.4f*Vector3.one);
+        //     }
+        // }
+        //
+        // Gizmos.color = Color.blue;
+        // foreach (var x in _testRects)
+        // {
+        //     Gizmos.DrawSphere(new Vector3(x.position.x, 0f, x.position.y), 0.5f);
+        //     foreach (var y in x.allPositionsWithin)
+        //     {
+        //         var pos = new Vector3(y.x, 0f, y.y);
+        //         Gizmos.DrawCube(pos, 0.4f*Vector3.one);
+        //     }
+        // }
+        //
+        // if (_rooms.Count > 0)
+        // {
+        //     foreach (var room in _rooms)
+        //     {
+        //         foreach (var pos in room.roomEntrances)
+        //         {
+        //             var vec = new Vector3(pos.x, 0f, pos.y) + Vector3.up;
+        //             Gizmos.DrawSphere(vec, 1.2f);
+        //         }
+        //     }
+        // }
+        //
+        // Gizmos.color = Color.red;
+        // if (_hallPos.Count > 0)
+        // {
+        //     foreach (var v in _hallPos)
+        //     {
+        //         Gizmos.DrawCube(v, Vector3.one);
+        //     }
+        // }
+        //
+        // if (_delaunay != null && _delaunay.Edges.Count > 0 && _selectedEdges.Count > 0)
+        // {
+        //     Gizmos.color = Color.green;
+        //     foreach (var x in _vertices)
+        //     {
+        //         Gizmos.DrawSphere(x.Position, 0.5f);
+        //     }
+        //
+        //     foreach (var edge in _delaunay.Edges)
+        //     {
+        //         Gizmos.DrawLine(edge.U.Position, edge.V.Position);
+        //     }
+        //     
+        //     Gizmos.color = Color.red;
+        //     foreach (var edge in _selectedEdges)
+        //     {
+        //         Gizmos.DrawLine(edge.U.Position, edge.V.Position);
+        //     }
+        // }
     }
     
     // Start is called before the first frame update
@@ -165,11 +168,12 @@ public class PF_Generator : MonoBehaviour
     {
         _grid = new PF_Grid<CellType>(maxSize, offset);
         _rectOffset = new Vector2Int(1, 0);
-        
+
         PlaceRooms();
         Triangulate();
         CreateHallways();
         PathFindHallways();
+        CombineHallways();
     }
 
     #region RoomPlacement
@@ -410,9 +414,11 @@ public class PF_Generator : MonoBehaviour
                 {
                     foreach (var offset in hallOffset)
                     {
+                        PlaceHallway(pos);
                         var x = _grid[pos + offset];
-                        if (x is CellType.Buffer or CellType.Hallway or CellType.None)
+                        if (x == CellType.Buffer || x == CellType.None)
                         {
+                            _grid[pos + offset] = CellType.Hallway;
                             PlaceHallway(pos + offset);
                         }
                     }
@@ -424,8 +430,12 @@ public class PF_Generator : MonoBehaviour
     private void PlaceHallway(Vector2Int pos)
     {
         var vec = new Vector3(pos.x, 0f, pos.y);
-        _hallPos.Add(vec);
-        //Instantiate(floorTile, vec, Quaternion.identity);
+        if (!_hallPos.Contains(vec))
+        {
+            _hallPos.Add(vec);
+        }
+        var tile = Instantiate(floorTile, vec, Quaternion.identity);
+        _floorMeshes.Add(tile.GetComponent<MeshFilter>());
     }
 
     private Vector2Int[] hallOffset =
@@ -440,6 +450,28 @@ public class PF_Generator : MonoBehaviour
         new Vector2Int(1,0),
         new Vector2Int(1, -1)
     };
+
+    private void CombineHallways()
+    {
+        var combine = new CombineInstance[_floorMeshes.Count];
+
+        for (int i = 0; i < _floorMeshes.Count; i++)
+        {
+            combine[i].mesh = _floorMeshes[i].mesh;
+            combine[i].transform = _floorMeshes[i].transform.localToWorldMatrix;
+        }
+
+        var mesh = new Mesh();
+        mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+        mesh.CombineMeshes(combine);
+        GetComponent<MeshFilter>().mesh = mesh;
+
+        foreach (var obj in _floorMeshes)
+        {
+            //_floorMeshes.Remove(obj);
+            Destroy(obj.gameObject);
+        }
+    }
 
     #endregion
 }
