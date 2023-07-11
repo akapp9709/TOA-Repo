@@ -10,6 +10,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Graphs;
 using UnityEngine;
+using UnityEngine.WSA;
 using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(MeshFilter))]
@@ -59,11 +60,16 @@ public class PF_Generator : MonoBehaviour
         None,
         Buffer,
         Room,
-        Hallway
+        Hallway,
+        WallEast,
+        WallWest,
+        WallSouth,
+        WallNorth
     }
     
     [SerializeField] private List<GameObject> roomPrefabs;
     [SerializeField] private GameObject floorTile;
+    [SerializeField] private GameObject wallTile;
     private PF_Grid<CellType> _grid;
     public Vector2Int maxSize, offset, roomBuffer;
     public int dungeonLength;
@@ -161,6 +167,29 @@ public class PF_Generator : MonoBehaviour
         //         Gizmos.DrawLine(edge.U.Position, edge.V.Position);
         //     }
         // }
+        for (int i = 0; i < maxSize.y; i++)
+        {
+            for (int j = 0; j < maxSize.x; j++)
+            {
+                switch (_grid[j, i])
+                {
+                    case CellType.Hallway:
+                        Gizmos.color = Color.red;
+                        Gizmos.DrawSphere(new Vector3(j, 0f, i) + Vector3.up, 0.3f);
+                        break;
+                    case CellType.WallEast:
+                    case CellType.WallWest:
+                        Gizmos.color = Color.yellow;
+                        Gizmos.DrawSphere(new Vector3(j, 0f, i) + Vector3.up, 0.3f);
+                        break;
+                    case CellType.WallNorth:
+                    case CellType.WallSouth:
+                        Gizmos.color = Color.green;
+                        Gizmos.DrawSphere(new Vector3(j, 0f, i) + Vector3.up, 0.3f);
+                        break;
+                }
+            }
+        }
     }
     
     // Start is called before the first frame update
@@ -173,6 +202,8 @@ public class PF_Generator : MonoBehaviour
         Triangulate();
         CreateHallways();
         PathFindHallways();
+        MarkWalls();
+        BuildHallways();
         CombineHallways();
     }
 
@@ -434,8 +465,8 @@ public class PF_Generator : MonoBehaviour
         {
             _hallPos.Add(vec);
         }
-        var tile = Instantiate(floorTile, vec, Quaternion.identity);
-        _floorMeshes.Add(tile.GetComponent<MeshFilter>());
+        // var tile = Instantiate(floorTile, vec, Quaternion.identity);
+        // _floorMeshes.Add(tile.GetComponent<MeshFilter>());
     }
 
     private Vector2Int[] hallOffset =
@@ -468,8 +499,80 @@ public class PF_Generator : MonoBehaviour
 
         foreach (var obj in _floorMeshes)
         {
-            //_floorMeshes.Remove(obj);
             Destroy(obj.gameObject);
+        }
+    }
+
+    private void MarkWalls()
+    {
+        for (int y = 0; y < maxSize.y; y++)
+        {
+            for (int x = 0; x < maxSize.x; x++)
+            {
+                _grid[x, y] = _grid[x, y] switch
+                {
+                    CellType.Hallway when _grid[x - 1, y] == CellType.None => CellType.WallWest,
+                    CellType.Hallway when _grid[x + 1, y] == CellType.None => CellType.WallEast,
+                    CellType.Hallway when _grid[x, y - 1] == CellType.None => CellType.WallSouth,
+                    CellType.Hallway when _grid[x, y + 1] == CellType.None => CellType.WallNorth,
+                    _ => _grid[x, y]
+                };
+            }
+        }
+    }
+
+    private void BuildHallways()
+    {
+        for (int i = 0; i < maxSize.y; i++)
+        {
+            for (int j = 0; j < maxSize.x; j++)
+            {
+                switch (_grid[j, i])
+                {
+                    case CellType.Hallway:
+                        PlaceFloor(new Vector2Int(j, i));
+                        break;
+                    case CellType.WallEast:
+                    case CellType.WallNorth:
+                    case CellType.WallSouth:
+                    case CellType.WallWest:
+                        PlaceWall(new Vector2Int(j,i),_grid[j, i]);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+
+    private void PlaceFloor(Vector2Int pos)
+    {
+        var vec = new Vector3(pos.x, 0f, pos.y);
+        
+        var tile = Instantiate(floorTile, vec, Quaternion.identity);
+        _floorMeshes.Add(tile.GetComponent<MeshFilter>());
+    }
+
+    private void PlaceWall(Vector2Int pos, CellType type)
+    {
+        var vec = new Vector3(pos.x, 0f, pos.y);
+        var wall = Instantiate(wallTile, vec, Quaternion.identity);
+        _floorMeshes.Add(wall.GetComponent<MeshFilter>());
+        switch (type)
+        {
+            case CellType.WallWest:
+                break;
+            case CellType.WallNorth:
+                wall.transform.Rotate(Vector3.up, 90f);
+                break;
+            case CellType.WallEast:
+                wall.transform.Rotate(Vector3.up, 180f);
+                break;
+            case CellType.WallSouth:
+                wall.transform.Rotate(Vector3.up, 270f);
+                break;
+            default:
+                break;
         }
     }
 
