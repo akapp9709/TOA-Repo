@@ -64,12 +64,20 @@ public class PF_Generator : MonoBehaviour
         WallEast,
         WallWest,
         WallSouth,
-        WallNorth
+        WallNorth,
+        CornerOutNE,
+        CornerOutNW,
+        CornerOutSE,
+        CornerOutSW,
+        CornerInNE,
+        CornerInNW,
+        CornerInSE,
+        CornerInSW
     }
     
     [SerializeField] private List<GameObject> roomPrefabs;
     [SerializeField] private GameObject floorTile;
-    [SerializeField] private GameObject wallTile;
+    [SerializeField] private GameObject wallTile, cornerTile;
     private PF_Grid<CellType> _grid;
     public Vector2Int maxSize, offset, roomBuffer;
     public int dungeonLength;
@@ -167,6 +175,8 @@ public class PF_Generator : MonoBehaviour
         //         Gizmos.DrawLine(edge.U.Position, edge.V.Position);
         //     }
         // }
+        if (_grid == null)
+            return;
         for (int i = 0; i < maxSize.y; i++)
         {
             for (int j = 0; j < maxSize.x; j++)
@@ -185,6 +195,21 @@ public class PF_Generator : MonoBehaviour
                     case CellType.WallNorth:
                     case CellType.WallSouth:
                         Gizmos.color = Color.green;
+                        Gizmos.DrawSphere(new Vector3(j, 0f, i) + Vector3.up, 0.3f);
+                        break;
+                    case CellType.CornerInNE:
+                    case CellType.CornerInNW:
+                    case CellType.CornerInSE:
+                    case CellType.CornerInSW:
+                    case CellType.CornerOutNE:
+                    case CellType.CornerOutNW:
+                    case CellType.CornerOutSE:
+                    case CellType.CornerOutSW:
+                        Gizmos.color = Color.magenta;
+                        Gizmos.DrawSphere(new Vector3(j, 0f, i) + Vector3.up, 0.3f);
+                        break;
+                    case CellType.Room:
+                        Gizmos.color = Color.blue;
                         Gizmos.DrawSphere(new Vector3(j, 0f, i) + Vector3.up, 0.3f);
                         break;
                 }
@@ -519,6 +544,38 @@ public class PF_Generator : MonoBehaviour
                 };
             }
         }
+        
+        for (int y = 0; y < maxSize.y; y++)
+        {
+            for (int x = 0; x < maxSize.x; x++)
+            {
+                switch (_grid[x, y])
+                {
+                    case CellType.WallEast:
+                        switch (_grid[x - 1, y])
+                        {
+                            case CellType.WallNorth:
+                                _grid[x, y] = CellType.CornerOutNE;
+                                break;
+                            case CellType.WallSouth:
+                                _grid[x, y] = CellType.CornerOutSE;
+                                break;
+                        }
+                        break;
+                    case CellType.WallWest:
+                        switch (_grid[x + 1, y])
+                        {
+                            case CellType.WallNorth:
+                                _grid[x, y] = CellType.CornerOutNW;
+                                break;
+                            case CellType.WallSouth:
+                                _grid[x, y] = CellType.CornerOutSW;
+                                break;
+                        }
+                        break;
+                }
+            }
+        }
     }
 
     private void BuildHallways()
@@ -537,6 +594,12 @@ public class PF_Generator : MonoBehaviour
                     case CellType.WallSouth:
                     case CellType.WallWest:
                         PlaceWall(new Vector2Int(j,i),_grid[j, i]);
+                        break;
+                    case CellType.CornerOutNE:
+                    case CellType.CornerOutNW:
+                    case CellType.CornerOutSE:
+                    case CellType.CornerOutSW:
+                        PlaceCorner(new Vector2Int(j, i), _grid[j, i]);
                         break;
                     default:
                         break;
@@ -570,6 +633,29 @@ public class PF_Generator : MonoBehaviour
                 break;
             case CellType.WallSouth:
                 wall.transform.Rotate(Vector3.up, 270f);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void PlaceCorner(Vector2Int pos, CellType type)
+    {
+        var vec = new Vector3(pos.x, 0f, pos.y);
+        var corner = Instantiate(cornerTile, vec, Quaternion.identity);
+        _floorMeshes.Add(corner.GetComponent<MeshFilter>());
+        switch (type)
+        {
+            case CellType.CornerOutNW:
+                break;
+            case CellType.CornerOutNE:
+                corner.transform.Rotate(Vector3.up, 90f);
+                break;
+            case CellType.CornerOutSE:
+                corner.transform.Rotate(Vector3.up, 180f);
+                break;
+            case CellType.CornerOutSW:
+                corner.transform.Rotate(Vector3.up, 270f);
                 break;
             default:
                 break;
