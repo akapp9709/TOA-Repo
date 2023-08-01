@@ -11,24 +11,11 @@ public class PF_Room : MonoBehaviour
 
     private float runTimes;
 
-    // private void OnDrawGizmos()
-    // {
-    //     Gizmos.color = Color.red;
-    //     Gizmos.DrawWireCube(
-    //         roomSizeOffset + transform.position
-    //         , roomSize
-    //     );
-    //
-    //     foreach (var x in roomCorners)
-    //     {
-    //         Gizmos.DrawWireSphere(x.transform.position, 0.2f);
-    //     }
-    //
-    //     foreach (var pos in entrancePositions)
-    //     {
-    //         Gizmos.DrawSphere(pos.position, 1f);
-    //     }
-    // }
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        // Gizmos.DrawWireCube(roomSizeOffset, roomSize);
+    }
 
     private void Awake()
     {
@@ -70,10 +57,17 @@ public class PF_Room : MonoBehaviour
     {
         get
         {
-            var vec = Vector2Int.FloorToInt(new Vector2(
-                pivotCorner.position.x, 
-                pivotCorner.position.z));
+            var vec = new Vector2Int(
+                Mathf.RoundToInt(pivotCorner.position.x),
+                Mathf.RoundToInt(pivotCorner.position.z)
+                );
             return vec;
         }
+    }
+
+    private void MarkSpace()
+    {
+        var rectangle = new Rect(Location2D, Size2D);
+        
     }
 }

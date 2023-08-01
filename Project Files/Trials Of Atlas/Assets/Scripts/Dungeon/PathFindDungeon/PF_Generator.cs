@@ -10,7 +10,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Graphs;
 using UnityEngine;
-using UnityEngine.WSA;
 using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(MeshFilter))]
@@ -72,21 +71,19 @@ public class PF_Generator : MonoBehaviour
         CornerInNE,
         CornerInNW,
         CornerInSE,
-        CornerInSW
+        CornerInSW,
+        SoftBuffer
     }
     
     [SerializeField] private List<GameObject> roomPrefabs;
     [SerializeField] private GameObject floorTile;
     [SerializeField] private GameObject wallTile, cornerTile;
     private PF_Grid<CellType> _grid;
-    public Vector2Int maxSize, offset, roomBuffer;
+    public Vector2Int maxSize, padding, offset, roomBuffer;
     public int dungeonLength;
 
     #region Debugging Variables
     
-    private List<Vector3> _testPoints = new List<Vector3>();
-    private List<Vector3> _hallPos = new List<Vector3>();
-    private List<Vector3> _entrances = new List<Vector3>();
     private List<RectInt> _testRects = new List<RectInt>();
     private List<RectInt> _testBuffer = new List<RectInt>();
     private List<Vertex> _vertices;
@@ -101,80 +98,42 @@ public class PF_Generator : MonoBehaviour
     private HashSet<Prim.Edge> _selectedEdges = new HashSet<Prim.Edge>();
 
     private List<MeshFilter> _floorMeshes = new List<MeshFilter>();
+
+    private int _roomRotation;
+    private bool _showGizmos = true;
+    public bool showTriangulation = true;
+    public bool showPath = true;
     private void OnDrawGizmos()
     {
-        // Gizmos.color = Color.green;
-        // var offPos = new Vector3(offset.x, 0f, offset.y);
-        // var gridSize = new Vector3(maxSize.x, 0f, maxSize.y);
-        // Gizmos.DrawWireCube(gridSize/2, gridSize);
-        //
-        // foreach (var x in _testPoints)
-        // {
-        //     Gizmos.DrawWireSphere(x, 0.4f);
-        // }
-        //
-        // Gizmos.color = Color.yellow;
-        // foreach (var x in _testBuffer)
-        // {
-        //     Gizmos.DrawSphere(new Vector3(x.position.x, 0f, x.position.y), 0.5f);
-        //     foreach (var y in x.allPositionsWithin)
-        //     {
-        //         var pos = new Vector3(y.x, 0f, y.y);
-        //         Gizmos.DrawCube(pos, 0.4f*Vector3.one);
-        //     }
-        // }
-        //
-        // Gizmos.color = Color.blue;
-        // foreach (var x in _testRects)
-        // {
-        //     Gizmos.DrawSphere(new Vector3(x.position.x, 0f, x.position.y), 0.5f);
-        //     foreach (var y in x.allPositionsWithin)
-        //     {
-        //         var pos = new Vector3(y.x, 0f, y.y);
-        //         Gizmos.DrawCube(pos, 0.4f*Vector3.one);
-        //     }
-        // }
-        //
-        // if (_rooms.Count > 0)
-        // {
-        //     foreach (var room in _rooms)
-        //     {
-        //         foreach (var pos in room.roomEntrances)
-        //         {
-        //             var vec = new Vector3(pos.x, 0f, pos.y) + Vector3.up;
-        //             Gizmos.DrawSphere(vec, 1.2f);
-        //         }
-        //     }
-        // }
-        //
-        // Gizmos.color = Color.red;
-        // if (_hallPos.Count > 0)
-        // {
-        //     foreach (var v in _hallPos)
-        //     {
-        //         Gizmos.DrawCube(v, Vector3.one);
-        //     }
-        // }
-        //
-        // if (_delaunay != null && _delaunay.Edges.Count > 0 && _selectedEdges.Count > 0)
-        // {
-        //     Gizmos.color = Color.green;
-        //     foreach (var x in _vertices)
-        //     {
-        //         Gizmos.DrawSphere(x.Position, 0.5f);
-        //     }
-        //
-        //     foreach (var edge in _delaunay.Edges)
-        //     {
-        //         Gizmos.DrawLine(edge.U.Position, edge.V.Position);
-        //     }
-        //     
-        //     Gizmos.color = Color.red;
-        //     foreach (var edge in _selectedEdges)
-        //     {
-        //         Gizmos.DrawLine(edge.U.Position, edge.V.Position);
-        //     }
-        // }
+        if (_delaunay != null && _delaunay.Vertices != null && showTriangulation)
+        {
+            Gizmos.color = Color.green;
+            foreach (var pnt in _delaunay.Vertices)
+            {
+                Gizmos.DrawSphere(new Vector3(pnt.Position.x, 0f, pnt.Position.y) + Vector3.up * 6, 1);
+            }
+
+            foreach (var edge in _delaunay.Edges)
+            {
+                var posU = new Vector3(edge.U.Position.x, 0f, edge.U.Position.y) + Vector3.up * 6;
+                var posV = new Vector3(edge.V.Position.x, 0f, edge.V.Position.y) + Vector3.up * 6;
+                Gizmos.DrawLine(posU, posV);
+            }
+        }
+
+        if (_selectedEdges.Count > 0 && showPath)
+        {
+            Gizmos.color = Color.red;
+            foreach (var edge in _selectedEdges)
+            {
+                var posU = new Vector3(edge.U.Position.x, 0f, edge.U.Position.y) + Vector3.up * 6;
+                var posV = new Vector3(edge.V.Position.x, 0f, edge.V.Position.y) + Vector3.up * 6;
+                Gizmos.DrawLine(posU, posV);
+            }
+        }
+        
+        if (!_showGizmos)
+            return;
         if (_grid == null)
             return;
         for (int i = 0; i < maxSize.y; i++)
@@ -212,6 +171,10 @@ public class PF_Generator : MonoBehaviour
                         Gizmos.color = Color.blue;
                         Gizmos.DrawSphere(new Vector3(j, 0f, i) + Vector3.up, 0.3f);
                         break;
+                    case CellType.SoftBuffer:
+                        Gizmos.color = Color.white;
+                        Gizmos.DrawSphere(new Vector3(j, 0f, i) + Vector3.up, 0.3f);
+                        break;
                 }
             }
         }
@@ -226,10 +189,10 @@ public class PF_Generator : MonoBehaviour
         PlaceRooms();
         Triangulate();
         CreateHallways();
-        PathFindHallways();
-        MarkWalls();
-        BuildHallways();
-        CombineHallways();
+        StartCoroutine(PathFindHallways());
+        // MarkWalls();
+        // BuildHallways();
+        // CombineHallways();
     }
 
     #region RoomPlacement
@@ -238,18 +201,21 @@ public class PF_Generator : MonoBehaviour
         for (int i = 0; i < dungeonLength; i++)
         {
             var pos = new Vector3(
-                Random.Range(0, (int)maxSize.x + 1),
+                Random.Range((int)(0.5f * padding.x), (int) ((maxSize.x + 1) - 0.5f * padding.x)),
                 0f,
-                Random.Range(0, (int)maxSize.y + 1)
+                Random.Range((int)(0.5f * padding.y), (int) ((maxSize.x + 1) - 0.5f * padding.y))
             );
 
             var ind = Random.Range(0, roomPrefabs.Count);
 
             var room = Instantiate(roomPrefabs[ind], pos, Quaternion.identity);
-            ChooseRoomRotation(room);
+            ChooseRoomRotation(room, out var rot);
             
             var roomVar = room.GetComponent<PF_Room>();
-            var roomRect = new RectInt(roomVar.Location2D, roomVar.Size2D + Vector2Int.one);
+
+            //TranslateBounds(rot, out var rectPosOff, out var rectSizeOff);
+            var roomRect = new RectInt(roomVar.Location2D, roomVar.Size2D);
+            
             var rs = new RoomSpace(roomRect.position, roomRect.size);
             
             var roomBufferRect = new RectInt(roomRect.position - _rectOffset, roomRect.size + _rectOffset*2);
@@ -270,7 +236,7 @@ public class PF_Generator : MonoBehaviour
             {
                 _testBuffer.Add(roomBufferRect);
                 _testRects.Add(roomRect);
-                FinalizeRoom(roomRect);
+                FinalizeRoom(roomRect, rot);
                 _placedRooms.Add(room);
                 rs.AddEntrances(roomVar.entrancePositions);
                 _rooms.Add(rs);
@@ -281,9 +247,14 @@ public class PF_Generator : MonoBehaviour
                 i--;
             }
         }
+
+        foreach (var obj in _placedRooms)
+        {
+            obj.transform.position -= new Vector3(0.5f, 0f, 0.5f);
+        }
     }
 
-    private void ChooseRoomRotation(GameObject room)
+    private void ChooseRoomRotation(GameObject room, out int rotation)
     {
         var rotVal = Random.Range(1, 5);
         var roomVar = room.GetComponent<PF_Room>();
@@ -323,8 +294,38 @@ public class PF_Generator : MonoBehaviour
                 break;
         }
 
+        rotation = rotVal;
         room.GetComponent<PF_Room>().roomSize = newSize;
         room.GetComponent<PF_Room>().roomSizeOffset = currentOffset;
+    }
+
+    private void TranslateBounds(int val, out Vector2Int posOffset, out Vector2Int sizeOffset)
+    {
+        var pos = new Vector2Int();
+        var size = new Vector2Int();
+        Debug.Log(pos);
+        switch (val)
+        {
+            case 1:
+                pos = new Vector2Int(1, 1);
+                size = new Vector2Int(-1, -1);
+                break;
+            case 2:
+                pos = new Vector2Int(1, 1);
+                size = new Vector2Int(-1, -1);
+                break;
+            case 3:
+                pos = new Vector2Int(1, 0);
+                size = new Vector2Int(-1, 1);
+                break;
+            case 4:
+                pos = new Vector2Int(0, 1);
+                size = new Vector2Int(1, -1);
+                break;
+        }
+
+        posOffset = pos;
+        sizeOffset = size;
     }
     
     private bool CheckRoomInBounds(RectInt area)
@@ -353,11 +354,42 @@ public class PF_Generator : MonoBehaviour
         return true;
     }
 
-    private void FinalizeRoom(RectInt area)
+    private void FinalizeRoom(RectInt area, int val)
     {
+        AddSoftBuffer(val, area);
         foreach (var pos in area.allPositionsWithin)
         {
             _grid[pos] = CellType.Room;
+        }
+    }
+
+    private void AddSoftBuffer(int val, RectInt area)
+    {
+        var vec = new Vector2Int();
+        var size = new Vector2Int();
+        switch (val)
+        {
+            case 1:
+                vec = area.position + new Vector2Int(-1, -1);
+                size = area.size + new Vector2Int(2,2);
+                break;
+            case 2:
+                vec = area.position + new Vector2Int(-1, -1);
+                size = area.size + new Vector2Int(2,2);
+                break;
+            case 3:
+                vec = area.position + new Vector2Int(-1, 1);
+                size = area.size + new Vector2Int(2,-2);
+                break;
+            case 4:
+                vec = area.position + new Vector2Int(1, -1);
+                size = area.size + new Vector2Int(-2,2);
+                break;
+        }
+        var rect = new RectInt(vec, size);
+        foreach (var pos in rect.allPositionsWithin)
+        {
+            _grid[pos] = CellType.SoftBuffer;
         }
     }
     
@@ -397,7 +429,7 @@ public class PF_Generator : MonoBehaviour
 
         foreach (var edge in remainingEdges)
         {
-            if (Random.Range(0, 1f) < 0.2f)
+            if (Random.Range(0, 1f) < 0.3f)
             {
                 _selectedEdges.Add(edge);
             }
@@ -407,7 +439,7 @@ public class PF_Generator : MonoBehaviour
 
     #region Pathfinding Hallways
 
-    private void PathFindHallways()
+    IEnumerator PathFindHallways()
     {
         var aStar = new PF_Pathfinder(maxSize);
 
@@ -429,16 +461,19 @@ public class PF_Generator : MonoBehaviour
                 switch (_grid[b.Position])
                 {
                     case CellType.None:
-                        cost.cost += 5;
+                        cost.cost += 7;
                         break;
                     case CellType.Buffer:
-                        cost.cost += 6;
+                        cost.cost += 10;
                         break;
                     case CellType.Hallway:
                         cost.cost += 1;
                         break;
+                    case CellType.SoftBuffer:
+                        cost.cost += 30;
+                        break;
                     case CellType.Room:
-                        cost.cost += 20;
+                        cost.cost += 50;
                         break;
                     default:
                         break;
@@ -457,6 +492,7 @@ public class PF_Generator : MonoBehaviour
                     if (_grid[current] == CellType.None)
                     {
                         _grid[current] = CellType.Hallway;
+                        yield return new WaitForSeconds(0.05f);
                     }
 
                     if (i > 0)
@@ -470,41 +506,30 @@ public class PF_Generator : MonoBehaviour
                 {
                     foreach (var offset in hallOffset)
                     {
-                        PlaceHallway(pos);
                         var x = _grid[pos + offset];
-                        if (x == CellType.Buffer || x == CellType.None)
-                        {
+                        if (x != CellType.Room)
                             _grid[pos + offset] = CellType.Hallway;
-                            PlaceHallway(pos + offset);
-                        }
                     }
                 }
             }
         }
-    }
 
-    private void PlaceHallway(Vector2Int pos)
-    {
-        var vec = new Vector3(pos.x, 0f, pos.y);
-        if (!_hallPos.Contains(vec))
-        {
-            _hallPos.Add(vec);
-        }
-        // var tile = Instantiate(floorTile, vec, Quaternion.identity);
-        // _floorMeshes.Add(tile.GetComponent<MeshFilter>());
+        MarkWalls();
+        BuildHallways();
+        CombineHallways();
     }
 
     private Vector2Int[] hallOffset =
     {
-        new Vector2Int(-1,1),
         new Vector2Int(-1,0),
-        new Vector2Int(-1, -1),
         new Vector2Int(0,1),
         new Vector2Int(0,0),
         new Vector2Int(0, -1),
         new Vector2Int(1,1),
+        new Vector2Int(1,-1),
+        new Vector2Int(-1,1),
+        new Vector2Int(-1,-1),
         new Vector2Int(1,0),
-        new Vector2Int(1, -1)
     };
 
     private void CombineHallways()
@@ -526,6 +551,8 @@ public class PF_Generator : MonoBehaviour
         {
             Destroy(obj.gameObject);
         }
+
+        _showGizmos = false;
     }
 
     private void MarkWalls()
@@ -536,10 +563,10 @@ public class PF_Generator : MonoBehaviour
             {
                 _grid[x, y] = _grid[x, y] switch
                 {
-                    CellType.Hallway when _grid[x - 1, y] == CellType.None => CellType.WallWest,
-                    CellType.Hallway when _grid[x + 1, y] == CellType.None => CellType.WallEast,
-                    CellType.Hallway when _grid[x, y - 1] == CellType.None => CellType.WallSouth,
-                    CellType.Hallway when _grid[x, y + 1] == CellType.None => CellType.WallNorth,
+                    CellType.Hallway when _grid[x - 1, y] is CellType.None or CellType.SoftBuffer => CellType.WallWest,
+                    CellType.Hallway when _grid[x + 1, y] is CellType.None or CellType.SoftBuffer => CellType.WallEast,
+                    CellType.Hallway when _grid[x, y - 1] is CellType.None or CellType.SoftBuffer => CellType.WallSouth,
+                    CellType.Hallway when _grid[x, y + 1] is CellType.None or CellType.SoftBuffer => CellType.WallNorth,
                     _ => _grid[x, y]
                 };
             }

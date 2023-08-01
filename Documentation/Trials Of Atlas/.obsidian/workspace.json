@@ -1,0 +1,322 @@
+{
+  "main": {
+    "id": "217ff880d7e261c6",
+    "type": "split",
+    "children": [
+      {
+        "id": "470906c1e428b6db",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "5ae63354e7b2f036",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {}
+            }
+          },
+          {
+            "id": "8053d0e623728ad5",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Player Character.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "e5abb9f793c24a28",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Final Fantasy XVI.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "faa24cda7348adb8",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Premise.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "b31b561bf23b0609",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Destiny 2.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "375cc782d6e0b4d7",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Dungeon.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "608b100e85c1fcef",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Time Trial.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "9d9c2593183abc56",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Powerless.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "fe2cf516ebbbc106",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Lock and Key.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "136292ba2b0231db",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Annihilation.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "46ee8bbdcf121eb2",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Enemies.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "b1089acc4e5a84ce",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Brute.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "ac0657ac47b9f793",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Ranged.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "74b94b7a5380cefa",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Melee.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "71813317c3300b9f",
+    "type": "split",
+    "children": [
+      {
+        "id": "6df7cae5bf3b1bdc",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "55c10b32ea93ff30",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "d86f802cb5dbec8e",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "746cf07c37106c34",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "644c95b151fd10d4",
+    "type": "split",
+    "children": [
+      {
+        "id": "a1da136f736cebfe",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "d63004034fdb50a0",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "20dd3c130392b7d2",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "74ef4308b952e3c9",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "c20332cd895ddb0f",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false
+    }
+  },
+  "active": "5ae63354e7b2f036",
+  "lastOpenFiles": [
+    "Enemies.md",
+    "Brute.md",
+    "Ranged.md",
+    "Melee.md",
+    "Time Trial.md",
+    "Dungeon.md",
+    "Annihilation.md",
+    "Lock and Key.md",
+    "Powerless.md",
+    "Premise.md",
+    "Destiny 2.md",
+    "Throw.md",
+    "Player Character.md",
+    "Light Attack Combo.md",
+    "Final Fantasy XVI.md",
+    "Dodge.md",
+    "Heavy Attack Combo.md",
+    "Hades.md",
+    "NieR Automata.md",
+    "Fire.md",
+    "Lightning.md",
+    "Tempest.md"
+  ]
+}
