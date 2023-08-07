@@ -11,8 +11,48 @@
             "id": "5ae63354e7b2f036",
             "type": "leaf",
             "state": {
-              "type": "graph",
-              "state": {}
+              "type": "markdown",
+              "state": {
+                "file": "Kieran Research/Chapman - Games as History.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "67be56ba99e3c41e",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Kieran Research/Research Ideas.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "f94eca82117e6522",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Kieran Research/Research Summary.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "db2441b5261ac6f9",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Game Notes/Annihilation.md",
+                "mode": "source",
+                "source": false
+              }
             }
           },
           {
@@ -21,7 +61,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Player Character.md",
+                "file": "Game Notes/Player Character.md",
                 "mode": "source",
                 "source": false
               }
@@ -33,7 +73,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Final Fantasy XVI.md",
+                "file": "Game Notes/Final Fantasy XVI.md",
                 "mode": "source",
                 "source": false
               }
@@ -45,7 +85,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Premise.md",
+                "file": "Game Notes/Premise.md",
                 "mode": "source",
                 "source": false
               }
@@ -57,7 +97,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Destiny 2.md",
+                "file": "Game Notes/Destiny 2.md",
                 "mode": "source",
                 "source": false
               }
@@ -69,7 +109,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Dungeon.md",
+                "file": "Game Notes/Dungeon.md",
                 "mode": "source",
                 "source": false
               }
@@ -81,7 +121,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Time Trial.md",
+                "file": "Game Notes/Time Trial.md",
                 "mode": "source",
                 "source": false
               }
@@ -93,7 +133,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Powerless.md",
+                "file": "Game Notes/Powerless.md",
                 "mode": "source",
                 "source": false
               }
@@ -105,7 +145,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Lock and Key.md",
+                "file": "Game Notes/Lock and Key.md",
                 "mode": "source",
                 "source": false
               }
@@ -117,7 +157,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Annihilation.md",
+                "file": "Game Notes/Annihilation.md",
                 "mode": "source",
                 "source": false
               }
@@ -129,7 +169,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Enemies.md",
+                "file": "Game Notes/Enemies.md",
                 "mode": "source",
                 "source": false
               }
@@ -141,7 +181,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Brute.md",
+                "file": "Game Notes/Brute.md",
                 "mode": "source",
                 "source": false
               }
@@ -153,7 +193,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Ranged.md",
+                "file": "Game Notes/Ranged.md",
                 "mode": "source",
                 "source": false
               }
@@ -165,13 +205,14 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Melee.md",
+                "file": "Game Notes/Melee.md",
                 "mode": "source",
                 "source": false
               }
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -237,6 +278,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "Kieran Research/Research Ideas.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -253,6 +295,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "Kieran Research/Research Ideas.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -274,7 +317,9 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {}
+              "state": {
+                "file": "Kieran Research/Research Ideas.md"
+              }
             }
           }
         ]
@@ -294,29 +339,34 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "5ae63354e7b2f036",
+  "active": "67be56ba99e3c41e",
   "lastOpenFiles": [
-    "Enemies.md",
-    "Brute.md",
-    "Ranged.md",
-    "Melee.md",
-    "Time Trial.md",
-    "Dungeon.md",
-    "Annihilation.md",
-    "Lock and Key.md",
-    "Powerless.md",
-    "Premise.md",
-    "Destiny 2.md",
-    "Throw.md",
-    "Player Character.md",
-    "Light Attack Combo.md",
-    "Final Fantasy XVI.md",
-    "Dodge.md",
-    "Heavy Attack Combo.md",
-    "Hades.md",
-    "NieR Automata.md",
-    "Fire.md",
-    "Lightning.md",
-    "Tempest.md"
+    "Kieran Research/Chapman - Games as History.md",
+    "Kieran Research/Research Ideas.md",
+    "Game Notes/Annihilation.md",
+    "Game Notes",
+    "Kieran Research/Research Summary.md",
+    "Kieran Research",
+    "Game Notes/Enemies.md",
+    "Game Notes/Brute.md",
+    "Game Notes/Ranged.md",
+    "Game Notes/Melee.md",
+    "Game Notes/Time Trial.md",
+    "Game Notes/Dungeon.md",
+    "Game Notes/Lock and Key.md",
+    "Game Notes/Powerless.md",
+    "Game Notes/Premise.md",
+    "Game Notes/Destiny 2.md",
+    "Game Notes/Throw.md",
+    "Game Notes/Player Character.md",
+    "Game Notes/Light Attack Combo.md",
+    "Game Notes/Final Fantasy XVI.md",
+    "Game Notes/Dodge.md",
+    "Game Notes/Heavy Attack Combo.md",
+    "Game Notes/Hades.md",
+    "Game Notes/NieR Automata.md",
+    "Game Notes/Fire.md",
+    "Game Notes/Lightning.md",
+    "Game Notes/Tempest.md"
   ]
 }

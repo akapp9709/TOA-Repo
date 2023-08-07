@@ -189,10 +189,11 @@ public class PF_Generator : MonoBehaviour
         PlaceRooms();
         Triangulate();
         CreateHallways();
-        StartCoroutine(PathFindHallways());
-        // MarkWalls();
-        // BuildHallways();
-        // CombineHallways();
+        //StartCoroutine(PathFindHallways());
+        PathFindHallways();
+        MarkWalls();
+        BuildHallways();
+        CombineHallways();
     }
 
     #region RoomPlacement
@@ -439,7 +440,7 @@ public class PF_Generator : MonoBehaviour
 
     #region Pathfinding Hallways
 
-    IEnumerator PathFindHallways()
+    private void PathFindHallways()
     {
         var aStar = new PF_Pathfinder(maxSize);
 
@@ -457,6 +458,8 @@ public class PF_Generator : MonoBehaviour
             var path = aStar.FindPath(startPos, endPos, (PF_Pathfinder.Node a, PF_Pathfinder.Node b) =>
             {
                 var cost = new PF_Pathfinder.PathCost();
+
+                cost.cost += Vector2Int.Distance(b.Position, maxSize/2) * 0.5f;
 
                 switch (_grid[b.Position])
                 {
@@ -492,7 +495,6 @@ public class PF_Generator : MonoBehaviour
                     if (_grid[current] == CellType.None)
                     {
                         _grid[current] = CellType.Hallway;
-                        yield return new WaitForSeconds(0.05f);
                     }
 
                     if (i > 0)
@@ -513,10 +515,10 @@ public class PF_Generator : MonoBehaviour
                 }
             }
         }
-
-        MarkWalls();
-        BuildHallways();
-        CombineHallways();
+        //
+        // MarkWalls();
+        // BuildHallways();
+        // CombineHallways();
     }
 
     private Vector2Int[] hallOffset =
@@ -552,7 +554,7 @@ public class PF_Generator : MonoBehaviour
             Destroy(obj.gameObject);
         }
 
-        _showGizmos = false;
+        // _showGizmos = false;
     }
 
     private void MarkWalls()
@@ -579,6 +581,18 @@ public class PF_Generator : MonoBehaviour
                 switch (_grid[x, y])
                 {
                     case CellType.WallEast:
+                        if (_grid[x, y + 1] is CellType.None or CellType.SoftBuffer && _grid[x, y - 1] == CellType.WallEast &&
+                            _grid[x - 1, y] == CellType.Hallway)
+                        {
+                            _grid[x, y] = CellType.CornerOutNE;
+                        }
+
+                        if (_grid[x, y + 1] == CellType.WallEast && _grid[x, y - 1] is CellType.None or CellType.SoftBuffer &&
+                            _grid[x - 1, y] == CellType.Hallway)
+                        {
+                            _grid[x, y] = CellType.CornerOutSE;
+                        }
+                        
                         switch (_grid[x - 1, y])
                         {
                             case CellType.WallNorth:
@@ -590,6 +604,20 @@ public class PF_Generator : MonoBehaviour
                         }
                         break;
                     case CellType.WallWest:
+                        if (_grid[x, y + 1] is CellType.None or CellType.SoftBuffer && _grid[x, y - 1] == CellType.WallWest &&
+                            _grid[x + 1, y] == CellType.Hallway)
+                        {
+                            _grid[x, y] = CellType.CornerOutNW;
+                            break;
+                        }
+
+                        if (_grid[x, y + 1] == CellType.WallWest && _grid[x, y - 1] is CellType.None or CellType.SoftBuffer &&
+                            _grid[x + 1, y] == CellType.Hallway)
+                        {
+                            _grid[x, y] = CellType.CornerOutSW;
+                            break;
+                        }
+                        
                         switch (_grid[x + 1, y])
                         {
                             case CellType.WallNorth:

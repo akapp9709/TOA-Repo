@@ -1,0 +1,13 @@
+ - Post-Apocalyptic Narratives
+	 - Origins
+	 - Lessons
+	 - Inspirations
+- End of Times Stories
+	- Relevance
+- How has our current situation framed past events?
+	- Chapman's Reading mentions that the present molds how we view history.
+- What is the Appeal of Alt History Game or Games with a historical Setting?***
+	- Wolfenstein
+	- Assassins Creed
+	- Call of Duty: World at War
+	- Compare the Ethics of games that use major historical events as a setting while querying the place of Alt History games.

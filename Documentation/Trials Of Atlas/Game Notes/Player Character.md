@@ -1,0 +1,5 @@
+The Player character is named Gideon, his main weapon is a trident due to its versatility as a heavy, reinforced weapon with decent balance and a sharp end. 
+The weapon can thus be used for slamming, sweeping, thrusting, and throwing. Gideon as a special type of soldier is able to proficiently use a trident in these ways as well as a crude control over elements in his actions.
+These include [[Fire]], [[Lightning]], and [[Tempest]], each bringing their own changes to Gideon's combat style, strategy and efficiency. 
+Gideon's arsenal involves a [[Light Attack Combo]], [[Heavy Attack Combo]], [[Dodge]], and a [[Throw]] attack. Each of the elements can be assigned to any of these as weapon slots of sorts. This idea is taken from *[[Hades]]*' boon system.
+The player combat as a whole is based off of *[[NieR Automata]]* specifically when playing as 2B with the focus on offense and maneuverability in the void of defensive abilities.
