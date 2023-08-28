@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: Small Formations
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyFormation
+  formations:
+  - formationPrefab: {fileID: 157767775075768365, guid: c27e20a05f8751b43b0981613378fee2,
+      type: 3}
+    formationValue: 1
+  - formationPrefab: {fileID: 5384820446328669729, guid: 498450d0f15c6f444a8da149e22fefd4,
+      type: 3}
+    formationValue: 1
+  - formationPrefab: {fileID: 950258253384602576, guid: 1b3bb0e7ec150114f88b0e301101a15b,
+      type: 3}
+    formationValue: 2
+  - formationPrefab: {fileID: 8322202618652207674, guid: fd16740ef77d5394d85bc3a3bb889014,
+      type: 3}
+    formationValue: 2
+  - formationPrefab: {fileID: 5414087952513359557, guid: 7452dff1b68f3184185426fc1b809dbf,
+      type: 3}
+    formationValue: 3
+  - formationPrefab: {fileID: 7633951548819731804, guid: 1f22c9196367a4d40b1e55eb02890b4c,
+      type: 3}
+    formationValue: 3

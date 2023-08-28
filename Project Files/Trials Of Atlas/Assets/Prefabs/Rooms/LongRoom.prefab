@@ -137,6 +137,7 @@ GameObject:
   - component: {fileID: 6350108363348109353}
   - component: {fileID: 8471372891519440559}
   - component: {fileID: 4105576011940651086}
+  - component: {fileID: 6322493481817914490}
   m_Layer: 0
   m_Name: LongRoom
   m_TagString: Untagged
@@ -248,3 +249,16 @@ MonoBehaviour:
   firstCorner: {fileID: 4255596935784487645}
   secondCorner: {fileID: 8642813287421565741}
   roomCorners: []
+--- !u!65 &6322493481817914490
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9208261320795417126}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 8, y: 4, z: 36}
+  m_Center: {x: 0, y: 1.5999999, z: 18}

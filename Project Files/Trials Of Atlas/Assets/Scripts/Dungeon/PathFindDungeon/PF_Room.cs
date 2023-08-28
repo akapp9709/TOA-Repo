@@ -20,6 +20,7 @@ public class PF_Room : MonoBehaviour
     private void Awake()
     {
         FindRoomCorners();
+        roomSize = GetComponent<BoxCollider>().size;
     }
 
     private void FindRoomCorners()
@@ -48,7 +49,7 @@ public class PF_Room : MonoBehaviour
     {
         get
         {
-            var vec = Vector2Int.FloorToInt(new Vector2(roomSize.x, roomSize.z));
+            var vec = new Vector2Int(Mathf.RoundToInt(roomSize.x), Mathf.RoundToInt(roomSize.z));
             return vec;
         }
     }

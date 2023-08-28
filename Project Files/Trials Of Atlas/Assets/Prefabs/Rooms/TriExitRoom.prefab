@@ -75,6 +75,7 @@ GameObject:
   - component: {fileID: 6327538265247184064}
   - component: {fileID: 2543212534172908220}
   - component: {fileID: 615888326677828641}
+  - component: {fileID: 9056584826050706651}
   m_Layer: 0
   m_Name: TriExitRoom
   m_TagString: Untagged
@@ -188,6 +189,19 @@ MonoBehaviour:
   firstCorner: {fileID: 1336642594783911077}
   secondCorner: {fileID: 7718654329244548750}
   roomCorners: []
+--- !u!65 &9056584826050706651
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3306335574426158015}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 6, y: 3.8, z: 8}
+  m_Center: {x: -0.01902771, y: 1.6999999, z: 4}
 --- !u!1 &3550906811431680263
 GameObject:
   m_ObjectHideFlags: 0
