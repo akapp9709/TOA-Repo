@@ -11,4 +11,6 @@ public class PlayerSO : ScriptableObject
     public float maxStamina = 100;
     public float staminaRegen = 10;
     public float staminaDepletion = 20;
+
+    public int runCompleted = 0;
 }

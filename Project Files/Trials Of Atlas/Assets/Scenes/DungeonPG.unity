@@ -154,6 +154,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa4b434aa1b0827469f006674c41447b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerStats: {fileID: 11400000, guid: 29d02af88c6fd03418eda0ebf4e43e3e, type: 2}
   startRoom: {fileID: 128481021799812949, guid: bf642118ac2859847ba0a03c3c837a58,
     type: 3}
   bossRoom: {fileID: 1945851118416578769, guid: c57770c2532e8c641a82f0e54c56bb9e,
@@ -171,14 +172,20 @@ MonoBehaviour:
     type: 3}
   diagonalTile: {fileID: 7413601232891495820, guid: 9d856e3f1e9dea34e8f2c767cb4200f6,
     type: 3}
-  maxSize: {x: 100, y: 100}
-  padding: {x: 20, y: 20}
+  maxSize: {x: 120, y: 120}
+  padding: {x: 25, y: 25}
   offset: {x: 0, y: 0}
   roomBuffer: {x: 3, y: 3}
   dungeonLength: 10
   showGizmos: 1
   showTriangulation: 0
   showPath: 0
+  variants: []
+  minRoomValue: 0
+  maxRoomValue: 0
+  roomCount: 0
+  curveWidth: 1.1
+  curveOffset: 0.15
 --- !u!4 &99727886
 Transform:
   m_ObjectHideFlags: 0

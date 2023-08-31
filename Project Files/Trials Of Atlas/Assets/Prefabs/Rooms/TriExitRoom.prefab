@@ -189,6 +189,9 @@ MonoBehaviour:
   firstCorner: {fileID: 1336642594783911077}
   secondCorner: {fileID: 7718654329244548750}
   roomCorners: []
+  formations:
+  - formationValue: 0
+    isUsed: 0
 --- !u!65 &9056584826050706651
 BoxCollider:
   m_ObjectHideFlags: 0

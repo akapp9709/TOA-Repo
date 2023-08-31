@@ -6,6 +6,7 @@
  * Documentation and algorithm details can be found here: https://vazgriz.com/119/procedurally-generated-dungeons/
  */
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Graphs;
@@ -15,6 +16,14 @@ using Random = UnityEngine.Random;
 [RequireComponent(typeof(MeshFilter))]
 public class PF_Generator : MonoBehaviour
 {
+    [Serializable]
+    private class RoomVariant
+    {
+        public GameObject room;
+        public int formationIndex;
+        public float roomValue, roomBias, shiftedBias;
+    }
+    
     private class RoomSpace
     {
         public RectInt bounds;
@@ -79,6 +88,7 @@ public class PF_Generator : MonoBehaviour
         DiagonalWestUp
     }
 
+    [SerializeField] private PlayerSO playerStats;
     [SerializeField] private GameObject startRoom, bossRoom;
     [SerializeField] private List<GameObject> roomPrefabs;
     [SerializeField] private GameObject floorTile;
@@ -108,6 +118,12 @@ public class PF_Generator : MonoBehaviour
     public bool showGizmos = true;
     public bool showTriangulation = true;
     public bool showPath = true;
+
+    [SerializeField] private List<RoomVariant> variants = new List<RoomVariant>();
+    public float minRoomValue, maxRoomValue, roomCount;
+    [Range(1, 5)] public float curveWidth;
+    [Range(0, 1)] public float curveOffset;
+
     private void OnDrawGizmos()
     {
         if (_delaunay != null && _delaunay.Vertices != null && showTriangulation)
@@ -198,6 +214,7 @@ public class PF_Generator : MonoBehaviour
         _grid = new PF_Grid<CellType>(maxSize, offset);
         _rectOffset = new Vector2Int(1, 0);
 
+        PrepareValues();
         PlaceRooms();
         Triangulate();
         CreateHallways();
@@ -208,49 +225,138 @@ public class PF_Generator : MonoBehaviour
         CombineHallways();
     }
 
+    #region Value Prep
+
+    private void PrepareValues()
+    {
+        foreach (var room in roomPrefabs)
+        {
+            var roomObj = room.GetComponent<PF_Room>();
+            var length = roomObj.Variants.Count;
+            
+            for (int i = 0; i < length; i++)
+            {
+                var obj = new RoomVariant();
+                obj.room = room;
+                obj.formationIndex = i;
+                roomObj.Variants[i].CalculateRoomValue();
+                obj.roomValue = roomObj.Variants[i].formationValue;
+                variants.Add(obj);
+            }
+        }
+        
+        SortRooms();
+        minRoomValue = variants[0].roomValue;
+        maxRoomValue = variants[^1].roomValue;
+        roomCount = variants.Count;
+
+        CalculateBiases();
+    }
+
+    private void SortRooms()
+    {
+        for (int i = 0; i < variants.Count-1; i++)
+        {
+            for (int j = i+1; j < variants.Count; j++)
+            {
+                var x = variants[i].roomValue;
+                var y = variants[j].roomValue;
+
+                if (x > y)
+                {
+                    (variants[i], variants[j]) = (variants[j], variants[i]);
+                }
+            }
+        }
+    }
+
+    private void CalculateBiases()
+    {
+        var runNum = playerStats.runCompleted;
+        
+        foreach (var room in variants)
+        {
+            room.roomBias =
+                Mathf.Exp(-(Mathf.Pow(((room.roomValue / maxRoomValue) - (runNum / roomCount) - curveOffset), 2) /
+                            (2 * Mathf.Pow(curveWidth, 2) / 100) ) );
+
+            if (room.roomBias < 0.01)
+            {
+                room.roomBias = 0;
+            }
+        }
+    }
+    #endregion
+
     #region RoomPlacement
     private void PlaceRooms()
     {
-        var startPos = new Vector3(
-            Random.Range((int)(0.5f * padding.x), (int) ((maxSize.x + 1) - 0.5f * padding.x)),
-            0f,
-            Random.Range((int)(0.5f * padding.y), (int) ((maxSize.x + 1) - 0.5f * padding.y))
-        );
+        var startPlaced = false;
+        while (!startPlaced)
+        {
+            var startPos = new Vector3(
+                Random.Range((int)(0.5f * padding.x), (int) ((maxSize.x + 1) - 0.5f * padding.x)),
+                0f,
+                Random.Range((int)(0.5f * padding.y), (int) ((maxSize.x + 1) - 0.5f * padding.y))
+            );
+            
+            var start = Instantiate(this.startRoom, startPos, Quaternion.identity);
+            ChooseRoomRotation(start, out var bRot);
+            var startVar = start.GetComponent<PF_Room>();
+            var startRect = new RectInt(startVar.Location2D, startVar.Size2D);
+            var startSpace = new RoomSpace(startRect.position, startRect.size);
+            var startBuffer = new RectInt(startRect.position - _rectOffset, startRect.size + _rectOffset * 2);
+            
+            if (CheckRoomInBounds(startBuffer) && CheckRoomIntersect(startBuffer))
+            {
+                _testBuffer.Add(startBuffer);
+                _testRects.Add(startRect);
+                FinalizeRoom(startRect, bRot);
+                _placedRooms.Add(start);
+                startSpace.AddEntrances(startVar.entrancePositions);
+                _rooms.Add(startSpace);
+                startPlaced = true;
+            }
+            else
+            {
+                Destroy(start);
+            }
+        }
+        
+        
 
-        var start = Instantiate(this.startRoom, startPos, Quaternion.identity);
-        ChooseRoomRotation(start, out var sRot);
-        var startVar = start.GetComponent<PF_Room>();
-        var startRect = new RectInt(startVar.Location2D, startVar.Size2D);
-        var startSpace = new RoomSpace(startRect.position, startRect.size);
-        var startBuffer = new RectInt(startRect.position - _rectOffset, startRect.size + _rectOffset * 2);
-        
-        _testBuffer.Add(startBuffer);
-        _testRects.Add(startRect);
-        FinalizeRoom(startRect, sRot);
-        _placedRooms.Add(start);
-        startSpace.AddEntrances(startVar.entrancePositions);
-        _rooms.Add(startSpace);
-        
-        var bossPos = new Vector3(
-            Random.Range((int)(0.5f * padding.x), (int) ((maxSize.x + 1) - 0.5f * padding.x)),
-            0f,
-            Random.Range((int)(0.5f * padding.y), (int) ((maxSize.x + 1) - 0.5f * padding.y))
-        );
+        var bossPlaced = false;
+        while (!bossPlaced)
+        {
+            var bossPos = new Vector3(
+                Random.Range((int)(0.5f * padding.x), (int) ((maxSize.x + 1) - 0.5f * padding.x)),
+                0f,
+                Random.Range((int)(0.5f * padding.y), (int) ((maxSize.x + 1) - 0.5f * padding.y))
+            );
+            
+            var boss = Instantiate(this.bossRoom, bossPos, Quaternion.identity);
+            ChooseRoomRotation(boss, out var bRot);
+            var bossVar = boss.GetComponent<PF_Room>();
+            var bossRect = new RectInt(bossVar.Location2D, bossVar.Size2D);
+            var bossSpace = new RoomSpace(bossRect.position, bossRect.size);
+            var bossBuffer = new RectInt(bossRect.position - _rectOffset, bossRect.size + _rectOffset * 2);
+            
+            if (CheckRoomInBounds(bossBuffer) && CheckRoomIntersect(bossBuffer))
+            {
+                _testBuffer.Add(bossBuffer);
+                _testRects.Add(bossRect);
+                FinalizeRoom(bossRect, bRot);
+                _placedRooms.Add(boss);
+                bossSpace.AddEntrances(bossVar.entrancePositions);
+                _rooms.Add(bossSpace);
+                bossPlaced = true;
+            }
+            else
+            {
+                Destroy(boss);
+            }
+        }
 
-        var boss = Instantiate(this.bossRoom, bossPos, Quaternion.identity);
-        ChooseRoomRotation(boss, out var bRot);
-        var bossVar = boss.GetComponent<PF_Room>();
-        var bossRect = new RectInt(bossVar.Location2D, bossVar.Size2D);
-        var bossSpace = new RoomSpace(bossRect.position, bossRect.size);
-        var bossBuffer = new RectInt(bossRect.position - _rectOffset, bossRect.size + _rectOffset * 2);
-        
-        _testBuffer.Add(bossBuffer);
-        _testRects.Add(bossRect);
-        FinalizeRoom(bossRect, bRot);
-        _placedRooms.Add(boss);
-        bossSpace.AddEntrances(bossVar.entrancePositions);
-        _rooms.Add(bossSpace);
-        
         for (int i = 0; i < dungeonLength; i++)
         {
             var pos = new Vector3(
@@ -353,35 +459,6 @@ public class PF_Generator : MonoBehaviour
         room.GetComponent<PF_Room>().roomSizeOffset = currentOffset;
     }
 
-    private void TranslateBounds(int val, out Vector2Int posOffset, out Vector2Int sizeOffset)
-    {
-        var pos = new Vector2Int();
-        var size = new Vector2Int();
-        Debug.Log(pos);
-        switch (val)
-        {
-            case 1:
-                pos = new Vector2Int(1, 1);
-                size = new Vector2Int(-1, -1);
-                break;
-            case 2:
-                pos = new Vector2Int(1, 1);
-                size = new Vector2Int(-1, -1);
-                break;
-            case 3:
-                pos = new Vector2Int(1, 0);
-                size = new Vector2Int(-1, 1);
-                break;
-            case 4:
-                pos = new Vector2Int(0, 1);
-                size = new Vector2Int(1, -1);
-                break;
-        }
-
-        posOffset = pos;
-        sizeOffset = size;
-    }
-    
     private bool CheckRoomInBounds(RectInt area)
     {
         foreach (var x in area.allPositionsWithin)

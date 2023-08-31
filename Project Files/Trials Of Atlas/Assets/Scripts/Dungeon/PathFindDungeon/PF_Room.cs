@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,6 +11,8 @@ public class PF_Room : MonoBehaviour
     public List<GameObject> roomCorners;
 
     private float runTimes;
+
+    [SerializeField] private List<EnemyFormation> formations;
 
     private void OnDrawGizmos()
     {
@@ -69,6 +72,36 @@ public class PF_Room : MonoBehaviour
     private void MarkSpace()
     {
         var rectangle = new Rect(Location2D, Size2D);
-        
     }
+
+    [Serializable]
+    public class EnemyFormation
+    {
+        public GameObject formation;
+        public float formationValue;
+        public bool isUsed;
+
+        public void CalculateRoomValue()
+        {
+            if (formation == null)
+            {
+                return;
+            }
+            
+            var numEnemies = formation.transform.childCount;
+            float totalHealth = 0, totalDamage = 0, totalAggression = 0, averageAggression;
+
+            foreach (var child in formation.GetComponentsInChildren<Enemy>())
+            {
+                totalHealth += child.EnemyHealth;
+                totalDamage += child.EnemyStrength;
+                totalAggression += child.EnemyAggression;
+            }
+
+            averageAggression = totalAggression / numEnemies;
+            formationValue = totalHealth + totalDamage * averageAggression;
+        }
+    }
+
+    public List<EnemyFormation> Variants => formations;
 }

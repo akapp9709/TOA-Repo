@@ -9,10 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: Large Formations
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyFormation
-  formations:
-  - formationPrefab: {fileID: 5923545616315456581, guid: 376c312ebaee7694ca2e5091f33c0586,
-      type: 3}
-    formationValue: 1
+  m_Script: {fileID: 11500000, guid: 1cb5c5be35c5ecf40a8201d7fe328420, type: 3}
+  m_Name: Creep
+  m_EditorClassIdentifier: 
+  strength: 25
+  health: 70
+  aggression: 0.5
