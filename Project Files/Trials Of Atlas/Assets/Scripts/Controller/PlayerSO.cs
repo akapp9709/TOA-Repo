@@ -13,4 +13,7 @@ public class PlayerSO : ScriptableObject
     public float staminaDepletion = 20;
 
     public int runCompleted = 0;
+
+    public float dodgeSpeed = 8f;
+    public float dodgeTime = 1f;
 }
