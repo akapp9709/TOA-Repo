@@ -11,9 +11,12 @@ public class PlayerMove : MonoBehaviour
     
     private PlayerControls _controls;
     private Rigidbody _rb;
+    private Animator _anim;
+    
     public Vector3 _inputDirection;
 
     private bool _isSprinting = false;
+    private float _currentSprintVal = 0;
     private bool _isDodging = false;
     private Vector3 _dodgeVelocity;
     private float _dodgeStartTime;
@@ -27,6 +30,7 @@ public class PlayerMove : MonoBehaviour
     void Start()
     {
         _rb = GetComponent<Rigidbody>();
+        _anim = GetComponent<Animator>();
         
         _controls = new PlayerControls();
         _controls.Main.Enable();
@@ -44,6 +48,10 @@ public class PlayerMove : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        var sprintVal = _isSprinting ? 1 : 0;
+        _currentSprintVal = Mathf.Lerp(_currentSprintVal, sprintVal, 0.01f);
+        _anim.SetFloat("Sprint", _currentSprintVal);
+        
         var camFwd = CamFwd;
         var camRt = CamRt;
 
@@ -79,12 +87,14 @@ public class PlayerMove : MonoBehaviour
         switch (context.phase)
         {
             case InputActionPhase.Started:
+                _anim.SetBool("isMoving", true);
                 break;
             case InputActionPhase.Performed:
                 _inputDirection = new Vector3(inVec.x, 0, inVec.y);
                 break;
             case InputActionPhase.Canceled:
                 _inputDirection = Vector3.zero;
+                _anim.SetBool("isMoving", false);
                 _isSprinting = false;
                 break;
         }
