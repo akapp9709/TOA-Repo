@@ -103,5 +103,13 @@ public class PF_Room : MonoBehaviour
         }
     }
 
+    public void PlaceEnemies(int index)
+    {
+        if (formations[index].formation != null)
+        {
+            Instantiate(formations[index].formation, this.transform);
+        }
+    }
+
     public List<EnemyFormation> Variants => formations;
 }

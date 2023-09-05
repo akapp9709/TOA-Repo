@@ -226,8 +226,6 @@ public class PF_Generator : MonoBehaviour
         MarkWalls();
         BuildHallways();
         CombineHallways();
-
-        Debug.Log(FindObjectsOfType<RangedBehavior>().Length);
     }
 
     #region Value Prep
@@ -342,7 +340,7 @@ public class PF_Generator : MonoBehaviour
                 break;
             }
             placedVars.Add(variants[ind]);
-            var room = Instantiate(variants[ind].room, pos, Quaternion.identity);
+            var room = Instantiate(variants[ind].room, pos, Quaternion.identity, this.transform);
             ChooseRoomRotation(room, out var rot);
             
             var roomVar = room.GetComponent<PF_Room>();
@@ -370,6 +368,7 @@ public class PF_Generator : MonoBehaviour
             {
                 _testBuffer.Add(roomBufferRect);
                 _testRects.Add(roomRect);
+                roomVar.PlaceEnemies(variants[ind].formationIndex);
                 FinalizeRoom(roomRect, rot);
                 _placedRooms.Add(room);
                 rs.AddEntrances(roomVar.entrancePositions);
