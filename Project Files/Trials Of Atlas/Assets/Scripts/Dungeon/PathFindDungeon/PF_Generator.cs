@@ -223,6 +223,8 @@ public class PF_Generator : MonoBehaviour
         MarkWalls();
         BuildHallways();
         CombineHallways();
+
+        Debug.Log(FindObjectsOfType<RangedBehavior>().Length);
     }
 
     #region Value Prep
