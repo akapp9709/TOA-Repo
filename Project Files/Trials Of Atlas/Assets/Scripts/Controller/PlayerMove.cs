@@ -30,7 +30,7 @@ public class PlayerMove : MonoBehaviour
     void Start()
     {
         _rb = GetComponent<Rigidbody>();
-        _anim = GetComponent<Animator>();
+        // _anim = GetComponent<Animator>();
         
         _controls = new PlayerControls();
         _controls.Main.Enable();
@@ -50,7 +50,7 @@ public class PlayerMove : MonoBehaviour
     {
         var sprintVal = _isSprinting ? 1 : 0;
         _currentSprintVal = Mathf.Lerp(_currentSprintVal, sprintVal, 0.01f);
-        _anim.SetFloat("Sprint", _currentSprintVal);
+        // _anim.SetFloat("Sprint", _currentSprintVal);
         
         var camFwd = CamFwd;
         var camRt = CamRt;
@@ -87,14 +87,14 @@ public class PlayerMove : MonoBehaviour
         switch (context.phase)
         {
             case InputActionPhase.Started:
-                _anim.SetBool("isMoving", true);
+                // _anim.SetBool("isMoving", true);
                 break;
             case InputActionPhase.Performed:
                 _inputDirection = new Vector3(inVec.x, 0, inVec.y);
                 break;
             case InputActionPhase.Canceled:
                 _inputDirection = Vector3.zero;
-                _anim.SetBool("isMoving", false);
+                // _anim.SetBool("isMoving", false);
                 _isSprinting = false;
                 break;
         }

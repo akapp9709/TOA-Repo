@@ -11,6 +11,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Graphs;
+using Unity.AI.Navigation;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -219,13 +220,13 @@ public class PF_Generator : MonoBehaviour
 
         PrepareValues();
         PlaceRooms();
-        Triangulate();
-        CreateHallways();
-        //StartCoroutine(PathFindHallways());
-        PathFindHallways();
-        MarkWalls();
-        BuildHallways();
-        CombineHallways();
+        // Triangulate();
+        // CreateHallways();
+        // //StartCoroutine(PathFindHallways());
+        // PathFindHallways();
+        // MarkWalls();
+        // BuildHallways();
+        // CombineHallways();
     }
 
     #region Value Prep
@@ -318,12 +319,18 @@ public class PF_Generator : MonoBehaviour
         PlaceStartRoom();
         PlaceBossRoom();
 
+        // PlaceDungeonRooms();
+        StartCoroutine(PlaceDungeonRoomsRoutine());
+    }
+
+    private void PlaceDungeonRooms()
+    {
         for (int i = 0; i < dungeonLength; i++)
         {
             var pos = new Vector3(
-                Random.Range((int)(0.5f * padding.x), (int) ((maxSize.x + 1) - 0.5f * padding.x)),
+                Random.Range((int) (0.5f * padding.x), (int) ((maxSize.x + 1) - 0.5f * padding.x)),
                 0f,
-                Random.Range((int)(0.5f * padding.y), (int) ((maxSize.x + 1) - 0.5f * padding.y))
+                Random.Range((int) (0.5f * padding.y), (int) ((maxSize.x + 1) - 0.5f * padding.y))
             );
 
             var x = Random.Range(0f, _lineLength);
@@ -339,27 +346,28 @@ public class PF_Generator : MonoBehaviour
                 ind = j;
                 break;
             }
+
             placedVars.Add(variants[ind]);
             var room = Instantiate(variants[ind].room, pos, Quaternion.identity, this.transform);
             ChooseRoomRotation(room, out var rot);
-            
+
             var roomVar = room.GetComponent<PF_Room>();
 
             //TranslateBounds(rot, out var rectPosOff, out var rectSizeOff);
             var roomRect = new RectInt(roomVar.Location2D, roomVar.Size2D);
-            
+
             var rs = new RoomSpace(roomRect.position, roomRect.size);
-            
-            var roomBufferRect = new RectInt(roomRect.position - _rectOffset, roomRect.size + _rectOffset*2);
+
+            var roomBufferRect = new RectInt(roomRect.position - _rectOffset, roomRect.size + _rectOffset * 2);
 
             bool safe = true;
             var inBox = CheckRoomInBounds(roomBufferRect);
-            
+
             if (!inBox)
             {
                 safe = false;
             }
-            else if(!CheckRoomIntersect(roomBufferRect))
+            else if (!CheckRoomIntersect(roomBufferRect))
             {
                 safe = false;
             }
@@ -385,6 +393,96 @@ public class PF_Generator : MonoBehaviour
         {
             obj.transform.position -= new Vector3(0.5f, 0f, 0.5f);
         }
+    }
+    
+    private IEnumerator PlaceDungeonRoomsRoutine()
+    {
+        for (int i = 0; i < dungeonLength; i++)
+        {
+            var pos = new Vector3(
+                Random.Range((int) (0.5f * padding.x), (int) ((maxSize.x + 1) - 0.5f * padding.x)),
+                0f,
+                Random.Range((int) (0.5f * padding.y), (int) ((maxSize.x + 1) - 0.5f * padding.y))
+            );
+
+            var x = Random.Range(0f, _lineLength);
+            int ind = 0;
+
+            for (int j = 0; j < variants.Count; j++)
+            {
+                if (x > variants[j].shiftedBias)
+                {
+                    continue;
+                }
+
+                ind = j;
+                break;
+            }
+
+            placedVars.Add(variants[ind]);
+            var room = Instantiate(variants[ind].room, pos, Quaternion.identity, this.transform);
+            ChooseRoomRotation(room, out var rot);
+
+            var roomVar = room.GetComponent<PF_Room>();
+
+            //TranslateBounds(rot, out var rectPosOff, out var rectSizeOff);
+            var roomRect = new RectInt(roomVar.Location2D, roomVar.Size2D);
+
+            var rs = new RoomSpace(roomRect.position, roomRect.size);
+
+            var roomBufferRect = new RectInt(roomRect.position - _rectOffset, roomRect.size + _rectOffset * 2);
+
+            bool safe = true;
+            var inBox = CheckRoomInBounds(roomBufferRect);
+
+            if (!inBox)
+            {
+                safe = false;
+            }
+            else if (!CheckRoomIntersect(roomBufferRect))
+            {
+                safe = false;
+            }
+
+            if (safe)
+            {
+                _testBuffer.Add(roomBufferRect);
+                _testRects.Add(roomRect);
+                roomVar.PlaceEnemies(variants[ind].formationIndex);
+                FinalizeRoom(roomRect, rot);
+                _placedRooms.Add(room);
+                rs.AddEntrances(roomVar.entrancePositions);
+                _rooms.Add(rs);
+
+                GetComponent<NavMeshSurface>().navMeshData = null;
+                GetComponent<NavMeshSurface>().BuildNavMesh();
+
+                yield return new WaitForSeconds(0.2f);
+            }
+            else
+            {
+                Destroy(room);
+                i--;
+                
+                GetComponent<NavMeshSurface>().navMeshData = null;
+                GetComponent<NavMeshSurface>().BuildNavMesh();
+                
+                yield return new WaitForSeconds(0.2f);
+            }
+        }
+
+        foreach (var obj in _placedRooms)
+        {
+            obj.transform.position -= new Vector3(0.5f, 0f, 0.5f);
+        }
+        
+        Triangulate();
+        CreateHallways();
+        //StartCoroutine(PathFindHallways());
+        PathFindHallways();
+        MarkWalls();
+        BuildHallways();
+        CombineHallways();
     }
 
     private void PlaceBossRoom()
@@ -722,6 +820,7 @@ public class PF_Generator : MonoBehaviour
         mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
         mesh.CombineMeshes(combine);
         GetComponent<MeshFilter>().mesh = mesh;
+        GetComponent<MeshCollider>().sharedMesh = mesh;
 
         foreach (var obj in _floorMeshes)
         {

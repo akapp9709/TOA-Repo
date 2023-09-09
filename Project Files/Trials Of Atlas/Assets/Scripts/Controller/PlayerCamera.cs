@@ -3,59 +3,112 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering.HighDefinition;
 
 public class PlayerCamera : MonoBehaviour
 {
-    [SerializeField] private Transform target;
-    [SerializeField] private Vector3 targetOffset;
-    [SerializeField] private Transform cameraTransform;
-    public float cameraDistance = 3f, rotationSpeed, sensitivityX, sensitivityY;
+    public Transform target;
+    public Transform cameraTrans;
+    public Transform cameraPivot;
+    private Transform _myTransform;
+    private Vector3 _cameraPos;
+    private LayerMask _ignoreLayers;
+    private Vector3 _cameraFollowVelocity = Vector3.zero;
+    private Vector3 _cameraTransformPosition = Vector3.zero;
 
+    public static PlayerCamera Singleton;
+    
+    public float lookSpeed = 0.1f;
+    public float followSpeed = 0.1f;
+    public float pivotSpeed = 0.03f;
+
+    private float _targetPosition;
+    private float _defaultPosition;
+    private float _lookAngle;
+    private float _pivotAngle;
+    public float minPivot = -35;
+    public float maxPivot = 35;
+    
     private PlayerControls _controls;
-    private float _camX, _camY;
-    private Transform _trans;
+    private Vector2 _mouseDelta;
 
-    private void OnDrawGizmos()
-    {
-        var pos = transform.position;
-        
-        Gizmos.color = Color.red;
-        Gizmos.DrawLine(pos, pos + transform.forward*-2);
-        Gizmos.DrawSphere(pos + transform.forward*-2, 0.3f);
-    }
+    public float cameraSphereRadius = 0.2f;
+    public float cameraCollisionOffset = 0.2f;
+    public float minCollisionOffset = 0.2f;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
-        _trans = transform;
+        Singleton = this;
+        _myTransform = transform;
+        _defaultPosition = cameraTrans.localPosition.z;
+        _ignoreLayers = ~(1 << 8 | 1 << 9 | 1 << 10);
+
         _controls = new PlayerControls();
         _controls.Main.Enable();
-        _controls.Main.Look.performed += LookAround;
-        
-        _trans.rotation = Quaternion.identity;
+
+        _controls.Main.Look.started += context => _mouseDelta = context.ReadValue<Vector2>();
+        _controls.Main.Look.canceled += context => _mouseDelta = Vector2.zero;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Start()
     {
-        var pos = _trans.position;
-        var rot = _trans.eulerAngles;
-
-        rot.x -= _camY * Time.deltaTime * sensitivityY * rotationSpeed;
-        rot.x = Mathf.Clamp(rot.x, -90f, 90f);
-
-        _trans.rotation = Quaternion.Euler(rot);
         
-        cameraTransform.position = pos + pos + transform.forward * -1 * cameraDistance;
-        cameraTransform.LookAt(pos);
     }
 
-    private void LookAround(InputAction.CallbackContext context)
+    private void Update()
     {
-        var inVec = context.ReadValue<Vector2>();
-
-        _camX = inVec.x;
-        _camY = inVec.y;
+        var delta = Time.deltaTime;
         
+        FollowTarget(delta);
+        HandleRotation(delta, _mouseDelta.x, _mouseDelta.y);
+    }
+
+    public void FollowTarget(float delta)
+    {
+        var targetPosition = Vector3.SmoothDamp(_myTransform.position, target.position, ref _cameraFollowVelocity,
+            delta / followSpeed);
+        _myTransform.position = targetPosition;
+        
+        HandleCameraCollision(delta);
+    }
+
+    public void HandleRotation(float delta, float mouseX, float mouseY)
+    {
+        _lookAngle += (mouseX * lookSpeed) / delta;
+        _pivotAngle -= (mouseY * pivotSpeed) / delta;
+        _pivotAngle = Mathf.Clamp(_pivotAngle, minPivot, maxPivot);
+
+        var rotation = Vector3.zero;
+        rotation.y = _lookAngle;
+        var targetRotation = Quaternion.Euler(rotation);
+        _myTransform.rotation = targetRotation;
+
+        rotation = Vector3.zero;
+        rotation.x = _pivotAngle;
+        targetRotation = Quaternion.Euler(rotation);
+        cameraPivot.localRotation = targetRotation;
+    }
+    
+    private void HandleCameraCollision(float delta)
+    {
+        _targetPosition = _defaultPosition;
+        RaycastHit hit;
+        var direction = cameraTrans.position - cameraPivot.position;
+        direction.Normalize();
+
+        if (Physics.SphereCast(cameraPivot.position, cameraSphereRadius, direction, out hit, 
+            Mathf.Abs(_targetPosition),_ignoreLayers))
+        {
+            var dis = Vector3.Distance(cameraPivot.position, hit.point);
+            _targetPosition = -(dis - cameraCollisionOffset);
+        }
+
+        if (Mathf.Abs(_targetPosition) < minCollisionOffset)
+        {
+            _targetPosition = -minCollisionOffset;
+        }
+
+        _cameraTransformPosition.z = Mathf.Lerp(cameraTrans.localPosition.z, _targetPosition, delta / 0.2f);
+        cameraTrans.localPosition = _cameraTransformPosition;
     }
 }
