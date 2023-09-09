@@ -474,6 +474,8 @@ public class PF_Generator : MonoBehaviour
         foreach (var obj in _placedRooms)
         {
             obj.transform.position -= new Vector3(0.5f, 0f, 0.5f);
+            GetComponent<NavMeshSurface>().navMeshData = null;
+            GetComponent<NavMeshSurface>().BuildNavMesh();
         }
         
         Triangulate();
