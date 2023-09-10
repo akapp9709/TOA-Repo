@@ -128,6 +128,10 @@ public class PF_Generator : MonoBehaviour
     [Range(0, 1)] public float curveOffset;
     private float _lineLength;
 
+    public int lightSpace;
+    public float _lightCount;
+    private Vector3[] _lightPositions;
+    
     private void OnDrawGizmos()
     {
         if (_delaunay != null && _delaunay.Vertices != null && showTriangulation)
@@ -210,6 +214,21 @@ public class PF_Generator : MonoBehaviour
                 }
             }
         }
+        Gizmos.color = Color.white;
+        foreach (var line in _lightLines)
+        {
+            var pos1 = line.StartPos;
+            var pos2 = line.EndPos;
+            
+            Gizmos.DrawSphere(new Vector3(pos1.x, 0f, pos1.y) + Vector3.up*5, 0.5f);
+            Gizmos.DrawSphere(new Vector3(pos2.x, 0f, pos2.y) + Vector3.up*5, 0.5f);
+            Gizmos.DrawLine(new Vector3(pos1.x,5, pos1.y), new Vector3(pos2.x, 5, pos2.y));
+
+            foreach (var pos in line.Positions)
+            {
+                Gizmos.DrawSphere(pos + Vector3.up*5, 0.3f);
+            }
+        }
     }
     
     // Start is called before the first frame update
@@ -217,6 +236,7 @@ public class PF_Generator : MonoBehaviour
     {
         _grid = new PF_Grid<CellType>(maxSize, offset);
         _rectOffset = new Vector2Int(1, 0);
+        LightLine.LightCount = _lightCount;
 
         PrepareValues();
         PlaceRooms();
@@ -419,7 +439,6 @@ public class PF_Generator : MonoBehaviour
                 break;
             }
 
-            placedVars.Add(variants[ind]);
             var room = Instantiate(variants[ind].room, pos, Quaternion.identity, this.transform);
             ChooseRoomRotation(room, out var rot);
 
@@ -446,6 +465,7 @@ public class PF_Generator : MonoBehaviour
 
             if (safe)
             {
+                placedVars.Add(variants[ind]);
                 _testBuffer.Add(roomBufferRect);
                 _testRects.Add(roomRect);
                 roomVar.PlaceEnemies(variants[ind].formationIndex);
@@ -485,6 +505,7 @@ public class PF_Generator : MonoBehaviour
         MarkWalls();
         BuildHallways();
         CombineHallways();
+        PlaceLights();
     }
 
     private void PlaceBossRoom()
@@ -733,7 +754,7 @@ public class PF_Generator : MonoBehaviour
             {
                 var cost = new PF_Pathfinder.PathCost();
 
-                cost.cost += Vector2Int.Distance(b.Position, maxSize/2) * 0.2f;
+                // cost.cost += Vector2Int.Distance(b.Position, maxSize/2) * 0.2f;
 
                 switch (_grid[b.Position])
                 {
@@ -805,7 +826,16 @@ public class PF_Generator : MonoBehaviour
         new Vector2Int(1,-1),
         new Vector2Int(-1,1),
         new Vector2Int(-1,-1),
-        new Vector2Int(1,0),
+        new Vector2Int(1,0)*2,
+        new Vector2Int(-1,0)*2,
+        new Vector2Int(0,1)*2,
+        new Vector2Int(0,0)*2,
+        new Vector2Int(0, -1)*2,
+        new Vector2Int(1,1)*2,
+        new Vector2Int(1,-1)*2,
+        new Vector2Int(-1,1)*2,
+        new Vector2Int(-1,-1)*2,
+        new Vector2Int(1,0)*2,
     };
 
     private void CombineHallways()
@@ -1059,5 +1089,121 @@ public class PF_Generator : MonoBehaviour
                 break;
         }
     }
+    #endregion
+    
+    #region Light Generation
+
+    
+    private List<LightLine> _lightLines = new List<LightLine>();
+    private class LightLine
+    {
+        public Vector2Int StartPos, EndPos;
+        public static float LightCount;
+        public List<Vector3> Positions = new List<Vector3>();
+        public LightLine(Vector2Int startPos, Vector2Int endPos)
+        {
+            StartPos = startPos;
+            EndPos = endPos;
+        }
+
+        public int NumberOfLights()
+        {
+            var dist = Vector2Int.Distance(StartPos, EndPos);
+            var num = Mathf.RoundToInt(dist * LightCount);
+            return num;
+        }
+
+        public float LightSpacing()
+        {
+            var dist = Vector2Int.Distance(StartPos, EndPos);
+            return dist / NumberOfLights();
+        }
+    }
+    
+    public void PlaceLights()
+    {
+        MarkLineSouthToNorth();
+        MarkLineEastToWest();
+        MarkLightPositions();
+    }
+
+    private void MarkLightPositions()
+    {
+        foreach (var line in _lightLines)
+        {
+            for (int i = 1; i < line.NumberOfLights(); i++)
+            {
+                var pos = new Vector3(line.StartPos.x, 0f, line.StartPos.y + line.LightSpacing() * i);
+                line.Positions.Add(pos);
+            }
+        }
+    }
+
+    private void MarkLineSouthToNorth()
+    {
+        Vector2Int pos1 = Vector2Int.zero, pos2 = Vector2Int.zero;
+
+        for (int x = 0; x < maxSize.x; x++)
+        {
+            for (int y = 0; y < maxSize.y; y++)
+            {
+                if (pos1 == Vector2Int.zero && (_grid[x, y] == CellType.CornerOutSW ||
+                                                (_grid[x, y] == CellType.WallWest &&
+                                                 _grid[x, y - 1] is CellType.Room or CellType.None)))
+                {
+                    pos1 = new Vector2Int(x, y);
+                }
+                else if (_grid[x, y] == CellType.CornerOutNW || (_grid[x, y] == CellType.WallWest &&
+                                                                 _grid[x, y + 1] is CellType.Hallway or CellType.Room))
+                {
+                    pos2 = new Vector2Int(x, y);
+                }
+
+                if (pos1 != Vector2Int.zero && pos2 != Vector2Int.zero)
+                {
+                    _lightLines.Add(new LightLine(pos1, pos2));
+                    pos1 = Vector2Int.zero;
+                    pos2 = Vector2Int.zero;
+                }
+            }
+
+            pos1 = Vector2Int.zero;
+            pos2 = Vector2Int.zero;
+        }
+    }
+    
+    private void MarkLineEastToWest()
+    {
+        Vector2Int pos1 = Vector2Int.zero, pos2 = Vector2Int.zero;
+
+        for (int y = 0; y < maxSize.y; y++)
+        {
+            for (int x = 0; x < maxSize.x; x++)
+            {
+                if (pos1 == Vector2Int.zero && (_grid[x, y] == CellType.CornerOutSW ||
+                                                (_grid[x, y] == CellType.WallWest &&
+                                                 _grid[x, y - 1] is CellType.Room or CellType.None)))
+                {
+                    // pos1 = new Vector2Int(x, y);
+                }
+                else if (_grid[x, y] == CellType.CornerOutNW || (_grid[x, y] == CellType.WallWest &&
+                                                                 _grid[x, y + 1] is CellType.Hallway or CellType.Room))
+                {
+                    // pos2 = new Vector2Int(x, y);
+                }
+
+                if (pos1 != Vector2Int.zero && pos2 != Vector2Int.zero)
+                {
+                    // _lightLines.Add(new LightLine(pos1, pos2));
+                    // pos1 = Vector2Int.zero;
+                    // pos2 = Vector2Int.zero;
+                }
+            }
+
+            pos1 = Vector2Int.zero;
+            pos2 = Vector2Int.zero;
+        }
+    }
+
     #endregion
 }

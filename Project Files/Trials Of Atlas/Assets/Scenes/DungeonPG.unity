@@ -191,6 +191,8 @@ MonoBehaviour:
   roomCount: 0
   curveWidth: 1.1
   curveOffset: 0.1
+  lightSpace: 0
+  _lightCount: 0.3
 --- !u!4 &99727886
 Transform:
   m_ObjectHideFlags: 0
