@@ -113,7 +113,7 @@ public class PlayerMove : MonoBehaviour
         var dVec = _inputDirection;
         if (dVec == Vector3.zero)
         {
-            dVec = transform.forward * -1;
+            dVec = CamFwd * -1;
         }
 
         _dodgeVelocity = dVec.z * CamFwd + dVec.x * CamRt;

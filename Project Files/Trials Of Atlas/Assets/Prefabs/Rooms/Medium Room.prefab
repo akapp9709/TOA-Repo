@@ -45,6 +45,7 @@ GameObject:
   - component: {fileID: 6670453909320302027}
   - component: {fileID: 6811080817331994170}
   - component: {fileID: 6612915606609129832}
+  - component: {fileID: 5982476014157321795}
   m_Layer: 0
   m_Name: Medium Room
   m_TagString: Untagged
@@ -179,11 +180,23 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3668780667716425508}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 12.000001, y: 4, z: 10}
   m_Center: {x: 0.014686108, y: 1.5999999, z: 5}
+--- !u!114 &5982476014157321795
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3668780667716425508}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 714244bab38aefb44a21b532d4ef4320, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5317128379357634464
 GameObject:
   m_ObjectHideFlags: 0

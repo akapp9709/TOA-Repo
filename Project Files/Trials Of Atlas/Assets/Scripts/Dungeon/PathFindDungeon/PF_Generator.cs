@@ -9,6 +9,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Graphs;
 using Unity.AI.Navigation;
@@ -134,6 +135,22 @@ public class PF_Generator : MonoBehaviour
     
     private void OnDrawGizmos()
     {
+        Gizmos.color = Color.white;
+        foreach (var line in _lightLines)
+        {
+            var pos1 = line.StartPos;
+            var pos2 = line.EndPos;
+            
+            Gizmos.DrawSphere(new Vector3(pos1.x, 0f, pos1.y) + Vector3.up*5, 0.5f);
+            Gizmos.DrawSphere(new Vector3(pos2.x, 0f, pos2.y) + Vector3.up*5, 0.5f);
+            Gizmos.DrawLine(new Vector3(pos1.x,5, pos1.y), new Vector3(pos2.x, 5, pos2.y));
+
+            foreach (var pos in line.Positions)
+            {
+                Gizmos.DrawSphere(pos + Vector3.up*5, 0.3f);
+            }
+        }
+        
         if (_delaunay != null && _delaunay.Vertices != null && showTriangulation)
         {
             Gizmos.color = Color.green;
@@ -214,21 +231,7 @@ public class PF_Generator : MonoBehaviour
                 }
             }
         }
-        Gizmos.color = Color.white;
-        foreach (var line in _lightLines)
-        {
-            var pos1 = line.StartPos;
-            var pos2 = line.EndPos;
-            
-            Gizmos.DrawSphere(new Vector3(pos1.x, 0f, pos1.y) + Vector3.up*5, 0.5f);
-            Gizmos.DrawSphere(new Vector3(pos2.x, 0f, pos2.y) + Vector3.up*5, 0.5f);
-            Gizmos.DrawLine(new Vector3(pos1.x,5, pos1.y), new Vector3(pos2.x, 5, pos2.y));
-
-            foreach (var pos in line.Positions)
-            {
-                Gizmos.DrawSphere(pos + Vector3.up*5, 0.3f);
-            }
-        }
+        
     }
     
     // Start is called before the first frame update
@@ -1100,10 +1103,20 @@ public class PF_Generator : MonoBehaviour
         public Vector2Int StartPos, EndPos;
         public static float LightCount;
         public List<Vector3> Positions = new List<Vector3>();
-        public LightLine(Vector2Int startPos, Vector2Int endPos)
+
+        public enum LineDirection
+        {
+            SouthToNorth,
+            WestToEast
+        }
+
+        public LineDirection Direction;
+        
+        public LightLine(Vector2Int startPos, Vector2Int endPos, LineDirection direction)
         {
             StartPos = startPos;
             EndPos = endPos;
+            Direction = direction;
         }
 
         public int NumberOfLights()
@@ -1133,8 +1146,18 @@ public class PF_Generator : MonoBehaviour
         {
             for (int i = 1; i < line.NumberOfLights(); i++)
             {
-                var pos = new Vector3(line.StartPos.x, 0f, line.StartPos.y + line.LightSpacing() * i);
-                line.Positions.Add(pos);
+                Vector3 pos;
+                switch (line.Direction)
+                {
+                    case LightLine.LineDirection.SouthToNorth:
+                        pos = new Vector3(line.StartPos.x, 0f, line.StartPos.y + line.LightSpacing() * i);
+                        line.Positions.Add(pos);
+                        break;
+                    case LightLine.LineDirection.WestToEast:
+                        pos = new Vector3(line.StartPos.x + line.LightSpacing() * i, 0f, line.StartPos.y);
+                        line.Positions.Add(pos);
+                        break;
+                }
             }
         }
     }
@@ -1161,7 +1184,7 @@ public class PF_Generator : MonoBehaviour
 
                 if (pos1 != Vector2Int.zero && pos2 != Vector2Int.zero)
                 {
-                    _lightLines.Add(new LightLine(pos1, pos2));
+                    _lightLines.Add(new LightLine(pos1, pos2, LightLine.LineDirection.SouthToNorth));
                     pos1 = Vector2Int.zero;
                     pos2 = Vector2Int.zero;
                 }
@@ -1180,23 +1203,23 @@ public class PF_Generator : MonoBehaviour
         {
             for (int x = 0; x < maxSize.x; x++)
             {
-                if (pos1 == Vector2Int.zero && (_grid[x, y] == CellType.CornerOutSW ||
-                                                (_grid[x, y] == CellType.WallWest &&
-                                                 _grid[x, y - 1] is CellType.Room or CellType.None)))
+                if (pos1 == Vector2Int.zero && ((_grid[x, y] == CellType.CornerOutSW && _grid[x+1,y] == CellType.WallSouth) ||
+                                                (_grid[x, y] == CellType.WallSouth &&
+                                                 _grid[x-1,y] is CellType.Room or CellType.None)))
                 {
-                    // pos1 = new Vector2Int(x, y);
+                    pos1 = new Vector2Int(x, y);
                 }
-                else if (_grid[x, y] == CellType.CornerOutNW || (_grid[x, y] == CellType.WallWest &&
-                                                                 _grid[x, y + 1] is CellType.Hallway or CellType.Room))
+                else if (_grid[x, y] == CellType.CornerOutSE || (_grid[x, y] == CellType.WallSouth &&
+                                                                 _grid[x+1, y] is CellType.Hallway or CellType.Room))
                 {
-                    // pos2 = new Vector2Int(x, y);
+                    pos2 = new Vector2Int(x, y);
                 }
 
                 if (pos1 != Vector2Int.zero && pos2 != Vector2Int.zero)
                 {
-                    // _lightLines.Add(new LightLine(pos1, pos2));
-                    // pos1 = Vector2Int.zero;
-                    // pos2 = Vector2Int.zero;
+                    _lightLines.Add(new LightLine(pos1, pos2, LightLine.LineDirection.WestToEast));
+                    pos1 = Vector2Int.zero;
+                    pos2 = Vector2Int.zero;
                 }
             }
 

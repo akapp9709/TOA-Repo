@@ -15,8 +15,8 @@ MonoBehaviour:
   runSpeed: 5
   sprintSpeed: 8
   maxStamina: 100
-  staminaRegen: 10
+  staminaRegen: 0
   staminaDepletion: 20
-  runCompleted: 0
+  runCompleted: 16
   dodgeSpeed: 10
   dodgeTime: 0.5

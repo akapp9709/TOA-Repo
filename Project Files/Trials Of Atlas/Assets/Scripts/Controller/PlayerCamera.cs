@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using AJK;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering.HighDefinition;
@@ -31,6 +32,7 @@ public class PlayerCamera : MonoBehaviour
     
     private PlayerControls _controls;
     private Vector2 _mouseDelta;
+    private InputHandler _input;
 
     public float cameraSphereRadius = 0.2f;
     public float cameraCollisionOffset = 0.2f;
@@ -48,19 +50,6 @@ public class PlayerCamera : MonoBehaviour
 
         _controls.Main.Look.started += context => _mouseDelta = context.ReadValue<Vector2>();
         _controls.Main.Look.canceled += context => _mouseDelta = Vector2.zero;
-    }
-
-    private void Start()
-    {
-        
-    }
-
-    private void Update()
-    {
-        var delta = Time.deltaTime;
-        
-        FollowTarget(delta);
-        HandleRotation(delta, _mouseDelta.x, _mouseDelta.y);
     }
 
     public void FollowTarget(float delta)

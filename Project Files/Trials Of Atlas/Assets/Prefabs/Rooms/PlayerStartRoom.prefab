@@ -202,6 +202,16 @@ PrefabInstance:
       propertyPath: target
       value: 
       objectReference: {fileID: 1521691427322152289}
+    - target: {fileID: 7644606075459558200, guid: 6182320340226454ebf0b1785fe72b77,
+        type: 3}
+      propertyPath: lookSpeed
+      value: 0.005
+      objectReference: {fileID: 0}
+    - target: {fileID: 7644606075459558200, guid: 6182320340226454ebf0b1785fe72b77,
+        type: 3}
+      propertyPath: pivotSpeed
+      value: 0.005
+      objectReference: {fileID: 0}
     - target: {fileID: 8998092361901780690, guid: 6182320340226454ebf0b1785fe72b77,
         type: 3}
       propertyPath: m_RootOrder
