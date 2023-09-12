@@ -59,6 +59,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ade11afcb90d45e4faa790c234b40012, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemySO: {fileID: 0}
 --- !u!1001 &1627595065683039143
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -136,6 +137,11 @@ PrefabInstance:
       propertyPath: m_ApplyRootMotion
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6148737315974723067, guid: 300a6daa2932ab04e8d69ffc7dc551a0,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: a14761bcb4fcf1c43a92feeacca58e17, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 300a6daa2932ab04e8d69ffc7dc551a0, type: 3}
 --- !u!4 &1233098355262501964 stripped
