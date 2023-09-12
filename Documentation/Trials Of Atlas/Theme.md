@@ -1,0 +1,2 @@
+The game is meant to emulate a training simulation for the player's character. This idea of a training sim means that each run is progress to the player's strength and stats, and can feel slightly generic in its presentation. 
+Enemies are presented as training dummies (faceless enemies) so that player's are more akin to racking up high body counts in the name of building strength and clearing the dungeon.
