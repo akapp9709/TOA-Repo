@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,13 +7,17 @@ namespace AJK
 {
     public class AnimationHandler : MonoBehaviour
     {
-        private Animator _anim;
+        public Animator anim;
+        public InputHandler inputHandler;
+        public PlayerLocomotion playerMove;
         private int _vertical, _horizontal;
         public bool canRotate;
         
         public void Initialize()
         {
-            _anim = GetComponent<Animator>();
+            anim = GetComponent<Animator>();
+            inputHandler = GetComponentInParent<InputHandler>();
+            playerMove = GetComponentInParent<PlayerLocomotion>();
             _vertical = Animator.StringToHash("Vertical");
             _horizontal = Animator.StringToHash("Horizontal");
         }
@@ -43,6 +48,11 @@ namespace AJK
             {
                 v = 0f;
             }
+
+            if (inputHandler.isSprinting)
+            {
+                v *= 2;
+            }
             #endregion
             
             #region Horizontal
@@ -70,8 +80,28 @@ namespace AJK
             }
             #endregion
             
-            _anim.SetFloat(_vertical, v, 0.1f, Time.deltaTime);
-            _anim.SetFloat(_horizontal, h, 0.1f, Time.deltaTime);
+            anim.SetFloat(_vertical, v, 0.1f, Time.deltaTime);
+            anim.SetFloat(_horizontal, h, 0.1f, Time.deltaTime);
+        }
+
+        public void PlayTargetAnimation(string animClip, bool interacting)
+        {
+            anim.applyRootMotion = interacting;
+            anim.SetBool("IsInteracting", interacting);
+            anim.CrossFade(animClip, 0.2f);
+        }
+
+        private void OnAnimatorMove()
+        {
+            if (inputHandler.isInteracting == false)
+                return;
+
+            float delta = Time.deltaTime;
+            playerMove._rb.drag = 0;
+            Vector3 deltaPosition = anim.deltaPosition;
+            deltaPosition.y = 0;
+            Vector3 velocity = deltaPosition / delta;
+            playerMove._rb.velocity = velocity;
         }
 
         public void CanRotate()

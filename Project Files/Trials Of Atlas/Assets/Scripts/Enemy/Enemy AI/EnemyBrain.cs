@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using EnemyAI;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class EnemyBrain : EnemyFSM
@@ -14,5 +15,15 @@ public class EnemyBrain : EnemyFSM
             return;
 
         knowledge[name] = value;
+    }
+
+    public object GetValue(string name)
+    {
+        if (knowledge.ContainsKey(name))
+        {
+            return knowledge[name];
+        }
+        else
+            return null;
     }
 }

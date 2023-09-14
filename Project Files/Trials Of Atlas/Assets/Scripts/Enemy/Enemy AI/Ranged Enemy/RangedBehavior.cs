@@ -4,10 +4,13 @@ using UnityEngine;
 
 public class RangedBehavior : EnemyBehavior
 {
-    private EnemyBrain _brain;
+    // private EnemyBrain _brain;
 
-    public EnemyStats enemySO;
     
+
+    public delegate void BrainTick();
+
+    public BrainTick LogicTick;
     
     // Start is called before the first frame update
     protected override void Start()
@@ -18,16 +21,23 @@ public class RangedBehavior : EnemyBehavior
         _brain = new RangedBrain();
         _brain.AddToDictionary("target", GameObject.FindGameObjectWithTag("Player"));
         _brain.enemyStats = enemySO;
+        
+        _brain.StartFSM("Idle", this);
     }
 
     // Update is called once per frame
     protected override void Update()
     {
-        _brain.UpdateFSM();
+        _brain.UpdateFSM(this);
     }
 
     private void MakeADecision()
     {
-        Debug.Log("A Second has passed and I have nothing to dwell");
+        if (!_brain.isActive)
+        {
+            return;
+        }
+        
+        LogicTick?.Invoke();
     }
 }

@@ -37,31 +37,13 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""Sprint"",
-                    ""type"": ""Button"",
-                    ""id"": ""00701725-89f5-481a-9dc4-4062688efb71"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
                     ""name"": ""Look"",
                     ""type"": ""PassThrough"",
                     ""id"": ""3df71d0c-d483-44e2-88b0-33c85573fa28"",
                     ""expectedControlType"": ""Vector2"",
-                    ""processors"": """",
+                    ""processors"": ""NormalizeVector2"",
                     ""interactions"": """",
                     ""initialStateCheck"": true
-                },
-                {
-                    ""name"": ""Dodge"",
-                    ""type"": ""Button"",
-                    ""id"": ""6589eeaf-8a96-4249-9d64-1b9b84b516a1"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -133,28 +115,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""68224ca3-553f-4b91-a16b-acdf5d48f9ab"",
-                    ""path"": ""<Gamepad>/buttonEast"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Sprint"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""f0d27629-9cd7-4fb8-8362-c4fd19e28a4b"",
-                    ""path"": ""<Keyboard>/shift"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Sprint"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""2b2a0f54-54bd-4940-8ffd-b373a2355465"",
                     ""path"": ""<Gamepad>/rightStick"",
                     ""interactions"": """",
@@ -169,15 +129,63 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""id"": ""639cf78c-254f-4da2-b455-3bbd5967d065"",
                     ""path"": ""<Mouse>/delta"",
                     ""interactions"": """",
-                    ""processors"": ""NormalizeVector2"",
+                    ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""PlayerActions"",
+            ""id"": ""0a3e6dd1-482b-4fcd-87d4-a65711eb4f19"",
+            ""actions"": [
+                {
+                    ""name"": ""Sprint"",
+                    ""type"": ""Button"",
+                    ""id"": ""c8ab3b3d-2b6d-4666-8aec-1afb3d66026e"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Dodge"",
+                    ""type"": ""Button"",
+                    ""id"": ""d3534311-2f33-4977-bde7-a5af7c6f679e"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""9067f84e-8b80-41b9-9652-4e719d6b5dd5"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Sprint"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
-                    ""id"": ""7a4acd9a-4c8d-4630-993d-ae9ceaa5278d"",
+                    ""id"": ""15739913-0b2f-4ee1-8333-4e87eca45a29"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Sprint"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2a30a696-689a-4e32-b687-85c6c0009bdd"",
                     ""path"": ""<Keyboard>/space"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -188,8 +196,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""c1e5279a-498a-4e70-a7c2-3b81a92f16a8"",
-                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""id"": ""113d5e9b-2152-46cf-8dbb-a4784c3ba884"",
+                    ""path"": ""<Gamepad>/buttonEast"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -205,9 +213,11 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         // Main
         m_Main = asset.FindActionMap("Main", throwIfNotFound: true);
         m_Main_Move = m_Main.FindAction("Move", throwIfNotFound: true);
-        m_Main_Sprint = m_Main.FindAction("Sprint", throwIfNotFound: true);
         m_Main_Look = m_Main.FindAction("Look", throwIfNotFound: true);
-        m_Main_Dodge = m_Main.FindAction("Dodge", throwIfNotFound: true);
+        // PlayerActions
+        m_PlayerActions = asset.FindActionMap("PlayerActions", throwIfNotFound: true);
+        m_PlayerActions_Sprint = m_PlayerActions.FindAction("Sprint", throwIfNotFound: true);
+        m_PlayerActions_Dodge = m_PlayerActions.FindAction("Dodge", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -270,17 +280,13 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Main;
     private List<IMainActions> m_MainActionsCallbackInterfaces = new List<IMainActions>();
     private readonly InputAction m_Main_Move;
-    private readonly InputAction m_Main_Sprint;
     private readonly InputAction m_Main_Look;
-    private readonly InputAction m_Main_Dodge;
     public struct MainActions
     {
         private @PlayerControls m_Wrapper;
         public MainActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
         public InputAction @Move => m_Wrapper.m_Main_Move;
-        public InputAction @Sprint => m_Wrapper.m_Main_Sprint;
         public InputAction @Look => m_Wrapper.m_Main_Look;
-        public InputAction @Dodge => m_Wrapper.m_Main_Dodge;
         public InputActionMap Get() { return m_Wrapper.m_Main; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -293,15 +299,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Move.started += instance.OnMove;
             @Move.performed += instance.OnMove;
             @Move.canceled += instance.OnMove;
-            @Sprint.started += instance.OnSprint;
-            @Sprint.performed += instance.OnSprint;
-            @Sprint.canceled += instance.OnSprint;
             @Look.started += instance.OnLook;
             @Look.performed += instance.OnLook;
             @Look.canceled += instance.OnLook;
-            @Dodge.started += instance.OnDodge;
-            @Dodge.performed += instance.OnDodge;
-            @Dodge.canceled += instance.OnDodge;
         }
 
         private void UnregisterCallbacks(IMainActions instance)
@@ -309,15 +309,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Move.started -= instance.OnMove;
             @Move.performed -= instance.OnMove;
             @Move.canceled -= instance.OnMove;
-            @Sprint.started -= instance.OnSprint;
-            @Sprint.performed -= instance.OnSprint;
-            @Sprint.canceled -= instance.OnSprint;
             @Look.started -= instance.OnLook;
             @Look.performed -= instance.OnLook;
             @Look.canceled -= instance.OnLook;
-            @Dodge.started -= instance.OnDodge;
-            @Dodge.performed -= instance.OnDodge;
-            @Dodge.canceled -= instance.OnDodge;
         }
 
         public void RemoveCallbacks(IMainActions instance)
@@ -335,11 +329,68 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         }
     }
     public MainActions @Main => new MainActions(this);
+
+    // PlayerActions
+    private readonly InputActionMap m_PlayerActions;
+    private List<IPlayerActionsActions> m_PlayerActionsActionsCallbackInterfaces = new List<IPlayerActionsActions>();
+    private readonly InputAction m_PlayerActions_Sprint;
+    private readonly InputAction m_PlayerActions_Dodge;
+    public struct PlayerActionsActions
+    {
+        private @PlayerControls m_Wrapper;
+        public PlayerActionsActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Sprint => m_Wrapper.m_PlayerActions_Sprint;
+        public InputAction @Dodge => m_Wrapper.m_PlayerActions_Dodge;
+        public InputActionMap Get() { return m_Wrapper.m_PlayerActions; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(PlayerActionsActions set) { return set.Get(); }
+        public void AddCallbacks(IPlayerActionsActions instance)
+        {
+            if (instance == null || m_Wrapper.m_PlayerActionsActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_PlayerActionsActionsCallbackInterfaces.Add(instance);
+            @Sprint.started += instance.OnSprint;
+            @Sprint.performed += instance.OnSprint;
+            @Sprint.canceled += instance.OnSprint;
+            @Dodge.started += instance.OnDodge;
+            @Dodge.performed += instance.OnDodge;
+            @Dodge.canceled += instance.OnDodge;
+        }
+
+        private void UnregisterCallbacks(IPlayerActionsActions instance)
+        {
+            @Sprint.started -= instance.OnSprint;
+            @Sprint.performed -= instance.OnSprint;
+            @Sprint.canceled -= instance.OnSprint;
+            @Dodge.started -= instance.OnDodge;
+            @Dodge.performed -= instance.OnDodge;
+            @Dodge.canceled -= instance.OnDodge;
+        }
+
+        public void RemoveCallbacks(IPlayerActionsActions instance)
+        {
+            if (m_Wrapper.m_PlayerActionsActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IPlayerActionsActions instance)
+        {
+            foreach (var item in m_Wrapper.m_PlayerActionsActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_PlayerActionsActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public PlayerActionsActions @PlayerActions => new PlayerActionsActions(this);
     public interface IMainActions
     {
         void OnMove(InputAction.CallbackContext context);
-        void OnSprint(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
+    }
+    public interface IPlayerActionsActions
+    {
+        void OnSprint(InputAction.CallbackContext context);
         void OnDodge(InputAction.CallbackContext context);
     }
 }

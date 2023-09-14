@@ -8,9 +8,9 @@ using UnityEngine.Rendering.HighDefinition;
 
 public class PlayerCamera : MonoBehaviour
 {
-    public Transform target;
-    public Transform cameraTrans;
-    public Transform cameraPivot;
+    [SerializeField] private Transform target;
+    [SerializeField] private Transform cameraTrans;
+    [SerializeField] private Transform cameraPivot;
     private Transform _myTransform;
     private Vector3 _cameraPos;
     private LayerMask _ignoreLayers;
@@ -70,9 +70,9 @@ public class PlayerCamera : MonoBehaviour
         var rotation = Vector3.zero;
         rotation.y = _lookAngle;
         var targetRotation = Quaternion.Euler(rotation);
-        _myTransform.rotation = targetRotation;
+        // _myTransform.rotation = targetRotation;
 
-        rotation = Vector3.zero;
+        // rotation = Vector3.zero;
         rotation.x = _pivotAngle;
         targetRotation = Quaternion.Euler(rotation);
         cameraPivot.localRotation = targetRotation;

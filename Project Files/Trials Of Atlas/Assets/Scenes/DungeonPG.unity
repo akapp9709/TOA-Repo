@@ -24,7 +24,7 @@ RenderSettings:
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1
-  m_AmbientMode: 0
+  m_AmbientMode: 4
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
   m_SkyboxMaterial: {fileID: 0}
   m_HaloStrength: 0.5
@@ -175,7 +175,7 @@ MonoBehaviour:
     type: 3}
   diagonalTile: {fileID: 7413601232891495820, guid: 9d856e3f1e9dea34e8f2c767cb4200f6,
     type: 3}
-  maxSize: {x: 120, y: 120}
+  maxSize: {x: 150, y: 150}
   padding: {x: 25, y: 25}
   offset: {x: 0, y: 0}
   roomBuffer: {x: 3, y: 3}

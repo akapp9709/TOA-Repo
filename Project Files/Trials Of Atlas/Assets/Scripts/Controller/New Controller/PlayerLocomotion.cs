@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace AJK
@@ -14,7 +15,7 @@ namespace AJK
         [HideInInspector] public Transform myTransform;
         [HideInInspector] public AnimationHandler animHandler;
 
-        public new Rigidbody _rb;
+        public Rigidbody _rb;
 
         public GameObject normalCamera;
 
@@ -34,19 +35,38 @@ namespace AJK
         private void Update()
         {
             float delta = Time.deltaTime;
-            
             _input.TickInput(delta);
+            HandleMovement(delta);
+            HandleDodgeAndSprint(delta);
+        }
+
+        private void HandleMovement(float delta)
+        {
+            
             _moveDirection = _cameraTransform.forward * _input.vertical;
             _moveDirection += _cameraTransform.right * _input.horizontal;
             _moveDirection.y = 0;
             _moveDirection.Normalize();
 
-            var speed = playerStats.runSpeed;
+            float speed;
+
+            if (Mathf.Abs(_input.moveAmount) < 0.55f)
+            {
+                speed = playerStats.walkSpeed;
+                _input.isSprinting = false;
+            }
+            else if (Mathf.Abs(_input.moveAmount) > 0.55f && !_input.isSprinting)
+            {
+                speed = playerStats.runSpeed;
+            }
+            else
+                speed = playerStats.sprintSpeed;
+            
             _moveDirection *= speed;
 
             var projectedV = Vector3.ProjectOnPlane(_moveDirection, _normalVector);
             _rb.velocity = projectedV;
-            
+
             animHandler.UpdateAnimatorValues(_input.moveAmount, 0);
 
             if (animHandler.canRotate)
@@ -80,6 +100,35 @@ namespace AJK
             var targetRot = Quaternion.Slerp(myTransform.rotation, tr, rs*delta);
 
             myTransform.rotation = targetRot;
+        }
+
+        public void HandleDodgeAndSprint(float delta)
+        {
+            if (animHandler.anim.GetBool("IsInteracting"))
+                return;
+            
+            if (_input.dodgeFlag)
+            {
+                
+                _moveDirection = _cameraTransform.forward * _input.vertical;
+                _moveDirection += _cameraTransform.right * _input.horizontal;
+
+                if (_input.moveAmount > 0)
+                {
+                    animHandler.PlayTargetAnimation("Dash_Forward", true);
+                    _moveDirection.y = 0;
+                    Quaternion dodgeRot = Quaternion.LookRotation(_moveDirection);
+                    myTransform.rotation = dodgeRot;
+                }
+                else
+                {
+                    animHandler.PlayTargetAnimation("Dash_Forward", true);
+                    _moveDirection = -_cameraTransform.forward;
+                    _moveDirection.y = 0f;
+                    Quaternion dodgeRot = Quaternion.LookRotation(_moveDirection);
+                    myTransform.rotation = dodgeRot;
+                }
+            }
         }
 
         #endregion

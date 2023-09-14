@@ -39,10 +39,10 @@ public class PlayerMove : MonoBehaviour
         _controls.Main.Move.performed += OnMove;
         _controls.Main.Move.canceled += OnMove;
 
-        _controls.Main.Sprint.started += ToggleSprint;
-        //_controls.Main.Sprint.canceled += ToggleSprint;
-
-        _controls.Main.Dodge.started += OnDodge;
+        // _controls.Main.Sprint.started += ToggleSprint;
+        // //_controls.Main.Sprint.canceled += ToggleSprint;
+        //
+        // _controls.Main.Dodge.started += OnDodge;
     }
 
     // Update is called once per frame

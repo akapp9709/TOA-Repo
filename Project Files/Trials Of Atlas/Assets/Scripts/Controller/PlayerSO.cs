@@ -5,6 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Stats/Player")]
 public class PlayerSO : ScriptableObject
 {
+    public float walkSpeed = 3;
     public float runSpeed = 3;
     public float sprintSpeed = 7;
     

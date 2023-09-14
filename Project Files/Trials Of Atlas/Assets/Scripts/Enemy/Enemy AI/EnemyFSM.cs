@@ -8,6 +8,8 @@ namespace EnemyAI
     {
         private Dictionary<string, IState> _states = new Dictionary<string, IState>();
         private IState _currentState;
+        public bool isActive;
+
 
         public void AddState(string name, IState state)
         {
@@ -17,31 +19,31 @@ namespace EnemyAI
             }
         }
 
-        public void StartFSM(string startState)
+        public void StartFSM(string startState, EnemyBehavior controller)
         {
             if (_states.ContainsKey(startState))
             {
                 _currentState = _states[startState];
-                _currentState.EnterState();
+                _currentState.EnterState(controller);
             }
         }
 
-        public void UpdateFSM()
+        public void UpdateFSM(EnemyBehavior controller)
         {
             if (_currentState != null)
             {
-                _currentState.UpdateState();
+                _currentState.UpdateState(controller);
             }
         }
 
-        public void ChangeState(string state)
+        public void ChangeState(string state, EnemyBehavior controller)
         {
             if (_states.ContainsKey(state) &&
                 !EqualityComparer<string>.Default.Equals(_currentState.GetName(), state))
             {
-                _currentState.ExitState();
+                _currentState.ExitState(controller);
                 _currentState = _states[state];
-                _currentState.EnterState();
+                _currentState.EnterState(controller);
             }
         }
     }
@@ -49,9 +51,9 @@ namespace EnemyAI
     public interface IState
     {
         string GetName();
-        void EnterState();
-        void UpdateState();
-        void ExitState();
+        void EnterState(EnemyBehavior controller);
+        void UpdateState(EnemyBehavior controller);
+        void ExitState(EnemyBehavior controller);
     }
 }
 

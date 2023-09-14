@@ -15,31 +15,13 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Sprint",
-                    "type": "Button",
-                    "id": "00701725-89f5-481a-9dc4-4062688efb71",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "Look",
                     "type": "PassThrough",
                     "id": "3df71d0c-d483-44e2-88b0-33c85573fa28",
                     "expectedControlType": "Vector2",
-                    "processors": "",
+                    "processors": "NormalizeVector2",
                     "interactions": "",
                     "initialStateCheck": true
-                },
-                {
-                    "name": "Dodge",
-                    "type": "Button",
-                    "id": "6589eeaf-8a96-4249-9d64-1b9b84b516a1",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -111,28 +93,6 @@
                 },
                 {
                     "name": "",
-                    "id": "68224ca3-553f-4b91-a16b-acdf5d48f9ab",
-                    "path": "<Gamepad>/buttonEast",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Sprint",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "f0d27629-9cd7-4fb8-8362-c4fd19e28a4b",
-                    "path": "<Keyboard>/shift",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Sprint",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "2b2a0f54-54bd-4940-8ffd-b373a2355465",
                     "path": "<Gamepad>/rightStick",
                     "interactions": "",
@@ -147,15 +107,63 @@
                     "id": "639cf78c-254f-4da2-b455-3bbd5967d065",
                     "path": "<Mouse>/delta",
                     "interactions": "",
-                    "processors": "NormalizeVector2",
+                    "processors": "",
                     "groups": "",
                     "action": "Look",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "PlayerActions",
+            "id": "0a3e6dd1-482b-4fcd-87d4-a65711eb4f19",
+            "actions": [
+                {
+                    "name": "Sprint",
+                    "type": "Button",
+                    "id": "c8ab3b3d-2b6d-4666-8aec-1afb3d66026e",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Dodge",
+                    "type": "Button",
+                    "id": "d3534311-2f33-4977-bde7-a5af7c6f679e",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "9067f84e-8b80-41b9-9652-4e719d6b5dd5",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Sprint",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "7a4acd9a-4c8d-4630-993d-ae9ceaa5278d",
+                    "id": "15739913-0b2f-4ee1-8333-4e87eca45a29",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Sprint",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2a30a696-689a-4e32-b687-85c6c0009bdd",
                     "path": "<Keyboard>/space",
                     "interactions": "",
                     "processors": "",
@@ -166,8 +174,8 @@
                 },
                 {
                     "name": "",
-                    "id": "c1e5279a-498a-4e70-a7c2-3b81a92f16a8",
-                    "path": "<Gamepad>/buttonSouth",
+                    "id": "113d5e9b-2152-46cf-8dbb-a4784c3ba884",
+                    "path": "<Gamepad>/buttonEast",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
