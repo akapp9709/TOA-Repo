@@ -471,7 +471,7 @@ public class PF_Generator : MonoBehaviour
                 placedVars.Add(variants[ind]);
                 _testBuffer.Add(roomBufferRect);
                 _testRects.Add(roomRect);
-                roomVar.PlaceEnemies(variants[ind].formationIndex);
+                // roomVar.PlaceEnemies(variants[ind].formationIndex);
                 FinalizeRoom(roomRect, rot);
                 _placedRooms.Add(room);
                 rs.AddEntrances(roomVar.entrancePositions);
@@ -501,6 +501,7 @@ public class PF_Generator : MonoBehaviour
             GetComponent<NavMeshSurface>().BuildNavMesh();
         }
         
+        PlaceEnemies();
         Triangulate();
         CreateHallways();
         //StartCoroutine(PathFindHallways());
@@ -509,6 +510,17 @@ public class PF_Generator : MonoBehaviour
         BuildHallways();
         CombineHallways();
         PlaceLights();
+    }
+
+    private void PlaceEnemies()
+    {
+        for (int i = 2; i < _placedRooms.Count; i++)
+        {
+            var roomVar = _placedRooms[i].GetComponent<PF_Room>();
+            var variant = placedVars[i - 2].formationIndex;
+            
+            roomVar.PlaceEnemies(variant);
+        }
     }
 
     private void PlaceBossRoom()

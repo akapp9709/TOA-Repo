@@ -13,9 +13,10 @@ GameObject:
   - component: {fileID: 1230705586733905155}
   - component: {fileID: 2336364466237916269}
   - component: {fileID: 2336364466237916270}
+  - component: {fileID: 2336364466237916273}
   m_Layer: 10
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -100,6 +101,22 @@ MonoBehaviour:
   moveAmount: 0
   mouseX: 0
   mouseY: 0
+  bInput: 0
+  dodgeFlag: 0
+  isInteracting: 0
+  isSprinting: 0
+--- !u!114 &2336364466237916273
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6664547293352665861}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f68be111826a014abb812e9edcbd6fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2954748557209048485
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -197,6 +214,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: daa75c2adbe3b6a49808fc3fcc1421d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  anim: {fileID: 0}
+  inputHandler: {fileID: 0}
+  playerMove: {fileID: 0}
   canRotate: 1
 --- !u!4 &3354013307000746574 stripped
 Transform:

@@ -14,6 +14,7 @@ public class RangeEnemyStates
     {
         private EnemyBrain _machine;
         private EnemyBehavior _controller;
+        private Transform _trans;
         
         public RangeAttackState(EnemyBrain machine)
         {
@@ -30,11 +31,23 @@ public class RangeEnemyStates
             Debug.Log("I am Attacking");
             _controller = controller;
             controller.OnTick = EndAttack;
+            _trans = controller.transform;
+            
+            controller.anim.SetTrigger("Attack");
         }
 
         public void UpdateState(EnemyBehavior controller)
         {
-            
+            var player = _machine.GetValue("Player Target");
+            if (player == null || player.GetType() != typeof(GameObject)) return;
+                
+            var playerGO = player as GameObject;
+            var playerTrans = playerGO.transform;
+                    
+            var targetFwd = playerTrans.position - _trans.position;
+            var targetRot = Quaternion.LookRotation(targetFwd);
+                    
+            _trans.rotation = Quaternion.Slerp(_trans.rotation, targetRot, 0.01f);
         }
 
         public void ExitState(EnemyBehavior controller)
@@ -87,7 +100,7 @@ public class RangeEnemyStates
             var playerAttackRange = 3f;
             var attackRange = 15f;
 
-            var maxDistance = 9f;
+            var maxDistance = 12f;
             int numCasts = 10;
             var angleIncrement = 360f / numCasts;
             List<Vector3> possiblePositions = new List<Vector3>();            
@@ -96,32 +109,35 @@ public class RangeEnemyStates
             {
                 var rayDir = Quaternion.Euler(0f, i * angleIncrement, 0f) * _trans.forward;
                 var ray = new Ray(_trans.position, rayDir);
-                Debug.DrawLine(pos, pos+ rayDir*maxDistance, Color.blue, 5f);
 
                 var targetPos = pos + rayDir * maxDistance;
                 var dist = Vector3.Distance(playerPos, targetPos);
                 var dot = Vector3.Dot(playerPos - pos, rayDir);
                 
-                if (dist > playerAttackRange && dist < attackRange && dot < 0.4f 
-                && NavMesh.SamplePosition(targetPos, out nmHit, maxDistance, NavMesh.AllAreas))
+                if (dist > playerAttackRange && dist < attackRange && dot < 0.6f 
+                && NavMesh.SamplePosition(targetPos, out nmHit, maxDistance - 3, NavMesh.AllAreas))
                 {
                     possiblePositions.Add(targetPos);
                 }
             }
             
             Debug.Log($"There are {possiblePositions.Count} available positions");
-            foreach (var hit in possiblePositions)
-            {
-                Debug.DrawLine(pos + Vector3.up*2, hit + Vector3.up*2, Color.red, 5f);
-            }
 
-            if (possiblePositions.Count == 0) return;
-            
+            if (possiblePositions.Count == 0)
+            {
+                _machine.ChangeState("Idle", controller);
+                return;
+            }
+                
+
             var rnd = new Random();
             var num = rnd.Next(0, possiblePositions.Count-1);
                 
             agent.SetDestination(nmHit.position);
             _destPos = agent.destination;
+            
+            controller.anim.SetBool("isMoving", true);
+            _controller.anim.SetFloat("MoveY", 1f);
         }
 
         public void UpdateState(EnemyBehavior controller)
@@ -131,11 +147,32 @@ public class RangeEnemyStates
             {
                 _machine.ChangeState("Idle", controller);
             }
+            
+            var player = _machine.GetValue("Player Target");
+            if (player == null || player.GetType() != typeof(GameObject)) return;
+                
+            var playerGO = player as GameObject;
+            var playerTrans = playerGO.transform;
+                    
+            var targetFwd = playerTrans.position - _trans.position;
+            var targetRot = Quaternion.LookRotation(targetFwd);
+                    
+            _trans.rotation = Quaternion.Slerp(_trans.rotation, targetRot, 0.1f);
+
+            var fwd = _trans.forward;
+            var rht = _trans.right;
+            var v = agent.velocity;
+            var transDir = v.z * rht + v.x * fwd;
+            transDir.y = 0;
+            transDir.Normalize();
+            
+            controller.anim.SetFloat("MoveX", transDir.x);
+            controller.anim.SetFloat("MoveY", transDir.z);
         }
 
         public void ExitState(EnemyBehavior controller)
         {
-            
+            controller.anim.SetBool("isMoving", false);
         }
     }
 

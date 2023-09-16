@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class RangedBehavior : EnemyBehavior
 {
-    // private EnemyBrain _brain;
+    public Transform rightHand;
+    public GameObject projectilePrefab;
+    public float projectileSpeed = 20;
+    public float projectileLifeTime = 5;
 
-    
+    private int _actionCount;
+    private GameObject _projectileObj;
 
-    public delegate void BrainTick();
-
-    public BrainTick LogicTick;
-    
     // Start is called before the first frame update
     protected override void Start()
     {
@@ -23,6 +23,8 @@ public class RangedBehavior : EnemyBehavior
         _brain.enemyStats = enemySO;
         
         _brain.StartFSM("Idle", this);
+
+        Action = FireProjectile;
     }
 
     // Update is called once per frame
@@ -37,7 +39,23 @@ public class RangedBehavior : EnemyBehavior
         {
             return;
         }
-        
-        LogicTick?.Invoke();
+    }
+
+    private void FireProjectile()
+    {
+        if (_actionCount == 0)
+        {
+            _projectileObj = Instantiate(projectilePrefab, rightHand.position, Quaternion.identity);
+            _projectileObj.GetComponent<ProjectileHandler>().hand = rightHand;
+            _projectileObj.GetComponent<ProjectileHandler>().lifeTime = projectileLifeTime;
+            _actionCount++;
+        }
+        else if (_actionCount == 1)
+        {
+            var prRB = _projectileObj.GetComponent<Rigidbody>();
+            _projectileObj.GetComponent<ProjectileHandler>().isLaunched = true;
+            prRB.velocity = transform.forward.normalized * projectileSpeed;
+            _actionCount = 0;
+        }
     }
 }

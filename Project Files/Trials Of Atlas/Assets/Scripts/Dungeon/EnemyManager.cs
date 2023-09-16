@@ -1,9 +1,8 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RoomBehavior : MonoBehaviour
+public class EnemyManager : MonoBehaviour
 {
     // Start is called before the first frame update
     void Start()
@@ -15,10 +14,5 @@ public class RoomBehavior : MonoBehaviour
     void Update()
     {
         
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        BroadcastMessage("InitializeBehavior");
     }
 }

@@ -9,9 +9,14 @@ public class EnemyBehavior : MonoBehaviour
     protected EnemyBrain _brain;
     public EnemyStats enemySO;
     public NavMeshAgent agent;
+    public Animator anim;
 
     public delegate void Tick();
     public Tick OnTick;
+    public float decisionTime = 2f;
+
+    public delegate void AttackAction();
+    public AttackAction Action;
     
     // Start is called before the first frame update
     protected virtual void Start()
@@ -32,7 +37,7 @@ public class EnemyBehavior : MonoBehaviour
         {
             OnTick?.Invoke();
             Debug.Log("Ticking");
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(decisionTime);
         }
     }
 
