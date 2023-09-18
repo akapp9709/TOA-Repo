@@ -69,7 +69,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Floor_Albedo:
-        m_Texture: {fileID: 2800000, guid: 96a33a7e186038d4ab192e1c0e86c54b, type: 3}
+        m_Texture: {fileID: 2800000, guid: 6a3820a96f72f894c84e10b7d9521bdd, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Floor_Normal:
@@ -206,14 +206,14 @@ Material:
     - _DoubleSidedConstants: {r: 1, g: 1, b: 1, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
     - _Emission_Color: {r: 0.53773576, g: 0.5199803, b: 0.5199803, a: 0}
-    - _Floor_Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Floor_Color: {r: 0.23487008, g: 0.28902745, b: 0.3301887, a: 1}
     - _Floor_Offset: {r: 0, g: 0, b: 0, a: 0}
-    - _Floor_Tiling: {r: 100, g: 100, b: 0, a: 0}
+    - _Floor_Tiling: {r: 1, g: 1, b: 0, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _WallColor: {r: 1, g: 1, b: 1, a: 1}
     - _Wall_Color: {r: 1, g: 1, b: 1, a: 0}
     - _Wall_Offset: {r: 0, g: 0, b: 0, a: 0}
-    - _Wall_Tiling: {r: 1, g: 1, b: 0, a: 0}
+    - _Wall_Tiling: {r: 0.1, g: 0.1, b: 0, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &4948209883230727932
 MonoBehaviour:
