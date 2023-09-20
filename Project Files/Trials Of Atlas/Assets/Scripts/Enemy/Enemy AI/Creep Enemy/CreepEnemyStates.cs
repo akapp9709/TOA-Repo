@@ -12,8 +12,10 @@ public class CreepEnemyStates
         private Animator _animator;
         private Transform _trans, _playerTrans;
         private NavMeshAgent _agent;
-        
-        
+        private EnemyBehavior _controller;
+        private bool _attacking = false;
+
+
         public CreepAttackState(EnemyBrain brain)
         {
             _brain = brain;
@@ -29,28 +31,50 @@ public class CreepEnemyStates
             _animator = controller.anim;
             _trans = controller.transform;
             _agent = controller.agent;
-            if (_brain.GetValue("Player Target") is GameObject playerObj) 
+            _controller = controller;
+
+            if (_brain.GetValue("Player Target") is GameObject playerObj)
                 _playerTrans = playerObj.transform;
 
-           
+            controller.Action = EndAttack;
         }
 
         public void UpdateState(EnemyBehavior controller)
         {
             var playerPos = _playerTrans.position;
-            _agent.SetDestination(playerPos);
+            var playerDir = playerPos - _trans.position;
+            var playerDist = Vector3.Distance(playerPos, _trans.position);
+            playerDir.Normalize();
+            Debug.DrawLine(_trans.position + Vector3.up, _trans.position + playerDir * 3 + Vector3.up, Color.red, 0.5f);
 
-            if (Vector3.Distance(_trans.position, playerPos) < 2f)
+
+            _agent.SetDestination(playerDir * (playerDist - 1.5f) + _trans.position);
+            _animator.SetBool("isMoving", true);
+            _animator.SetFloat("MoveY", 1f);
+
+            if (Vector3.Distance(_trans.position, playerPos) < 2f && !_attacking)
             {
-                Debug.Log("In Range for attack");
+                _animator.SetBool("isMoving", false);
+
+                _animator.SetTrigger("Attack");
+                _attacking = true;
+            }
+            else if (_attacking)
+            {
                 _agent.ResetPath();
-                _brain.ChangeState("Idle", controller);
             }
         }
 
         public void ExitState(EnemyBehavior controller)
         {
-            Debug.Log("Leaving Attack State");
+            _agent.ResetPath();
+        }
+
+        private void EndAttack()
+        {
+            _attacking = false;
+            _controller.Action = null;
+            _brain.ChangeState("Move", _controller);
         }
     }
 }

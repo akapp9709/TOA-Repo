@@ -15,3 +15,6 @@ MonoBehaviour:
   strength: 25
   health: 70
   aggression: 0.5
+  attackRange: 10
+  safetyBufferRadius: 2
+  maxMoveDistance: 4

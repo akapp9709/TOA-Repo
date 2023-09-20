@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemyAnimationHandler : MonoBehaviour
 {
-    public void FireProjectile()
+    public void AnimationActionEvent()
     {
         GetComponentInParent<EnemyBehavior>().Action?.Invoke();
     }

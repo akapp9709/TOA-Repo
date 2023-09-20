@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 244072318217991966}
   - component: {fileID: 244072318217991953}
   - component: {fileID: 8741574311799248663}
+  - component: {fileID: 5826820030483517821}
   m_Layer: 0
   m_Name: TestProjectile
   m_TagString: Untagged
@@ -94,7 +95,7 @@ SphereCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 244072318217991952}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5
@@ -128,5 +129,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifeTime: 3
+  damage: 0
+  targetTag: 
   isLaunched: 0
+  destroyOnImpact: 1
   hand: {fileID: 0}
+--- !u!114 &5826820030483517821
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 244072318217991952}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 144cd67fa8864c04cb4baff30d15c4d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

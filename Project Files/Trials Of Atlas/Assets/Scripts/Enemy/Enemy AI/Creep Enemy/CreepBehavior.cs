@@ -9,8 +9,9 @@ public class CreepBehavior : EnemyBehavior
     {
         base.Start();
         _brain = new CreepBrain();
-        
+
         _brain.StartFSM("Idle", this);
+        GetComponentInChildren<HitBox>().SetupValues("Player", enemySO.strength);
     }
 
     // Update is called once per frame

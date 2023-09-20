@@ -17,11 +17,10 @@ public class RangedBehavior : EnemyBehavior
     {
         base.Start();
         OnTick = MakeADecision;
-        Debug.Log("Ranged Enemy Initialized");
         _brain = new RangedBrain();
         _brain.AddToDictionary("target", GameObject.FindGameObjectWithTag("Player"));
         _brain.enemyStats = enemySO;
-        
+
         _brain.StartFSM("Idle", this);
 
         Action = FireProjectile;
@@ -46,8 +45,7 @@ public class RangedBehavior : EnemyBehavior
         if (_actionCount == 0)
         {
             _projectileObj = Instantiate(projectilePrefab, rightHand.position, Quaternion.identity);
-            _projectileObj.GetComponent<ProjectileHandler>().hand = rightHand;
-            _projectileObj.GetComponent<ProjectileHandler>().lifeTime = projectileLifeTime;
+            _projectileObj.GetComponent<ProjectileHandler>().SetupValues(projectileLifeTime, rightHand, "Player", enemySO.strength);
             _actionCount++;
         }
         else if (_actionCount == 1)

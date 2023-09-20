@@ -5,17 +5,22 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     public EnemyStats enemySO;
-    
+
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
+    }
+
+    public void TakeDamage(float damage)
+    {
+        Debug.Log($"{this.gameObject.name} took {damage} points of damage");
     }
 
     public float EnemyHealth => enemySO.health;

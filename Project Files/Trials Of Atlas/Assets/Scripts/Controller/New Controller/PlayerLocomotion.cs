@@ -1,7 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace AJK
@@ -42,7 +38,9 @@ namespace AJK
 
         private void HandleMovement(float delta)
         {
-            
+            if (_input.isInteracting)
+                return;
+
             _moveDirection = _cameraTransform.forward * _input.vertical;
             _moveDirection += _cameraTransform.right * _input.horizontal;
             _moveDirection.y = 0;
@@ -61,7 +59,7 @@ namespace AJK
             }
             else
                 speed = playerStats.sprintSpeed;
-            
+
             _moveDirection *= speed;
 
             var projectedV = Vector3.ProjectOnPlane(_moveDirection, _normalVector);
@@ -87,7 +85,7 @@ namespace AJK
 
             targetDirection = _cameraTransform.forward * _input.vertical;
             targetDirection += _cameraTransform.right * _input.horizontal;
-            
+
             targetDirection.Normalize();
             targetDirection.y = 0;
             if (targetDirection == Vector3.zero)
@@ -97,7 +95,7 @@ namespace AJK
 
             var rs = _rotationSpeed;
             var tr = Quaternion.LookRotation(targetDirection);
-            var targetRot = Quaternion.Slerp(myTransform.rotation, tr, rs*delta);
+            var targetRot = Quaternion.Slerp(myTransform.rotation, tr, rs * delta);
 
             myTransform.rotation = targetRot;
         }
@@ -106,10 +104,10 @@ namespace AJK
         {
             if (animHandler.anim.GetBool("IsInteracting"))
                 return;
-            
+
             if (_input.dodgeFlag)
             {
-                
+
                 _moveDirection = _cameraTransform.forward * _input.vertical;
                 _moveDirection += _cameraTransform.right * _input.horizontal;
 
