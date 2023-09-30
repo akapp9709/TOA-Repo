@@ -208,7 +208,7 @@ Material:
     - _Emission_Color: {r: 0.53773576, g: 0.5199803, b: 0.5199803, a: 0}
     - _Floor_Color: {r: 0.23487008, g: 0.28902745, b: 0.3301887, a: 1}
     - _Floor_Offset: {r: 0, g: 0, b: 0, a: 0}
-    - _Floor_Tiling: {r: 1, g: 1, b: 0, a: 0}
+    - _Floor_Tiling: {r: 1.61, g: 1.57, b: 0, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _WallColor: {r: 1, g: 1, b: 1, a: 1}
     - _Wall_Color: {r: 1, g: 1, b: 1, a: 0}

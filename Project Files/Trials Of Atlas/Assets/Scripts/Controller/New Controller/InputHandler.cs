@@ -18,6 +18,7 @@ namespace AJK
 
         private PlayerControls _inputActions;
         private PlayerCamera _cameraHandler;
+        private PlayerManager _manager;
 
         private Vector2 _movementInput, _cameraInput;
 
@@ -29,6 +30,7 @@ namespace AJK
         public void Start()
         {
             _cameraHandler = PlayerCamera.Singleton;
+            _manager = PlayerManager.singleton;
         }
 
         private void FixedUpdate()
@@ -55,7 +57,7 @@ namespace AJK
                 _inputActions.PlayerActions.Dodge.started += OnDodge;
                 _inputActions.PlayerActions.Sprint.started += ToggleSprint;
             }
-            
+
             _inputActions.Enable();
         }
 
@@ -95,19 +97,18 @@ namespace AJK
 
         private void OnDodge(InputAction.CallbackContext context)
         {
-            switch (context.phase)
-            {
-                case InputActionPhase.Started:
-                    bInput = true;
-                    break;
-                case InputActionPhase.Canceled:
-                    bInput = false;
-                    break;
-            }
+            if (!_manager.canUseStamina)
+                return;
+
+            GetComponent<PlayerLocomotion>().HandleDodge();
+            OnDodgeEvent?.Invoke();
         }
 
         private void ToggleSprint(InputAction.CallbackContext context)
         {
+            if (!_manager.canUseStamina)
+                return;
+
             isSprinting = !isSprinting;
         }
     }

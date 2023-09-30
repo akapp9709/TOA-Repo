@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 2336364466237916269}
   - component: {fileID: 2336364466237916270}
   - component: {fileID: 2336364466237916273}
+  - component: {fileID: 2336364466237916274}
   m_Layer: 10
   m_Name: Player
   m_TagString: Player
@@ -63,10 +64,10 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.5
-  m_Height: 2
+  m_Radius: 0.3
+  m_Height: 1.8
   m_Direction: 1
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Center: {x: 0, y: 0.9, z: 0}
 --- !u!114 &2336364466237916269
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -117,7 +118,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f68be111826a014abb812e9edcbd6fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerStats: {fileID: 0}
+  playerStats: {fileID: 11400000, guid: 29d02af88c6fd03418eda0ebf4e43e3e, type: 2}
+--- !u!114 &2336364466237916274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6664547293352665861}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1e192edb9655884d879a54a24980aae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackVal: 0
+  isAttacking: 0
+  anim: {fileID: 8677299043921799220}
 --- !u!1001 &2954748557209048485
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -231,6 +247,12 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 2954748557209048485}
   m_PrefabAsset: {fileID: 0}
+--- !u!95 &8677299043921799220 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: f5f222c29d177cc498b52e7c53c3b1ea,
+    type: 3}
+  m_PrefabInstance: {fileID: 2954748557209048485}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8433334178144442905
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -313,6 +335,11 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 58e43cc7cb9771d4bbe67f63914f065e, type: 2}
+    - target: {fileID: 8452410346445848905, guid: 0f2a0097405498c458cd0792ef4177cf,
+        type: 3}
+      propertyPath: m_IsKinematic
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8932259811539442406, guid: 0f2a0097405498c458cd0792ef4177cf,
         type: 3}
       propertyPath: m_Name

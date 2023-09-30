@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 namespace AJK
@@ -17,6 +18,9 @@ namespace AJK
 
         [SerializeField] private PlayerSO playerStats;
         private float _rotationSpeed = 10;
+
+        public bool isDodging = false;
+        public Vector3 dodgeVelocity;
         // Start is called before the first frame update
         void Start()
         {
@@ -33,7 +37,8 @@ namespace AJK
             float delta = Time.deltaTime;
             _input.TickInput(delta);
             HandleMovement(delta);
-            HandleDodgeAndSprint(delta);
+            animHandler.SetAnimationValuesBool("isDodging", isDodging);
+
         }
 
         private void HandleMovement(float delta)
@@ -61,9 +66,10 @@ namespace AJK
                 speed = playerStats.sprintSpeed;
 
             _moveDirection *= speed;
+            var dV = DodgeV(speed, dodgeVelocity, Time.time);
 
             var projectedV = Vector3.ProjectOnPlane(_moveDirection, _normalVector);
-            _rb.velocity = projectedV;
+            _rb.velocity = projectedV + dV;
 
             animHandler.UpdateAnimatorValues(_input.moveAmount, 0);
 
@@ -83,6 +89,7 @@ namespace AJK
             var targetDirection = Vector3.zero;
             var moveOverride = _input.moveAmount;
 
+
             targetDirection = _cameraTransform.forward * _input.vertical;
             targetDirection += _cameraTransform.right * _input.horizontal;
 
@@ -100,33 +107,44 @@ namespace AJK
             myTransform.rotation = targetRot;
         }
 
-        public void HandleDodgeAndSprint(float delta)
+        public void HandleDodge()
         {
-            if (animHandler.anim.GetBool("IsInteracting"))
+            if (_input.moveAmount == 0)
                 return;
 
-            if (_input.dodgeFlag)
-            {
+            var targetDirection = _cameraTransform.forward * _input.vertical;
+            targetDirection += _cameraTransform.right * _input.horizontal;
 
-                _moveDirection = _cameraTransform.forward * _input.vertical;
-                _moveDirection += _cameraTransform.right * _input.horizontal;
+            dodgeVelocity = _input.mouseY > 0 ? transform.forward * -playerStats.dodgeSpeed : _moveDirection;
 
-                if (_input.moveAmount > 0)
-                {
-                    animHandler.PlayTargetAnimation("Dash_Forward", true);
-                    _moveDirection.y = 0;
-                    Quaternion dodgeRot = Quaternion.LookRotation(_moveDirection);
-                    myTransform.rotation = dodgeRot;
-                }
-                else
-                {
-                    animHandler.PlayTargetAnimation("Dash_Forward", true);
-                    _moveDirection = -_cameraTransform.forward;
-                    _moveDirection.y = 0f;
-                    Quaternion dodgeRot = Quaternion.LookRotation(_moveDirection);
-                    myTransform.rotation = dodgeRot;
-                }
-            }
+            var targetRot = Quaternion.LookRotation(targetDirection);
+            myTransform.rotation = targetRot;
+
+            animHandler.TriggerTargetAnimation("Dodge", false);
+            animHandler.StopRotation();
+            StartCoroutine(DodgeRoutine());
+        }
+
+        private Vector3 DodgeV(float currentSpeed, Vector3 dodgeVelocity, float dodgeStartTime)
+        {
+            var dodgeV = isDodging
+                ? dodgeVelocity.normalized *
+                  EaseFunctions.AccelerateValue(dodgeStartTime,
+                      playerStats.dodgeTime,
+                      Time.time,
+                      currentSpeed,
+                      playerStats.dodgeSpeed,
+                      EaseFunctions.EaseType.CircEaseOut)
+                : Vector3.zero;
+            return dodgeV;
+        }
+
+        private IEnumerator DodgeRoutine()
+        {
+            isDodging = true;
+            yield return new WaitForSecondsRealtime(0.3f);
+            isDodging = false;
+            animHandler.CanRotate();
         }
 
         #endregion

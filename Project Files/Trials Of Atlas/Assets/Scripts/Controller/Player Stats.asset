@@ -15,9 +15,17 @@ MonoBehaviour:
   walkSpeed: 1.5
   runSpeed: 6
   sprintSpeed: 8
-  maxStamina: 100
+  maxStamina: 25
   staminaRegen: 0
   staminaDepletion: 20
+  staminaLevel: 1
   runCompleted: 16
-  dodgeSpeed: 10
+  dodgeSpeed: 15
   dodgeTime: 0.5
+  dodgeCost: 10
+  health: 100
+  healthLevel: 1
+  strength: 10
+  strengthLevel: 1
+  defense: 0
+  defenseLevel: 1

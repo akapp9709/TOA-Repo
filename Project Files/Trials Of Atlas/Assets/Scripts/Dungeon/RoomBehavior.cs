@@ -5,10 +5,15 @@ using UnityEngine;
 
 public class RoomBehavior : MonoBehaviour
 {
+    [SerializeField] private List<Enemy> enemies;
     // Start is called before the first frame update
-    void Start()
+    public void InitializeRoom()
     {
-
+        var arr = GetComponentsInChildren<Enemy>();
+        foreach (var obj in arr)
+        {
+            enemies.Add(obj);
+        }
     }
 
     // Update is called once per frame
@@ -19,7 +24,12 @@ public class RoomBehavior : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
-            BroadcastMessage("InitializeBehavior");
+        if (!other.CompareTag("Player"))
+            return;
+
+        foreach (var enemy in enemies)
+        {
+            enemy.StartEnemyFSM();
+        }
     }
 }

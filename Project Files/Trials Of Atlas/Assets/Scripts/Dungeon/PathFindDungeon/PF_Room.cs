@@ -32,7 +32,7 @@ public class PF_Room : MonoBehaviour
 
         foreach (var x in arr)
         {
-            if(x.transform.IsChildOf(this.transform))
+            if (x.transform.IsChildOf(this.transform))
                 roomCorners.Add(x);
         }
     }
@@ -42,12 +42,12 @@ public class PF_Room : MonoBehaviour
         get
         {
             var vec = Vector2Int.FloorToInt(new Vector2(
-                roomSizeOffset.x + transform.position.x, 
+                roomSizeOffset.x + transform.position.x,
                 roomSizeOffset.z + transform.position.z));
             return vec;
         }
     }
-    
+
     public Vector2Int Size2D
     {
         get
@@ -87,7 +87,7 @@ public class PF_Room : MonoBehaviour
             {
                 return;
             }
-            
+
             var numEnemies = formation.transform.childCount;
             float totalHealth = 0, totalDamage = 0, totalAggression = 0, averageAggression;
 
@@ -109,6 +109,7 @@ public class PF_Room : MonoBehaviour
         {
             Instantiate(formations[index].formation, this.transform);
         }
+        GetComponent<RoomBehavior>().InitializeRoom();
     }
 
     public List<EnemyFormation> Variants => formations;

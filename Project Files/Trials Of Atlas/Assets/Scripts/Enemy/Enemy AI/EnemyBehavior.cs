@@ -17,7 +17,7 @@ public class EnemyBehavior : MonoBehaviour
 
     public delegate void AttackAction();
     public AttackAction Action;
-    
+
     // Start is called before the first frame update
     protected virtual void Start()
     {
@@ -28,20 +28,19 @@ public class EnemyBehavior : MonoBehaviour
     // Update is called once per frame
     protected virtual void Update()
     {
-        
+
     }
-    
+
     private IEnumerator Clock()
     {
         while (true)
         {
             OnTick?.Invoke();
-            Debug.Log("Ticking");
             yield return new WaitForSeconds(decisionTime);
         }
     }
 
-    private void InitializeBehavior()
+    public void InitializeBehavior()
     {
         _brain.isActive = true;
         var player = GameObject.FindGameObjectWithTag("Player");

@@ -9,8 +9,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using Graphs;
 using Unity.AI.Navigation;
 using UnityEngine;
@@ -26,7 +24,7 @@ public class PF_Generator : MonoBehaviour
         public int formationIndex;
         public float roomValue, roomBias, shiftedBias;
     }
-    
+
     private class RoomSpace
     {
         public RectInt bounds;
@@ -47,7 +45,7 @@ public class PF_Generator : MonoBehaviour
 
         public void TranslateAndAddPosition(Vector3 v)
         {
-            var vec = new Vector2Int((int) v.x, (int) v.z);
+            var vec = new Vector2Int((int)v.x, (int)v.z);
             roomEntrances.Add(vec);
         }
 
@@ -101,15 +99,15 @@ public class PF_Generator : MonoBehaviour
     public int dungeonLength, availableRooms = 0;
 
     #region Debugging Variables
-    
+
     private List<RectInt> _testRects = new List<RectInt>();
     private List<RectInt> _testBuffer = new List<RectInt>();
     private List<Vertex> _vertices;
     private List<PF_Delauney.Edge> _edges;
-    [SerializeField]private List<RoomVariant> placedVars;
-    
+    [SerializeField] private List<RoomVariant> placedVars;
+
     #endregion
-    
+
     private Vector2Int _rectOffset;
     private List<GameObject> _placedRooms = new List<GameObject>();
     private List<RoomSpace> _rooms = new List<RoomSpace>();
@@ -131,8 +129,13 @@ public class PF_Generator : MonoBehaviour
 
     public int lightSpace;
     public float _lightCount;
-    private Vector3[] _lightPositions;
-    
+    [SerializeField] private GameObject decorPrefab;
+
+    public delegate void GenerationComplete();
+    public GenerationComplete OnComplete;
+
+    public static PF_Generator Singleton;
+
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.white;
@@ -140,17 +143,13 @@ public class PF_Generator : MonoBehaviour
         {
             var pos1 = line.StartPos;
             var pos2 = line.EndPos;
-            
-            Gizmos.DrawSphere(new Vector3(pos1.x, 0f, pos1.y) + Vector3.up*5, 0.5f);
-            Gizmos.DrawSphere(new Vector3(pos2.x, 0f, pos2.y) + Vector3.up*5, 0.5f);
-            Gizmos.DrawLine(new Vector3(pos1.x,5, pos1.y), new Vector3(pos2.x, 5, pos2.y));
 
-            foreach (var pos in line.Positions)
-            {
-                Gizmos.DrawSphere(pos + Vector3.up*5, 0.3f);
-            }
+            Gizmos.DrawSphere(new Vector3(pos1.x, 0f, pos1.y) + Vector3.up * 5, 0.5f);
+
+            Gizmos.DrawSphere(new Vector3(pos2.x, 0f, pos2.y) + Vector3.up * 5, 0.5f);
+            Gizmos.DrawLine(new Vector3(pos1.x, 5, pos1.y), new Vector3(pos2.x, 5, pos2.y));
         }
-        
+
         if (_delaunay != null && _delaunay.Vertices != null && showTriangulation)
         {
             Gizmos.color = Color.green;
@@ -177,7 +176,7 @@ public class PF_Generator : MonoBehaviour
                 Gizmos.DrawLine(posU, posV);
             }
         }
-        
+
         if (!showGizmos)
             return;
         if (_grid == null)
@@ -231,12 +230,18 @@ public class PF_Generator : MonoBehaviour
                 }
             }
         }
-        
+
     }
-    
+
+    private void Awake()
+    {
+        Singleton = this;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
+
         _grid = new PF_Grid<CellType>(maxSize, offset);
         _rectOffset = new Vector2Int(1, 0);
         LightLine.LightCount = _lightCount;
@@ -260,7 +265,7 @@ public class PF_Generator : MonoBehaviour
         {
             var roomObj = room.GetComponent<PF_Room>();
             var length = roomObj.Variants.Count;
-            
+
             for (int i = 0; i < length; i++)
             {
                 var obj = new RoomVariant();
@@ -271,7 +276,7 @@ public class PF_Generator : MonoBehaviour
                 variants.Add(obj);
             }
         }
-        
+
         SortRooms();
         minRoomValue = variants[0].roomValue;
         maxRoomValue = variants[^1].roomValue;
@@ -290,9 +295,9 @@ public class PF_Generator : MonoBehaviour
 
     private void SortRooms()
     {
-        for (int i = 0; i < variants.Count-1; i++)
+        for (int i = 0; i < variants.Count - 1; i++)
         {
-            for (int j = i+1; j < variants.Count; j++)
+            for (int j = i + 1; j < variants.Count; j++)
             {
                 var x = variants[i].roomValue;
                 var y = variants[j].roomValue;
@@ -308,12 +313,12 @@ public class PF_Generator : MonoBehaviour
     private void CalculateBiases()
     {
         var runNum = playerStats.runCompleted;
-        
+
         foreach (var room in variants)
         {
             room.roomBias =
                 Mathf.Exp(-(Mathf.Pow(((room.roomValue / maxRoomValue) - (runNum / roomCount) - curveOffset), 2) /
-                            (2 * Mathf.Pow(curveWidth, 2) / 100) ) );
+                            (2 * Mathf.Pow(curveWidth, 2) / 100)));
 
             if (room.roomBias < 0.01)
             {
@@ -321,7 +326,7 @@ public class PF_Generator : MonoBehaviour
             }
         }
     }
-    
+
     private void PrepareVariantLine()
     {
         variants[0].shiftedBias = variants[0].roomBias;
@@ -337,7 +342,7 @@ public class PF_Generator : MonoBehaviour
     #endregion
 
     #region RoomPlacement
-    private void PlaceRooms() 
+    private void PlaceRooms()
     {
         PlaceStartRoom();
         PlaceBossRoom();
@@ -351,9 +356,9 @@ public class PF_Generator : MonoBehaviour
         for (int i = 0; i < dungeonLength; i++)
         {
             var pos = new Vector3(
-                Random.Range((int) (0.5f * padding.x), (int) ((maxSize.x + 1) - 0.5f * padding.x)),
+                Random.Range((int)(0.5f * padding.x), (int)((maxSize.x + 1) - 0.5f * padding.x)),
                 0f,
-                Random.Range((int) (0.5f * padding.y), (int) ((maxSize.x + 1) - 0.5f * padding.y))
+                Random.Range((int)(0.5f * padding.y), (int)((maxSize.x + 1) - 0.5f * padding.y))
             );
 
             var x = Random.Range(0f, _lineLength);
@@ -417,15 +422,15 @@ public class PF_Generator : MonoBehaviour
             obj.transform.position -= new Vector3(0.5f, 0f, 0.5f);
         }
     }
-    
+
     private IEnumerator PlaceDungeonRoomsRoutine()
     {
         for (int i = 0; i < dungeonLength; i++)
         {
             var pos = new Vector3(
-                Random.Range((int) (0.5f * padding.x), (int) ((maxSize.x + 1) - 0.5f * padding.x)),
+                Random.Range((int)(0.5f * padding.x), (int)((maxSize.x + 1) - 0.5f * padding.x)),
                 0f,
-                Random.Range((int) (0.5f * padding.y), (int) ((maxSize.x + 1) - 0.5f * padding.y))
+                Random.Range((int)(0.5f * padding.y), (int)((maxSize.x + 1) - 0.5f * padding.y))
             );
 
             var x = Random.Range(0f, _lineLength);
@@ -486,10 +491,10 @@ public class PF_Generator : MonoBehaviour
             {
                 Destroy(room);
                 i--;
-                
+
                 GetComponent<NavMeshSurface>().navMeshData = null;
                 GetComponent<NavMeshSurface>().BuildNavMesh();
-                
+
                 yield return new WaitForSeconds(0.2f);
             }
         }
@@ -500,7 +505,7 @@ public class PF_Generator : MonoBehaviour
             GetComponent<NavMeshSurface>().navMeshData = null;
             GetComponent<NavMeshSurface>().BuildNavMesh();
         }
-        
+
         PlaceEnemies();
         Triangulate();
         CreateHallways();
@@ -510,6 +515,7 @@ public class PF_Generator : MonoBehaviour
         BuildHallways();
         CombineHallways();
         PlaceLights();
+        OnComplete?.Invoke();
     }
 
     private void PlaceEnemies()
@@ -518,7 +524,7 @@ public class PF_Generator : MonoBehaviour
         {
             var roomVar = _placedRooms[i].GetComponent<PF_Room>();
             var variant = placedVars[i - 2].formationIndex;
-            
+
             roomVar.PlaceEnemies(variant);
         }
     }
@@ -529,9 +535,9 @@ public class PF_Generator : MonoBehaviour
         while (!bossPlaced)
         {
             var bossPos = new Vector3(
-                Random.Range((int) (0.5f * padding.x), (int) ((maxSize.x + 1) - 0.5f * padding.x)),
+                Random.Range((int)(0.5f * padding.x), (int)((maxSize.x + 1) - 0.5f * padding.x)),
                 0f,
-                Random.Range((int) (0.5f * padding.y), (int) ((maxSize.x + 1) - 0.5f * padding.y))
+                Random.Range((int)(0.5f * padding.y), (int)((maxSize.x + 1) - 0.5f * padding.y))
             );
 
             var boss = Instantiate(this.bossRoom, bossPos, Quaternion.identity);
@@ -564,9 +570,9 @@ public class PF_Generator : MonoBehaviour
         while (!startPlaced)
         {
             var startPos = new Vector3(
-                Random.Range((int) (0.5f * padding.x), (int) ((maxSize.x + 1) - 0.5f * padding.x)),
+                Random.Range((int)(0.5f * padding.x), (int)((maxSize.x + 1) - 0.5f * padding.x)),
                 0f,
-                Random.Range((int) (0.5f * padding.y), (int) ((maxSize.x + 1) - 0.5f * padding.y))
+                Random.Range((int)(0.5f * padding.y), (int)((maxSize.x + 1) - 0.5f * padding.y))
             );
 
             var start = Instantiate(this.startRoom, startPos, Quaternion.identity);
@@ -600,7 +606,7 @@ public class PF_Generator : MonoBehaviour
         var currentSize = room.GetComponent<PF_Room>().roomSize;
         var currentOffset = room.GetComponent<PF_Room>().roomSizeOffset;
         var newSize = new Vector3();
-        
+
         switch (rotVal)
         {
             case 1:
@@ -682,19 +688,19 @@ public class PF_Generator : MonoBehaviour
         {
             case 1:
                 vec = area.position + new Vector2Int(-1, -1);
-                size = area.size + new Vector2Int(2,2);
+                size = area.size + new Vector2Int(2, 2);
                 break;
             case 2:
                 vec = area.position + new Vector2Int(-1, -1);
-                size = area.size + new Vector2Int(2,2);
+                size = area.size + new Vector2Int(2, 2);
                 break;
             case 3:
                 vec = area.position + new Vector2Int(-1, 1);
-                size = area.size + new Vector2Int(2,-2);
+                size = area.size + new Vector2Int(2, -2);
                 break;
             case 4:
                 vec = area.position + new Vector2Int(1, -1);
-                size = area.size + new Vector2Int(-2,2);
+                size = area.size + new Vector2Int(-2, 2);
                 break;
         }
         var rect = new RectInt(vec, size);
@@ -703,7 +709,7 @@ public class PF_Generator : MonoBehaviour
             _grid[pos] = CellType.SoftBuffer;
         }
     }
-    
+
     #endregion
 
     #region Triangulation
@@ -713,7 +719,7 @@ public class PF_Generator : MonoBehaviour
         _edges = new List<PF_Delauney.Edge>();
         foreach (var room in _rooms)
         {
-            _vertices.Add(new Vertex<RoomSpace>((Vector2)room.bounds.position + ((Vector2) room.bounds.size / 2), room));
+            _vertices.Add(new Vertex<RoomSpace>((Vector2)room.bounds.position + ((Vector2)room.bounds.size / 2), room));
         }
 
         _delaunay = PF_Delauney.Triangulate(_vertices);
@@ -796,8 +802,8 @@ public class PF_Generator : MonoBehaviour
 
                 return cost;
             });
-            
-            if(path != null)
+
+            if (path != null)
             {
                 for (int i = 0; i < path.Count; i++)
                 {
@@ -813,7 +819,7 @@ public class PF_Generator : MonoBehaviour
                         var delta = current - prev;
                     }
                 }
-                
+
                 foreach (var pos in path)
                 {
                     foreach (var offset in hallOffset)
@@ -893,7 +899,7 @@ public class PF_Generator : MonoBehaviour
                 };
             }
         }
-        
+
         for (int y = 0; y < maxSize.y; y++)
         {
             for (int x = 0; x < maxSize.x; x++)
@@ -912,7 +918,7 @@ public class PF_Generator : MonoBehaviour
                         {
                             _grid[x, y] = CellType.CornerOutSE;
                         }
-                        
+
                         switch (_grid[x - 1, y])
                         {
                             case CellType.WallNorth:
@@ -937,7 +943,7 @@ public class PF_Generator : MonoBehaviour
                             _grid[x, y] = CellType.CornerOutSW;
                             break;
                         }
-                        
+
                         switch (_grid[x + 1, y])
                         {
                             case CellType.WallNorth:
@@ -951,7 +957,7 @@ public class PF_Generator : MonoBehaviour
                 }
             }
         }
-        
+
         for (int y = 0; y < maxSize.y; y++)
         {
             for (int x = 0; x < maxSize.x; x++)
@@ -959,13 +965,13 @@ public class PF_Generator : MonoBehaviour
                 switch (_grid[x, y])
                 {
                     case CellType.WallEast:
-                        if (_grid[x - 1, y + 1] is CellType.WallEast or CellType.DiagonalEastDown or CellType.CornerOutNE or CellType.WallNorth && 
+                        if (_grid[x - 1, y + 1] is CellType.WallEast or CellType.DiagonalEastDown or CellType.CornerOutNE or CellType.WallNorth &&
                             _grid[x + 1, y - 1] is CellType.WallEast or CellType.DiagonalEastDown or CellType.CornerOutNE or CellType.WallNorth)
                         {
                             _grid[x, y] = CellType.DiagonalEastDown;
                             break;
                         }
-                        if (_grid[x - 1, y - 1] is CellType.WallEast or CellType.DiagonalEastUp or CellType.CornerOutSE or CellType.WallSouth &&  
+                        if (_grid[x - 1, y - 1] is CellType.WallEast or CellType.DiagonalEastUp or CellType.CornerOutSE or CellType.WallSouth &&
                             _grid[x + 1, y + 1] is CellType.WallEast or CellType.DiagonalEastUp or CellType.CornerOutSE or CellType.WallSouth)
                         {
                             _grid[x, y] = CellType.DiagonalEastUp;
@@ -973,13 +979,13 @@ public class PF_Generator : MonoBehaviour
                         }
                         break;
                     case CellType.WallWest:
-                        if (_grid[x - 1, y + 1] is CellType.WallWest or CellType.DiagonalWestDown or CellType.CornerOutSW or CellType.WallSouth && 
+                        if (_grid[x - 1, y + 1] is CellType.WallWest or CellType.DiagonalWestDown or CellType.CornerOutSW or CellType.WallSouth &&
                             _grid[x + 1, y - 1] is CellType.WallWest or CellType.DiagonalWestDown or CellType.CornerOutSW or CellType.WallSouth)
                         {
                             _grid[x, y] = CellType.DiagonalWestDown;
                             break;
                         }
-                        if (_grid[x - 1, y - 1] is CellType.WallWest or CellType.DiagonalWestUp or CellType.CornerOutNW or CellType.WallNorth && 
+                        if (_grid[x - 1, y - 1] is CellType.WallWest or CellType.DiagonalWestUp or CellType.CornerOutNW or CellType.WallNorth &&
                             _grid[x + 1, y + 1] is CellType.WallWest or CellType.DiagonalWestUp or CellType.CornerOutNW or CellType.WallNorth)
                         {
                             _grid[x, y] = CellType.DiagonalWestUp;
@@ -1006,7 +1012,7 @@ public class PF_Generator : MonoBehaviour
                     case CellType.WallNorth:
                     case CellType.WallSouth:
                     case CellType.WallWest:
-                        PlaceWall(new Vector2Int(j,i),_grid[j, i]);
+                        PlaceWall(new Vector2Int(j, i), _grid[j, i]);
                         break;
                     case CellType.CornerOutNE:
                     case CellType.CornerOutNW:
@@ -1030,7 +1036,7 @@ public class PF_Generator : MonoBehaviour
     private void PlaceFloor(Vector2Int pos)
     {
         var vec = new Vector3(pos.x, 0f, pos.y);
-        
+
         var tile = Instantiate(floorTile, vec, Quaternion.identity);
         _floorMeshes.Add(tile.GetComponent<MeshFilter>());
     }
@@ -1080,7 +1086,7 @@ public class PF_Generator : MonoBehaviour
                 break;
         }
 
-        
+
     }
     private void PlaceDiagonal(Vector2Int pos, CellType type)
     {
@@ -1105,10 +1111,10 @@ public class PF_Generator : MonoBehaviour
         }
     }
     #endregion
-    
+
     #region Light Generation
 
-    
+
     private List<LightLine> _lightLines = new List<LightLine>();
     private class LightLine
     {
@@ -1123,7 +1129,7 @@ public class PF_Generator : MonoBehaviour
         }
 
         public LineDirection Direction;
-        
+
         public LightLine(Vector2Int startPos, Vector2Int endPos, LineDirection direction)
         {
             StartPos = startPos;
@@ -1144,12 +1150,32 @@ public class PF_Generator : MonoBehaviour
             return dist / NumberOfLights();
         }
     }
-    
+
     public void PlaceLights()
     {
-        MarkLineSouthToNorth();
-        MarkLineEastToWest();
+        MarkLineSouthToNorthWest();
+        MarkLineEastToWestSouth();
         MarkLightPositions();
+
+        foreach (var line in _lightLines)
+        {
+            foreach (var pos in line.Positions)
+            {
+                var obj = Instantiate(decorPrefab, pos, Quaternion.identity, this.transform);
+                var handler = obj.GetComponent<LightDecalHandler>();
+                switch (line.Direction)
+                {
+                    case LightLine.LineDirection.SouthToNorth:
+                        obj.transform.rotation *= Quaternion.Euler(0f, 270f, 0f);
+                        // handler.Initialize()
+                        break;
+                    case LightLine.LineDirection.WestToEast:
+                        obj.transform.rotation *= Quaternion.Euler(0f, 180f, 0f);
+                        break;
+                }
+                handler.Initialize(new Vector3(line.LightSpacing(), 0.3f, 0.3f));
+            }
+        }
     }
 
     private void MarkLightPositions()
@@ -1174,7 +1200,7 @@ public class PF_Generator : MonoBehaviour
         }
     }
 
-    private void MarkLineSouthToNorth()
+    private void MarkLineSouthToNorthWest()
     {
         Vector2Int pos1 = Vector2Int.zero, pos2 = Vector2Int.zero;
 
@@ -1206,8 +1232,8 @@ public class PF_Generator : MonoBehaviour
             pos2 = Vector2Int.zero;
         }
     }
-    
-    private void MarkLineEastToWest()
+
+    private void MarkLineEastToWestSouth()
     {
         Vector2Int pos1 = Vector2Int.zero, pos2 = Vector2Int.zero;
 
@@ -1215,14 +1241,14 @@ public class PF_Generator : MonoBehaviour
         {
             for (int x = 0; x < maxSize.x; x++)
             {
-                if (pos1 == Vector2Int.zero && ((_grid[x, y] == CellType.CornerOutSW && _grid[x+1,y] == CellType.WallSouth) ||
+                if (pos1 == Vector2Int.zero && ((_grid[x, y] == CellType.CornerOutSW && _grid[x + 1, y] == CellType.WallSouth) ||
                                                 (_grid[x, y] == CellType.WallSouth &&
-                                                 _grid[x-1,y] is CellType.Room or CellType.None)))
+                                                 _grid[x - 1, y] is CellType.Room or CellType.None)))
                 {
                     pos1 = new Vector2Int(x, y);
                 }
-                else if (_grid[x, y] == CellType.CornerOutSE || (_grid[x, y] == CellType.WallSouth &&
-                                                                 _grid[x+1, y] is CellType.Hallway or CellType.Room))
+                else if (pos1 == Vector2Int.zero && (_grid[x, y] == CellType.CornerOutSE || (_grid[x, y] == CellType.WallSouth &&
+                                                                 _grid[x + 1, y] is CellType.Hallway or CellType.Room)))
                 {
                     pos2 = new Vector2Int(x, y);
                 }

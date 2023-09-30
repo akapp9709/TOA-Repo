@@ -11,4 +11,5 @@ public class EnemyStats : ScriptableObject
     public float attackRange;
     public float safetyBufferRadius;
     public float maxMoveDistance = 9;
+    public float avoidance = 0.8f;
 }

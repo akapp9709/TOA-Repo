@@ -1,0 +1,15 @@
+
+- Enemy AI collaberate
+- Dungeon lighting
+- Gameplay
+	- Stamina Limitation
+	- Sprinting Stamina Depletion
+- UI
+	- Dungeon Progress
+	- Loading Screen
+	- Damage Numbers***
+- Exit Behaviour
+- Clear Dungeon
+- Player Death
+- Playtest
+- First Build

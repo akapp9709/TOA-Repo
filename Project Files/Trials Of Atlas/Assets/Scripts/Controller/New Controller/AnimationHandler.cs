@@ -12,7 +12,7 @@ namespace AJK
         public PlayerLocomotion playerMove;
         private int _vertical, _horizontal;
         public bool canRotate;
-        
+
         public void Initialize()
         {
             anim = GetComponent<Animator>();
@@ -32,7 +32,7 @@ namespace AJK
             {
                 v = 0.5f;
             }
-            else if (vertical is >0.55f and <= 1f)
+            else if (vertical is > 0.55f and <= 1f)
             {
                 v = 1f;
             }
@@ -54,7 +54,7 @@ namespace AJK
                 v *= 2;
             }
             #endregion
-            
+
             #region Horizontal
             float h = 0;
 
@@ -62,7 +62,7 @@ namespace AJK
             {
                 h = 0.5f;
             }
-            else if (horizontal is >0.55f and <= 1f)
+            else if (horizontal is > 0.55f and <= 1f)
             {
                 h = 1f;
             }
@@ -79,7 +79,7 @@ namespace AJK
                 h = 0f;
             }
             #endregion
-            
+
             anim.SetFloat(_vertical, v, 0.1f, Time.deltaTime);
             anim.SetFloat(_horizontal, h, 0.1f, Time.deltaTime);
         }
@@ -89,6 +89,18 @@ namespace AJK
             anim.applyRootMotion = interacting;
             anim.SetBool("IsInteracting", interacting);
             anim.CrossFade(animClip, 0.2f);
+        }
+
+        public void TriggerTargetAnimation(string trigger, bool interacting)
+        {
+            anim.applyRootMotion = interacting;
+            anim.SetBool("IsInteracting", interacting);
+            anim.SetTrigger(trigger);
+        }
+
+        public void SetAnimationValuesBool(string variable, bool value)
+        {
+            anim.SetBool(variable, value);
         }
 
         private void OnAnimatorMove()
