@@ -15,6 +15,8 @@ public class EnemyBehavior : MonoBehaviour
     public Tick OnTick;
     public float decisionTime = 2f;
 
+    private Timer timer;
+
     public delegate void AttackAction();
     public AttackAction Action;
 
@@ -23,6 +25,18 @@ public class EnemyBehavior : MonoBehaviour
     {
         StartCoroutine(Clock());
         agent = GetComponent<NavMeshAgent>();
+
+        timer = new Timer(20f, TimerComplete, OnTimerTick);
+    }
+
+    private void TimerComplete()
+    {
+
+    }
+
+    private void OnTimerTick(float deltaTime)
+    {
+
     }
 
     // Update is called once per frame
@@ -35,6 +49,7 @@ public class EnemyBehavior : MonoBehaviour
     {
         while (true)
         {
+
             OnTick?.Invoke();
             yield return new WaitForSeconds(decisionTime);
         }

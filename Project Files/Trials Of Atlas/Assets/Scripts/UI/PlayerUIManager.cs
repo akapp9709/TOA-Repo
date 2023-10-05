@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class PlayerUIManager : MonoBehaviour
 {
+    [SerializeField] private RectTransform loadingScreen;
     [SerializeField] private RectTransform healthBar;
     [SerializeField] private RectTransform staminaBar;
     [SerializeField] private TextMeshProUGUI attackStat;
@@ -23,6 +24,7 @@ public class PlayerUIManager : MonoBehaviour
     private void InitilaizeUI()
     {
         playerManager = PlayerManager.singleton;
+        loadingScreen.gameObject.SetActive(false);
         isReady = true;
     }
 
@@ -32,6 +34,7 @@ public class PlayerUIManager : MonoBehaviour
         if (!isReady)
             return;
         UpdateAttackValue();
+        UpdateDefenseValue();
         UpdateHealthValue();
         UpdateStaminaValue();
     }
@@ -49,5 +52,9 @@ public class PlayerUIManager : MonoBehaviour
     private void UpdateStaminaValue()
     {
         staminaBar.GetComponent<ProgressBar>().SetValues(playerManager.currentStamina / playerManager.maxStamina);
+    }
+    private void UpdateDefenseValue()
+    {
+        defenseStat.SetText($"Defense: {playerManager.defense}");
     }
 }

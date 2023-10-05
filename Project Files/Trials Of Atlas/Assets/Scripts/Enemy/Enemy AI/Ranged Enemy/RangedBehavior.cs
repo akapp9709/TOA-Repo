@@ -44,7 +44,7 @@ public class RangedBehavior : EnemyBehavior
     {
         if (_actionCount == 0)
         {
-            _projectileObj = Instantiate(projectilePrefab, rightHand.position, Quaternion.identity);
+            _projectileObj = Instantiate(projectilePrefab, rightHand.position, Quaternion.identity, transform);
             _projectileObj.GetComponent<ProjectileHandler>().SetupValues(projectileLifeTime, rightHand, "Player", enemySO.strength);
             _actionCount++;
         }

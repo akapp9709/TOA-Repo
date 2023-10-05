@@ -14,6 +14,11 @@ public class HitBox : MonoBehaviour
         _targetTag = tag;
     }
 
+    public void UpdateValue(float amount)
+    {
+        _damage = amount;
+    }
+
     private void OnTriggerEnter(Collider other)
     {
 

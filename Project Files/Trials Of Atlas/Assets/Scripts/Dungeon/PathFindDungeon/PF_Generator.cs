@@ -136,6 +136,8 @@ public class PF_Generator : MonoBehaviour
 
     public static PF_Generator Singleton;
 
+    public int numberOfRooms;
+
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.white;
@@ -248,13 +250,6 @@ public class PF_Generator : MonoBehaviour
 
         PrepareValues();
         PlaceRooms();
-        // Triangulate();
-        // CreateHallways();
-        // //StartCoroutine(PathFindHallways());
-        // PathFindHallways();
-        // MarkWalls();
-        // BuildHallways();
-        // CombineHallways();
     }
 
     #region Value Prep
@@ -351,78 +346,6 @@ public class PF_Generator : MonoBehaviour
         StartCoroutine(PlaceDungeonRoomsRoutine());
     }
 
-    private void PlaceDungeonRooms()
-    {
-        for (int i = 0; i < dungeonLength; i++)
-        {
-            var pos = new Vector3(
-                Random.Range((int)(0.5f * padding.x), (int)((maxSize.x + 1) - 0.5f * padding.x)),
-                0f,
-                Random.Range((int)(0.5f * padding.y), (int)((maxSize.x + 1) - 0.5f * padding.y))
-            );
-
-            var x = Random.Range(0f, _lineLength);
-            int ind = 0;
-
-            for (int j = 0; j < variants.Count; j++)
-            {
-                if (x > variants[j].shiftedBias)
-                {
-                    continue;
-                }
-
-                ind = j;
-                break;
-            }
-
-            placedVars.Add(variants[ind]);
-            var room = Instantiate(variants[ind].room, pos, Quaternion.identity, this.transform);
-            ChooseRoomRotation(room, out var rot);
-
-            var roomVar = room.GetComponent<PF_Room>();
-
-            //TranslateBounds(rot, out var rectPosOff, out var rectSizeOff);
-            var roomRect = new RectInt(roomVar.Location2D, roomVar.Size2D);
-
-            var rs = new RoomSpace(roomRect.position, roomRect.size);
-
-            var roomBufferRect = new RectInt(roomRect.position - _rectOffset, roomRect.size + _rectOffset * 2);
-
-            bool safe = true;
-            var inBox = CheckRoomInBounds(roomBufferRect);
-
-            if (!inBox)
-            {
-                safe = false;
-            }
-            else if (!CheckRoomIntersect(roomBufferRect))
-            {
-                safe = false;
-            }
-
-            if (safe)
-            {
-                _testBuffer.Add(roomBufferRect);
-                _testRects.Add(roomRect);
-                roomVar.PlaceEnemies(variants[ind].formationIndex);
-                FinalizeRoom(roomRect, rot);
-                _placedRooms.Add(room);
-                rs.AddEntrances(roomVar.entrancePositions);
-                _rooms.Add(rs);
-            }
-            else
-            {
-                Destroy(room);
-                i--;
-            }
-        }
-
-        foreach (var obj in _placedRooms)
-        {
-            obj.transform.position -= new Vector3(0.5f, 0f, 0.5f);
-        }
-    }
-
     private IEnumerator PlaceDungeonRoomsRoutine()
     {
         for (int i = 0; i < dungeonLength; i++)
@@ -505,6 +428,8 @@ public class PF_Generator : MonoBehaviour
             GetComponent<NavMeshSurface>().navMeshData = null;
             GetComponent<NavMeshSurface>().BuildNavMesh();
         }
+
+        numberOfRooms = placedVars.Count;
 
         PlaceEnemies();
         Triangulate();
@@ -957,44 +882,6 @@ public class PF_Generator : MonoBehaviour
                 }
             }
         }
-
-        for (int y = 0; y < maxSize.y; y++)
-        {
-            for (int x = 0; x < maxSize.x; x++)
-            {
-                switch (_grid[x, y])
-                {
-                    case CellType.WallEast:
-                        if (_grid[x - 1, y + 1] is CellType.WallEast or CellType.DiagonalEastDown or CellType.CornerOutNE or CellType.WallNorth &&
-                            _grid[x + 1, y - 1] is CellType.WallEast or CellType.DiagonalEastDown or CellType.CornerOutNE or CellType.WallNorth)
-                        {
-                            _grid[x, y] = CellType.DiagonalEastDown;
-                            break;
-                        }
-                        if (_grid[x - 1, y - 1] is CellType.WallEast or CellType.DiagonalEastUp or CellType.CornerOutSE or CellType.WallSouth &&
-                            _grid[x + 1, y + 1] is CellType.WallEast or CellType.DiagonalEastUp or CellType.CornerOutSE or CellType.WallSouth)
-                        {
-                            _grid[x, y] = CellType.DiagonalEastUp;
-                            break;
-                        }
-                        break;
-                    case CellType.WallWest:
-                        if (_grid[x - 1, y + 1] is CellType.WallWest or CellType.DiagonalWestDown or CellType.CornerOutSW or CellType.WallSouth &&
-                            _grid[x + 1, y - 1] is CellType.WallWest or CellType.DiagonalWestDown or CellType.CornerOutSW or CellType.WallSouth)
-                        {
-                            _grid[x, y] = CellType.DiagonalWestDown;
-                            break;
-                        }
-                        if (_grid[x - 1, y - 1] is CellType.WallWest or CellType.DiagonalWestUp or CellType.CornerOutNW or CellType.WallNorth &&
-                            _grid[x + 1, y + 1] is CellType.WallWest or CellType.DiagonalWestUp or CellType.CornerOutNW or CellType.WallNorth)
-                        {
-                            _grid[x, y] = CellType.DiagonalWestUp;
-                            break;
-                        }
-                        break;
-                }
-            }
-        }
     }
 
     private void BuildHallways()
@@ -1019,12 +906,6 @@ public class PF_Generator : MonoBehaviour
                     case CellType.CornerOutSE:
                     case CellType.CornerOutSW:
                         PlaceCorner(new Vector2Int(j, i), _grid[j, i]);
-                        break;
-                    case CellType.DiagonalEastDown:
-                    case CellType.DiagonalEastUp:
-                    case CellType.DiagonalWestDown:
-                    case CellType.DiagonalWestUp:
-                        PlaceDiagonal(new Vector2Int(j, i), _grid[j, i]);
                         break;
                     default:
                         break;
@@ -1125,7 +1006,9 @@ public class PF_Generator : MonoBehaviour
         public enum LineDirection
         {
             SouthToNorth,
-            WestToEast
+            WestToEast,
+            NorthToSouth,
+            EasttoWest
         }
 
         public LineDirection Direction;
@@ -1149,31 +1032,71 @@ public class PF_Generator : MonoBehaviour
             var dist = Vector2Int.Distance(StartPos, EndPos);
             return dist / NumberOfLights();
         }
+
+        public Vector3 Midpoint
+        {
+            get
+            {
+                Vector3 vec = new Vector3();
+
+                var p1 = new Vector3(StartPos.x, 0f, StartPos.y);
+                var p2 = new Vector3(EndPos.x, 0f, EndPos.y);
+
+                vec = (p1 + p2) / 2f;
+
+                return vec;
+            }
+        }
+
+        public float LineLength
+        {
+            get
+            {
+                return Vector2.Distance(StartPos, EndPos);
+            }
+        }
     }
 
     public void PlaceLights()
     {
         MarkLineSouthToNorthWest();
+        MarkLineSouthToNorthEast();
         MarkLineEastToWestSouth();
+        MarkLineEastToWestNorth();
         MarkLightPositions();
 
         foreach (var line in _lightLines)
         {
-            foreach (var pos in line.Positions)
+            var pos = line.Midpoint;
+
+            var obj = Instantiate(decorPrefab, pos, Quaternion.identity, this.transform);
+            var handler = obj.GetComponent<LightDecalHandler>();
+            var l = line.LineLength;
+            Vector3 rot;
+            switch (line.Direction)
             {
-                var obj = Instantiate(decorPrefab, pos, Quaternion.identity, this.transform);
-                var handler = obj.GetComponent<LightDecalHandler>();
-                switch (line.Direction)
-                {
-                    case LightLine.LineDirection.SouthToNorth:
-                        obj.transform.rotation *= Quaternion.Euler(0f, 270f, 0f);
-                        // handler.Initialize()
-                        break;
-                    case LightLine.LineDirection.WestToEast:
-                        obj.transform.rotation *= Quaternion.Euler(0f, 180f, 0f);
-                        break;
-                }
-                handler.Initialize(new Vector3(line.LightSpacing(), 0.3f, 0.3f));
+                case LightLine.LineDirection.SouthToNorth:
+                    rot = new Vector3(0f, 0f, 0f);
+                    obj.transform.rotation *= Quaternion.Euler(rot);
+                    handler.Initialize(new Vector3(l, 0.3f, 0.3f), rot, l);
+                    // handler.Initialize()
+                    break;
+                case LightLine.LineDirection.NorthToSouth:
+                    rot = new Vector3(0f, 180f, 0f);
+                    obj.transform.rotation *= Quaternion.Euler(rot);
+                    handler.Initialize(new Vector3(l, 0.3f, 0.3f), rot, l);
+                    // handler.Initialize()
+                    break;
+                case LightLine.LineDirection.WestToEast:
+                    rot = new Vector3(0f, 270f, 0f);
+                    obj.transform.rotation *= Quaternion.Euler(rot);
+                    handler.Initialize(new Vector3(l, 0.3f, 0.3f), l);
+                    break;
+                case LightLine.LineDirection.EasttoWest:
+                    rot = new Vector3(0f, 90f, 0f);
+                    obj.transform.rotation *= Quaternion.Euler(rot);
+                    handler.Initialize(new Vector3(l, 0.3f, 0.3f), l);
+                    break;
             }
         }
     }
@@ -1187,6 +1110,7 @@ public class PF_Generator : MonoBehaviour
                 Vector3 pos;
                 switch (line.Direction)
                 {
+                    case LightLine.LineDirection.NorthToSouth:
                     case LightLine.LineDirection.SouthToNorth:
                         pos = new Vector3(line.StartPos.x, 0f, line.StartPos.y + line.LightSpacing() * i);
                         line.Positions.Add(pos);
@@ -1195,6 +1119,11 @@ public class PF_Generator : MonoBehaviour
                         pos = new Vector3(line.StartPos.x + line.LightSpacing() * i, 0f, line.StartPos.y);
                         line.Positions.Add(pos);
                         break;
+                    case LightLine.LineDirection.EasttoWest:
+                        pos = new Vector3(line.StartPos.x + line.LightSpacing() * i, 0f, line.StartPos.y);
+                        line.Positions.Add(pos);
+                        break;
+
                 }
             }
         }
@@ -1208,14 +1137,13 @@ public class PF_Generator : MonoBehaviour
         {
             for (int y = 0; y < maxSize.y; y++)
             {
-                if (pos1 == Vector2Int.zero && (_grid[x, y] == CellType.CornerOutSW ||
-                                                (_grid[x, y] == CellType.WallWest &&
-                                                 _grid[x, y - 1] is CellType.Room or CellType.None)))
+                if (pos1 == Vector2Int.zero && ((_grid[x, y] is CellType.CornerOutSW or CellType.Room && _grid[x, y + 1] == CellType.WallWest)
+                                            || (_grid[x, y] == CellType.Hallway && _grid[x - 1, y] is CellType.WallNorth or CellType.CornerOutNW)))
                 {
                     pos1 = new Vector2Int(x, y);
                 }
-                else if (_grid[x, y] == CellType.CornerOutNW || (_grid[x, y] == CellType.WallWest &&
-                                                                 _grid[x, y + 1] is CellType.Hallway or CellType.Room))
+                else if (_grid[x, y] == CellType.CornerOutNW || ((_grid[x, y] is CellType.Room or CellType.CornerOutNW && _grid[x, y - 1] == CellType.WallWest)
+                                                            || (_grid[x, y] == CellType.Hallway && _grid[x - 1, y] is CellType.WallSouth or CellType.CornerOutSW)))
                 {
                     pos2 = new Vector2Int(x, y);
                 }
@@ -1223,6 +1151,38 @@ public class PF_Generator : MonoBehaviour
                 if (pos1 != Vector2Int.zero && pos2 != Vector2Int.zero)
                 {
                     _lightLines.Add(new LightLine(pos1, pos2, LightLine.LineDirection.SouthToNorth));
+                    pos1 = Vector2Int.zero;
+                    pos2 = Vector2Int.zero;
+                }
+            }
+
+            pos1 = Vector2Int.zero;
+            pos2 = Vector2Int.zero;
+        }
+    }
+
+    private void MarkLineSouthToNorthEast()
+    {
+        Vector2Int pos1 = Vector2Int.zero, pos2 = Vector2Int.zero;
+
+        for (int x = 0; x < maxSize.x; x++)
+        {
+            for (int y = 0; y < maxSize.y; y++)
+            {
+                if (pos1 == Vector2Int.zero && ((_grid[x, y] is CellType.CornerOutSE or CellType.Room && _grid[x, y + 1] == CellType.WallEast)
+                                            || (_grid[x, y] == CellType.Hallway && _grid[x + 1, y] is CellType.WallNorth or CellType.CornerOutNE)))
+                {
+                    pos1 = new Vector2Int(x, y);
+                }
+                else if (_grid[x, y] == CellType.CornerOutSW || ((_grid[x, y] is CellType.Room or CellType.CornerOutNE && _grid[x, y - 1] == CellType.WallEast)
+                                                            || (_grid[x, y] == CellType.Hallway && _grid[x + 1, y] is CellType.WallSouth or CellType.CornerOutSE)))
+                {
+                    pos2 = new Vector2Int(x, y);
+                }
+
+                if (pos1 != Vector2Int.zero && pos2 != Vector2Int.zero)
+                {
+                    _lightLines.Add(new LightLine(pos1, pos2, LightLine.LineDirection.NorthToSouth));
                     pos1 = Vector2Int.zero;
                     pos2 = Vector2Int.zero;
                 }
@@ -1241,14 +1201,13 @@ public class PF_Generator : MonoBehaviour
         {
             for (int x = 0; x < maxSize.x; x++)
             {
-                if (pos1 == Vector2Int.zero && ((_grid[x, y] == CellType.CornerOutSW && _grid[x + 1, y] == CellType.WallSouth) ||
-                                                (_grid[x, y] == CellType.WallSouth &&
-                                                 _grid[x - 1, y] is CellType.Room or CellType.None)))
+                if (pos1 == Vector2Int.zero && ((_grid[x, y] is CellType.CornerOutSW or CellType.Room && _grid[x + 1, y] == CellType.WallSouth)
+                                            || (_grid[x, y] == CellType.Hallway && _grid[x, y - 1] is CellType.WallEast or CellType.CornerOutSE)))
                 {
                     pos1 = new Vector2Int(x, y);
                 }
-                else if (pos1 == Vector2Int.zero && (_grid[x, y] == CellType.CornerOutSE || (_grid[x, y] == CellType.WallSouth &&
-                                                                 _grid[x + 1, y] is CellType.Hallway or CellType.Room)))
+                else if (pos1 != Vector2Int.zero && ((_grid[x, y] is CellType.CornerOutSE or CellType.Room && _grid[x - 1, y] == CellType.WallSouth)
+                                                    || (_grid[x, y] == CellType.Hallway && (_grid[x, y - 1] is CellType.WallWest or CellType.CornerOutSW))))
                 {
                     pos2 = new Vector2Int(x, y);
                 }
@@ -1256,6 +1215,38 @@ public class PF_Generator : MonoBehaviour
                 if (pos1 != Vector2Int.zero && pos2 != Vector2Int.zero)
                 {
                     _lightLines.Add(new LightLine(pos1, pos2, LightLine.LineDirection.WestToEast));
+                    pos1 = Vector2Int.zero;
+                    pos2 = Vector2Int.zero;
+                }
+            }
+
+            pos1 = Vector2Int.zero;
+            pos2 = Vector2Int.zero;
+        }
+    }
+
+    private void MarkLineEastToWestNorth()
+    {
+        Vector2Int pos1 = Vector2Int.zero, pos2 = Vector2Int.zero;
+
+        for (int y = 0; y < maxSize.y; y++)
+        {
+            for (int x = 0; x < maxSize.x; x++)
+            {
+                if (pos1 == Vector2Int.zero && ((_grid[x, y] is CellType.CornerOutNW or CellType.Room && _grid[x + 1, y] == CellType.WallNorth)
+                                            || (_grid[x, y] == CellType.Hallway && _grid[x, y + 1] is CellType.WallEast or CellType.CornerOutNE)))
+                {
+                    pos1 = new Vector2Int(x, y);
+                }
+                else if (pos1 != Vector2Int.zero && ((_grid[x, y] is CellType.CornerOutNE or CellType.Room && _grid[x - 1, y] == CellType.WallNorth)
+                                                    || (_grid[x, y] == CellType.Hallway && (_grid[x, y + 1] is CellType.WallWest or CellType.CornerOutNW))))
+                {
+                    pos2 = new Vector2Int(x, y);
+                }
+
+                if (pos1 != Vector2Int.zero && pos2 != Vector2Int.zero)
+                {
+                    _lightLines.Add(new LightLine(pos1, pos2, LightLine.LineDirection.EasttoWest));
                     pos1 = Vector2Int.zero;
                     pos2 = Vector2Int.zero;
                 }

@@ -27,6 +27,9 @@ namespace AJK
         public delegate void Dodge();
         public Dodge OnDodgeEvent;
 
+        public Action Interact;
+        public Action Hint;
+
         public void Start()
         {
             _cameraHandler = PlayerCamera.Singleton;
@@ -56,6 +59,8 @@ namespace AJK
                 _inputActions.Main.Look.performed += context => _cameraInput = context.ReadValue<Vector2>();
                 _inputActions.PlayerActions.Dodge.started += OnDodge;
                 _inputActions.PlayerActions.Sprint.started += ToggleSprint;
+                _inputActions.PlayerActions.Interact.started += InteractInput;
+                _inputActions.PlayerActions.Hint.started += HintInput;
             }
 
             _inputActions.Enable();
@@ -110,6 +115,16 @@ namespace AJK
                 return;
 
             isSprinting = !isSprinting;
+        }
+
+        private void InteractInput(InputAction.CallbackContext context)
+        {
+            Interact?.Invoke();
+        }
+
+        private void HintInput(InputAction.CallbackContext context)
+        {
+            Hint?.Invoke();
         }
     }
 }

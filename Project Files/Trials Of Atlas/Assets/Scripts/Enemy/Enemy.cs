@@ -17,6 +17,11 @@ public class Enemy : MonoBehaviour
         enemyHealth = enemySO.health;
     }
 
+    private void OnDestroy()
+    {
+        SendMessageUpwards("RemoveEnemy", this);
+    }
+
     public void StartEnemyFSM()
     {
         Debug.Log("Enemy starting up");
@@ -31,10 +36,6 @@ public class Enemy : MonoBehaviour
             return;
         }
 
-        if (enemyHealth <= 0)
-        {
-            Destroy(this.gameObject);
-        }
 
 
     }
@@ -45,6 +46,10 @@ public class Enemy : MonoBehaviour
         _rb.AddForce(transform.forward * -5f, ForceMode.Impulse);
         enemyHealth -= damage;
         StartCoroutine(KnockBackTimer());
+        if (enemyHealth <= 0)
+        {
+            Destroy(this.gameObject);
+        }
     }
 
     private IEnumerator KnockBackTimer()

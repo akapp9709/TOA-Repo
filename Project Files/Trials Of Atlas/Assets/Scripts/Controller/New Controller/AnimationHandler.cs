@@ -12,6 +12,7 @@ namespace AJK
         public PlayerLocomotion playerMove;
         private int _vertical, _horizontal;
         public bool canRotate;
+        public bool rootMotion;
 
         public void Initialize()
         {
@@ -87,6 +88,8 @@ namespace AJK
         public void PlayTargetAnimation(string animClip, bool interacting)
         {
             anim.applyRootMotion = interacting;
+            rootMotion = interacting;
+
             anim.SetBool("IsInteracting", interacting);
             anim.CrossFade(animClip, 0.2f);
         }
@@ -94,6 +97,7 @@ namespace AJK
         public void TriggerTargetAnimation(string trigger, bool interacting)
         {
             anim.applyRootMotion = interacting;
+            rootMotion = interacting;
             anim.SetBool("IsInteracting", interacting);
             anim.SetTrigger(trigger);
         }
@@ -124,6 +128,13 @@ namespace AJK
         public void StopRotation()
         {
             canRotate = false;
+        }
+
+        public void ChangeMotion()
+        {
+            rootMotion = !rootMotion;
+
+            anim.applyRootMotion = rootMotion;
         }
     }
 }
