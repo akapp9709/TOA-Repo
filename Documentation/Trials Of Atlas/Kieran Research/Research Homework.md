@@ -13,5 +13,15 @@ Included readings
 - Chapman
 - Assassin's Creed
 - Ghost of Tsushima
-- 
+- Historical Problem Space
+	- Structure and Planning
+- "History as a debate vs as a record"
+
+Play with Question
+
+Lit Reviews
+- Citations
+- Juice 
+- Structure
+- Signposting
 	 

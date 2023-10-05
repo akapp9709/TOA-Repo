@@ -97,6 +97,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4418935657165366938, guid: 767a66917d7fe1046909d6c9ef317bca,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 7935752250970491073, guid: 767a66917d7fe1046909d6c9ef317bca,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 8917606683150304906, guid: 767a66917d7fe1046909d6c9ef317bca,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 8
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 767a66917d7fe1046909d6c9ef317bca, type: 3}
 --- !u!4 &725027721817567681 stripped
@@ -112,31 +127,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 725027721817567681}
     m_Modifications:
-    - target: {fileID: 19640222875130704, guid: a72dc2ff20e910c468cf3925f4b921f3,
-        type: 3}
-      propertyPath: m_IsKinematic
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 2336364466237916269, guid: a72dc2ff20e910c468cf3925f4b921f3,
         type: 3}
       propertyPath: normalCamera
       value: 
       objectReference: {fileID: 1100593562913212237}
-    - target: {fileID: 2336364466237916270, guid: a72dc2ff20e910c468cf3925f4b921f3,
-        type: 3}
-      propertyPath: vertical
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2336364466237916270, guid: a72dc2ff20e910c468cf3925f4b921f3,
-        type: 3}
-      propertyPath: horizontal
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 2336364466237916274, guid: a72dc2ff20e910c468cf3925f4b921f3,
         type: 3}
       propertyPath: _cameraTransform
       value: 
       objectReference: {fileID: 828926364538486783}
+    - target: {fileID: 3206582961921063113, guid: a72dc2ff20e910c468cf3925f4b921f3,
+        type: 3}
+      propertyPath: hintCoolDown
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 4811548011811657279, guid: a72dc2ff20e910c468cf3925f4b921f3,
         type: 3}
       propertyPath: m_RootOrder

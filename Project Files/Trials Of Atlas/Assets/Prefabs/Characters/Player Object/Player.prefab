@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 2336364466237916270}
   - component: {fileID: 2336364466237916273}
   - component: {fileID: 2336364466237916274}
+  - component: {fileID: 3206582961921063113}
   m_Layer: 10
   m_Name: Player
   m_TagString: Player
@@ -85,6 +86,8 @@ MonoBehaviour:
   _rb: {fileID: 0}
   normalCamera: {fileID: 0}
   playerStats: {fileID: 11400000, guid: 29d02af88c6fd03418eda0ebf4e43e3e, type: 2}
+  isDodging: 0
+  dodgeVelocity: {x: 0, y: 0, z: 0}
 --- !u!114 &2336364466237916270
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -119,6 +122,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerStats: {fileID: 11400000, guid: 29d02af88c6fd03418eda0ebf4e43e3e, type: 2}
+  maxHealth: 0
+  currentHealth: 0
+  defense: 0
+  strength: 0
+  maxStamina: 0
+  currentStamina: 0
+  staminaRegen: 0
+  hasStamina: 0
+  canUseStamina: 0
 --- !u!114 &2336364466237916274
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -131,9 +143,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1e192edb9655884d879a54a24980aae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _cameraTransform: {fileID: 0}
+  attackRadius: 10
+  minimumStepDistance: 1
   attackVal: 0
+  angle: 0
+  rotationSpeed: 20
   isAttacking: 0
   anim: {fileID: 8677299043921799220}
+--- !u!114 &3206582961921063113
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6664547293352665861}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83a5033dd17737e41aeeb50d4831a270, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hintPrefab: {fileID: 4256470844245777944, guid: 72dd06416e6634542a0bf950fb374e05,
+    type: 3}
+  hintCoolDown: 0
 --- !u!1001 &2954748557209048485
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -235,6 +267,7 @@ MonoBehaviour:
   inputHandler: {fileID: 0}
   playerMove: {fileID: 0}
   canRotate: 1
+  rootMotion: 0
 --- !u!4 &3354013307000746574 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: f5f222c29d177cc498b52e7c53c3b1ea,
@@ -340,10 +373,20 @@ PrefabInstance:
       propertyPath: m_IsKinematic
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8534584494616804853, guid: 0f2a0097405498c458cd0792ef4177cf,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8932259811539442406, guid: 0f2a0097405498c458cd0792ef4177cf,
         type: 3}
       propertyPath: m_Name
       value: CreepWeapon
+      objectReference: {fileID: 0}
+    - target: {fileID: 8932259811539442406, guid: 0f2a0097405498c458cd0792ef4177cf,
+        type: 3}
+      propertyPath: m_Layer
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0f2a0097405498c458cd0792ef4177cf, type: 3}

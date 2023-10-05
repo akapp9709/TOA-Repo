@@ -25,14 +25,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2042649085472961601}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 3.2, z: 0}
+  m_LocalRotation: {x: 0.25386092, y: 0.65996563, z: -0.25386092, w: 0.65996563}
+  m_LocalPosition: {x: -0.23, y: 3.64, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7814145554406040461}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 42.079, y: 90, z: 0}
 --- !u!108 &7793537567454368662
 Light:
   m_ObjectHideFlags: 0
@@ -45,8 +45,8 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 14.636029
-  m_Range: 3.93
+  m_Intensity: 35272.293
+  m_Range: 8
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
@@ -86,11 +86,11 @@ Light:
   m_RenderingLayerMask: 1
   m_Lightmapping: 4
   m_LightShadowCasterMode: 2
-  m_AreaSize: {x: 1, y: 0.19213496}
+  m_AreaSize: {x: 1.8787544, y: 0.19213496}
   m_BounceIntensity: 1
-  m_ColorTemperature: 4926
+  m_ColorTemperature: 4474
   m_UseColorTemperature: 1
-  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 3.93}
+  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 8}
   m_UseBoundingSphereOverride: 1
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
@@ -107,7 +107,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a68c43fe1f2a47cfa234b5eeaa98012, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Intensity: 8.834451
+  m_Intensity: 40000
   m_EnableSpotReflector: 1
   m_LuxAtDistance: 1
   m_InnerSpotPercent: 0
@@ -120,7 +120,7 @@ MonoBehaviour:
   m_AffectDiffuse: 1
   m_AffectSpecular: 1
   m_NonLightmappedOnly: 0
-  m_ShapeWidth: 1
+  m_ShapeWidth: 1.8787544
   m_ShapeHeight: 0.19213496
   m_AspectRatio: 1
   m_ShapeRadius: 0.025
@@ -242,7 +242,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2426388892836429883}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -0.33, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -262,7 +262,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 2100000, guid: 47d432f0e6feca64ca2c4c2979f5fcdb, type: 2}
-  m_DrawDistance: 1000
+  m_DrawDistance: 150
   m_FadeScale: 0.793
   m_StartAngleFade: 180
   m_EndAngleFade: 180
@@ -270,9 +270,9 @@ MonoBehaviour:
   m_UVBias: {x: 0, y: 0}
   m_AffectsTransparency: 0
   m_DecalLayerMask: 1
-  m_ScaleMode: 0
-  m_Offset: {x: -0.27, y: 0, z: 0.29332417}
-  m_Size: {x: 0.3, y: 0.99, z: 0.41335166}
+  m_ScaleMode: 1
+  m_Offset: {x: 0, y: 0, z: 0}
+  m_Size: {x: 0.39, y: 0.3, z: 0.3}
   m_FadeFactor: 1
   m_Version: 2
 --- !u!1 &5084743158387839711
@@ -322,3 +322,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   projector: {fileID: 5242768921752872827}
+  areaLight: {fileID: 3577586998400508827}

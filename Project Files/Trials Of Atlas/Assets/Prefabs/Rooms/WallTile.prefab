@@ -106,40 +106,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 735486907024706271}
     m_Modifications:
-    - target: {fileID: 4538313335143419288, guid: c6ce8dbc74ecf844c924b19d9fc4022c,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.33
-      objectReference: {fileID: 0}
     - target: {fileID: 5084743158387839711, guid: c6ce8dbc74ecf844c924b19d9fc4022c,
         type: 3}
       propertyPath: m_Name
       value: LightingAndDecal
-      objectReference: {fileID: 0}
-    - target: {fileID: 5242768921752872827, guid: c6ce8dbc74ecf844c924b19d9fc4022c,
-        type: 3}
-      propertyPath: m_Size.x
-      value: 0.39
-      objectReference: {fileID: 0}
-    - target: {fileID: 5242768921752872827, guid: c6ce8dbc74ecf844c924b19d9fc4022c,
-        type: 3}
-      propertyPath: m_Size.y
-      value: 0.3
-      objectReference: {fileID: 0}
-    - target: {fileID: 5242768921752872827, guid: c6ce8dbc74ecf844c924b19d9fc4022c,
-        type: 3}
-      propertyPath: m_Size.z
-      value: 0.3
-      objectReference: {fileID: 0}
-    - target: {fileID: 5242768921752872827, guid: c6ce8dbc74ecf844c924b19d9fc4022c,
-        type: 3}
-      propertyPath: m_Offset.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5242768921752872827, guid: c6ce8dbc74ecf844c924b19d9fc4022c,
-        type: 3}
-      propertyPath: m_Offset.z
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7814145554406040461, guid: c6ce8dbc74ecf844c924b19d9fc4022c,
         type: 3}
