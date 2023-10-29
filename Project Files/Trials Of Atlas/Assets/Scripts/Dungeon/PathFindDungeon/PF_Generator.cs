@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using Graphs;
 using Unity.AI.Navigation;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(MeshFilter))]
@@ -96,6 +97,8 @@ public class PF_Generator : MonoBehaviour
     [SerializeField] private GameObject wallTile, cornerTile, diagonalTile;
     private PF_Grid<CellType> _grid;
     public Vector2Int maxSize, padding, offset, roomBuffer;
+    public int maxHallWidth = 10;
+    public float decorDensity;
     public int dungeonLength, availableRooms = 0;
 
     #region Debugging Variables
@@ -116,7 +119,6 @@ public class PF_Generator : MonoBehaviour
 
     private List<MeshFilter> _floorMeshes = new List<MeshFilter>();
 
-    private int _roomRotation;
     public bool showGizmos = true;
     public bool showTriangulation = true;
     public bool showPath = true;
@@ -127,8 +129,7 @@ public class PF_Generator : MonoBehaviour
     [Range(0, 1)] public float curveOffset;
     private float _lineLength;
 
-    public int lightSpace;
-    public float _lightCount;
+    public float lightCount;
     [SerializeField] private GameObject decorPrefab;
 
     public delegate void GenerationComplete();
@@ -137,6 +138,13 @@ public class PF_Generator : MonoBehaviour
     public static PF_Generator Singleton;
 
     public int numberOfRooms;
+
+    private List<Vector3> decorPositions = new List<Vector3>();
+
+    private void OnSceneUnload(Scene current)
+    {
+        OnComplete = null;
+    }
 
     private void OnDrawGizmos()
     {
@@ -150,6 +158,12 @@ public class PF_Generator : MonoBehaviour
 
             Gizmos.DrawSphere(new Vector3(pos2.x, 0f, pos2.y) + Vector3.up * 5, 0.5f);
             Gizmos.DrawLine(new Vector3(pos1.x, 5, pos1.y), new Vector3(pos2.x, 5, pos2.y));
+        }
+
+        Gizmos.color = Color.white;
+        foreach (var pos in decorPositions)
+        {
+            Gizmos.DrawCube(pos, Vector3.one);
         }
 
         if (_delaunay != null && _delaunay.Vertices != null && showTriangulation)
@@ -194,6 +208,9 @@ public class PF_Generator : MonoBehaviour
                         Gizmos.DrawSphere(new Vector3(j, 0f, i) + Vector3.up, 0.3f);
                         break;
                     case CellType.WallEast:
+                        Gizmos.color = Color.magenta;
+                        Gizmos.DrawSphere(new Vector3(j, 0f, i) + Vector3.up, 0.3f);
+                        break;
                     case CellType.WallWest:
                         Gizmos.color = Color.yellow;
                         Gizmos.DrawSphere(new Vector3(j, 0f, i) + Vector3.up, 0.3f);
@@ -238,6 +255,7 @@ public class PF_Generator : MonoBehaviour
     private void Awake()
     {
         Singleton = this;
+        SceneManager.sceneUnloaded += OnSceneUnload;
     }
 
     // Start is called before the first frame update
@@ -246,7 +264,7 @@ public class PF_Generator : MonoBehaviour
 
         _grid = new PF_Grid<CellType>(maxSize, offset);
         _rectOffset = new Vector2Int(1, 0);
-        LightLine.LightCount = _lightCount;
+        LightLine.LightCount = lightCount;
 
         PrepareValues();
         PlaceRooms();
@@ -440,6 +458,8 @@ public class PF_Generator : MonoBehaviour
         BuildHallways();
         CombineHallways();
         PlaceLights();
+        yield return new WaitForSeconds(0.2f);
+        PlaceDecorations();
         OnComplete?.Invoke();
     }
 
@@ -1067,36 +1087,38 @@ public class PF_Generator : MonoBehaviour
 
         foreach (var line in _lightLines)
         {
-            var pos = line.Midpoint;
-
-            var obj = Instantiate(decorPrefab, pos, Quaternion.identity, this.transform);
-            var handler = obj.GetComponent<LightDecalHandler>();
             var l = line.LineLength;
-            Vector3 rot;
-            switch (line.Direction)
+
+            foreach (var pos in line.Positions)
             {
-                case LightLine.LineDirection.SouthToNorth:
-                    rot = new Vector3(0f, 0f, 0f);
-                    obj.transform.rotation *= Quaternion.Euler(rot);
-                    handler.Initialize(new Vector3(l, 0.3f, 0.3f), rot, l);
-                    // handler.Initialize()
-                    break;
-                case LightLine.LineDirection.NorthToSouth:
-                    rot = new Vector3(0f, 180f, 0f);
-                    obj.transform.rotation *= Quaternion.Euler(rot);
-                    handler.Initialize(new Vector3(l, 0.3f, 0.3f), rot, l);
-                    // handler.Initialize()
-                    break;
-                case LightLine.LineDirection.WestToEast:
-                    rot = new Vector3(0f, 270f, 0f);
-                    obj.transform.rotation *= Quaternion.Euler(rot);
-                    handler.Initialize(new Vector3(l, 0.3f, 0.3f), l);
-                    break;
-                case LightLine.LineDirection.EasttoWest:
-                    rot = new Vector3(0f, 90f, 0f);
-                    obj.transform.rotation *= Quaternion.Euler(rot);
-                    handler.Initialize(new Vector3(l, 0.3f, 0.3f), l);
-                    break;
+                var obj = Instantiate(decorPrefab, pos, Quaternion.identity, this.transform);
+                var handler = obj.GetComponent<LightDecalHandler>();
+                Vector3 rot;
+                switch (line.Direction)
+                {
+                    case LightLine.LineDirection.SouthToNorth:
+                        rot = new Vector3(0f, 0f, 0f);
+                        obj.transform.rotation *= Quaternion.Euler(rot);
+                        handler.Initialize(new Vector3(3f, 0.3f, 0.3f), rot, 3f);
+                        // handler.Initialize()
+                        break;
+                    case LightLine.LineDirection.NorthToSouth:
+                        rot = new Vector3(0f, 180f, 0f);
+                        obj.transform.rotation *= Quaternion.Euler(rot);
+                        handler.Initialize(new Vector3(3f, 0.3f, 0.3f), rot, 3f);
+                        // handler.Initialize()
+                        break;
+                    case LightLine.LineDirection.WestToEast:
+                        rot = new Vector3(0f, 270f, 0f);
+                        obj.transform.rotation *= Quaternion.Euler(rot);
+                        handler.Initialize(new Vector3(3f, 0.3f, 0.3f), 3f);
+                        break;
+                    case LightLine.LineDirection.EasttoWest:
+                        rot = new Vector3(0f, 90f, 0f);
+                        obj.transform.rotation *= Quaternion.Euler(rot);
+                        handler.Initialize(new Vector3(3f, 0.3f, 0.3f), 3f);
+                        break;
+                }
             }
         }
     }
@@ -1105,7 +1127,7 @@ public class PF_Generator : MonoBehaviour
     {
         foreach (var line in _lightLines)
         {
-            for (int i = 1; i < line.NumberOfLights(); i++)
+            for (var i = 0.5f; i < line.NumberOfLights(); i++)
             {
                 Vector3 pos;
                 switch (line.Direction)
@@ -1256,6 +1278,43 @@ public class PF_Generator : MonoBehaviour
             pos2 = Vector2Int.zero;
         }
     }
+
+    #endregion
+
+    #region Decoration
+
+    private void PlaceDecorations()
+    {
+        var decorHandler = new PF_DungeonDecor(_grid, maxHallWidth, 0.2f);
+
+        var positions = decorHandler.positions;
+
+        if (positions == null)
+        {
+            Debug.Log("Map Positions not doing that.");
+        }
+
+        foreach (var hall in positions)
+        {
+            var startPos = hall.start;
+            var endPos = hall.end;
+
+            var line = decorHandler.PlaceOnLineX(decorDensity, startPos, endPos);
+
+            if (line == null)
+            {
+                continue;
+            }
+
+            foreach (var pos in line)
+            {
+                decorPositions.Add(pos);
+            }
+        }
+
+    }
+
+
 
     #endregion
 }

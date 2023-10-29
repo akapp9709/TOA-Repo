@@ -11,6 +11,8 @@ public class EnemyBehavior : MonoBehaviour
     public NavMeshAgent agent;
     public Animator anim;
 
+    public float delta;
+
     public delegate void Tick();
     public Tick OnTick;
     public float decisionTime = 2f;
@@ -42,14 +44,13 @@ public class EnemyBehavior : MonoBehaviour
     // Update is called once per frame
     protected virtual void Update()
     {
-
+        delta = Time.deltaTime;
     }
 
     private IEnumerator Clock()
     {
         while (true)
         {
-
             OnTick?.Invoke();
             yield return new WaitForSeconds(decisionTime);
         }
