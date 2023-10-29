@@ -15,3 +15,16 @@ MonoBehaviour:
   strength: 60
   health: 200
   aggression: 0.8
+  attackRange: 0
+  safetyBufferRadius: 0
+  maxMoveDistance: 9
+  avoidance: 0.8
+  bitDrops:
+  - amount: 40
+    chance: 4
+  - amount: 60
+    chance: 2
+  - amount: 90
+    chance: 0.2
+  - amount: 130
+    chance: 0.05

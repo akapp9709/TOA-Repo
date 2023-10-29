@@ -18,3 +18,11 @@ MonoBehaviour:
   attackRange: 12
   safetyBufferRadius: 5
   maxMoveDistance: 9
+  avoidance: 0.8
+  bitDrops:
+  - amount: 10
+    chance: 2
+  - amount: 15
+    chance: 1.5
+  - amount: 30
+    chance: 0.5

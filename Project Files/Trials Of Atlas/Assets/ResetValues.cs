@@ -7,9 +7,13 @@ public class ResetValues : StateMachineBehaviour
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        animator.SetInteger("Attack Index", 0);
-        animator.SetBool("IsInteracting", false);
-        AttackHandler.singleton.attackVal = 0;
+        // animator.SetInteger("Attack Index", 0);
+        // animator.SetBool("IsInteracting", false);
+        // animator.ResetTrigger("Attack");
+
+        // if (AttackHandler.singleton == null) { return; }
+
+        // AttackHandler.singleton.attackVal = 0;
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
