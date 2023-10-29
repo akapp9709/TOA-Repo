@@ -1,153 +1,127 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace AJK
 {
     public class PlayerLocomotion : MonoBehaviour
     {
-        private Transform _cameraTransform;
-        private InputHandler _input;
-        private Vector3 _moveDirection;
-
-        [HideInInspector] public Transform myTransform;
-        [HideInInspector] public AnimationHandler animHandler;
-
+        public Transform cameraTransform;
+        public PlayerSO playerStats;
+        private float _walk, _run, _sprint;
+        public Vector3 inVec;
+        private PlayerControls _controls;
         public Rigidbody _rb;
+        private float _currentSpeed;
+        private float _moveAmount;
 
-        public GameObject normalCamera;
+        private Animator _anim;
+        private bool _isSprinting = false;
 
-        [SerializeField] private PlayerSO playerStats;
-        private float _rotationSpeed = 10;
-
-        public bool isDodging = false;
-        public Vector3 dodgeVelocity;
-        // Start is called before the first frame update
-        void Start()
+        private void Start()
         {
+            InitializeControls();
+
             _rb = GetComponent<Rigidbody>();
-            _input = GetComponent<InputHandler>();
-            animHandler = GetComponentInChildren<AnimationHandler>();
-            _cameraTransform = normalCamera.transform;
-            myTransform = transform;
-            animHandler.Initialize();
+            _walk = playerStats.walkSpeed;
+            _run = playerStats.runSpeed;
+            _sprint = playerStats.sprintSpeed;
+
+            _anim = GetComponentInChildren<Animator>();
+
+        }
+
+        private void InitializeControls()
+        {
+            _controls = new PlayerControls();
+            _controls.Enable();
+            _controls.Main.Enable();
+            _controls.Main.Move.performed += OnMoveStart;
+            _controls.Main.Sprint.started += ToggleSprint;
         }
 
         private void Update()
         {
-            float delta = Time.deltaTime;
-            _input.TickInput(delta);
-            HandleMovement(delta);
-            animHandler.SetAnimationValuesBool("isDodging", isDodging);
+            if (Mathf.Abs(_moveAmount) < 0.15f)
+            {
+                _moveAmount = 0;
+                _isSprinting = false;
+            }
+            else if (Mathf.Abs(_moveAmount) < 0.55f)
+            {
+                _moveAmount = 0.5f;
+                _isSprinting = false;
+            }
+            else if (Mathf.Abs(_moveAmount) >= 0.55f)
+            {
+                _moveAmount = 1;
+            }
 
-        }
+            if (_isSprinting && Mathf.Abs(_moveAmount) >= 0.55f)
+            {
+                _moveAmount = 2;
+            }
 
-        private void HandleMovement(float delta)
-        {
-            if (_input.isInteracting)
+            var speed = 0f;
+            switch (_moveAmount)
+            {
+                case 0:
+                    speed = 0;
+                    break;
+                case 0.5f:
+                    speed = _walk;
+                    break;
+                case 1:
+                    speed = _run;
+                    break;
+                case 2:
+                    speed = _sprint;
+                    break;
+            }
+            _currentSpeed = Mathf.Lerp(_currentSpeed, speed, 0.1f);
+
+
+
+            var desiredDirection = inVec.x * cameraTransform.right + inVec.z * cameraTransform.forward;
+            desiredDirection.y = 0;
+            desiredDirection.Normalize();
+
+            var desiredV = desiredDirection * _currentSpeed;
+            var goV = Vector3.Lerp(_rb.velocity, desiredV, 0.5f);
+
+            if (Vector3.Dot(goV, desiredV) > 0.9)
+            {
+                goV = desiredV;
+            }
+
+            _rb.velocity = goV;
+
+            _anim.SetFloat("Vertical", _moveAmount);
+
+            if (_anim.GetBool("IsInteracting"))
                 return;
-
-            _moveDirection = _cameraTransform.forward * _input.vertical;
-            _moveDirection += _cameraTransform.right * _input.horizontal;
-            _moveDirection.y = 0;
-            _moveDirection.Normalize();
-
-            float speed;
-
-            if (Mathf.Abs(_input.moveAmount) < 0.55f)
+            if (_moveAmount > 0)
             {
-                speed = playerStats.walkSpeed;
-                _input.isSprinting = false;
-            }
-            else if (Mathf.Abs(_input.moveAmount) > 0.55f && !_input.isSprinting)
-            {
-                speed = playerStats.runSpeed;
-            }
-            else
-                speed = playerStats.sprintSpeed;
+                var rot = transform.rotation;
+                var targetRot = Quaternion.LookRotation(desiredDirection);
 
-            _moveDirection *= speed;
-            var dV = DodgeV(speed, dodgeVelocity, Time.time);
-
-            var projectedV = Vector3.ProjectOnPlane(_moveDirection, _normalVector);
-            _rb.velocity = projectedV + dV;
-
-            animHandler.UpdateAnimatorValues(_input.moveAmount, 0);
-
-            if (animHandler.canRotate)
-            {
-                HandleRotation(delta);
+                rot = Quaternion.Slerp(rot, targetRot, 0.2f);
+                transform.rotation = rot;
             }
         }
 
-        #region Movement
-
-        private Vector3 _normalVector;
-        private Vector3 _targetPosition;
-
-        private void HandleRotation(float delta)
+        private void OnMoveStart(InputAction.CallbackContext context)
         {
-            var targetDirection = Vector3.zero;
-            var moveOverride = _input.moveAmount;
-
-
-            targetDirection = _cameraTransform.forward * _input.vertical;
-            targetDirection += _cameraTransform.right * _input.horizontal;
-
-            targetDirection.Normalize();
-            targetDirection.y = 0;
-            if (targetDirection == Vector3.zero)
-            {
-                targetDirection = myTransform.forward;
-            }
-
-            var rs = _rotationSpeed;
-            var tr = Quaternion.LookRotation(targetDirection);
-            var targetRot = Quaternion.Slerp(myTransform.rotation, tr, rs * delta);
-
-            myTransform.rotation = targetRot;
+            var inv = context.ReadValue<Vector2>();
+            inVec = new Vector3(inv.x, 0f, inv.y);
+            _moveAmount = Mathf.Clamp01(Mathf.Abs(inv.x) + Mathf.Abs(inv.y));
         }
 
-        public void HandleDodge()
+        private void ToggleSprint(InputAction.CallbackContext context)
         {
-            if (_input.moveAmount == 0)
-                return;
-
-            var targetDirection = _cameraTransform.forward * _input.vertical;
-            targetDirection += _cameraTransform.right * _input.horizontal;
-
-            dodgeVelocity = _input.mouseY > 0 ? transform.forward * -playerStats.dodgeSpeed : _moveDirection;
-
-            var targetRot = Quaternion.LookRotation(targetDirection);
-            myTransform.rotation = targetRot;
-
-            animHandler.TriggerTargetAnimation("Dodge", false);
-            animHandler.StopRotation();
-            StartCoroutine(DodgeRoutine());
+            _isSprinting = !_isSprinting;
         }
-
-        private Vector3 DodgeV(float currentSpeed, Vector3 dodgeVelocity, float dodgeStartTime)
-        {
-            var dodgeV = isDodging
-                ? dodgeVelocity.normalized *
-                  EaseFunctions.AccelerateValue(dodgeStartTime,
-                      playerStats.dodgeTime,
-                      Time.time,
-                      currentSpeed,
-                      playerStats.dodgeSpeed,
-                      EaseFunctions.EaseType.CircEaseOut)
-                : Vector3.zero;
-            return dodgeV;
-        }
-
-        private IEnumerator DodgeRoutine()
-        {
-            isDodging = true;
-            yield return new WaitForSecondsRealtime(0.3f);
-            isDodging = false;
-            animHandler.CanRotate();
-        }
-
-        #endregion
     }
 }
 

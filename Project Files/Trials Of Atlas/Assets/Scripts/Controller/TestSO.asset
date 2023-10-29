@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 91c93d30b36a93141b2b002ce09362d2, type: 3}
-  m_Name: Player Stats
+  m_Name: TestSO
   m_EditorClassIdentifier: 
   walkSpeed: 1.5
   runSpeed: 6
@@ -18,21 +18,27 @@ MonoBehaviour:
   maxStamina: 25
   health: 100
   strength: 10
+  attackRange: 6
   defense: 3
   runCompleted: 0
-  staminaLevel: 1
-  staminaExp: 0
-  sNeeded: 0
-  strengthLevel: 1
-  strengthExp: 0
-  dONeeded: 0
-  defenseLevel: 1
-  defenseExp: 0
-  dINeeded: 0
-  healthLevel: 1
-  healthXP: 0
+  bitCollected: 0
+  purseSize: 0
+  staminaLevel: 4
+  staminaExp: 30
+  sNeeded: 450
+  strengthLevel: 2
+  strengthExp: 140.04
+  dONeeded: 692.6145
+  defenseLevel: 2
+  defenseExp: 215
+  dINeeded: 249.58221
+  healthLevel: 2
+  healthXP: 1
+  dexLevel: 1
+  dexExp: 0
+  dexNeeded: 0
   staminaRegen: 0
   staminaDepletion: 5
-  dodgeSpeed: 15
-  dodgeTime: 0.5
+  dodgeSpeed: 25
+  dodgeTime: 0.3
   dodgeCost: 10

@@ -29,11 +29,12 @@ namespace AJK
 
         public Action Interact;
         public Action Hint;
+        public Action Special;
 
         public void Start()
         {
             _cameraHandler = PlayerCamera.Singleton;
-            _manager = PlayerManager.singleton;
+            _manager = PlayerManager.Singleton;
         }
 
         private void FixedUpdate()
@@ -58,9 +59,9 @@ namespace AJK
                 _inputActions.Main.Move.performed += context => _movementInput = context.ReadValue<Vector2>();
                 _inputActions.Main.Look.performed += context => _cameraInput = context.ReadValue<Vector2>();
                 _inputActions.PlayerActions.Dodge.started += OnDodge;
-                _inputActions.PlayerActions.Sprint.started += ToggleSprint;
                 _inputActions.PlayerActions.Interact.started += InteractInput;
                 _inputActions.PlayerActions.Hint.started += HintInput;
+                _inputActions.PlayerActions.SpecialAttack.started += SpecialInput;
             }
 
             _inputActions.Enable();
@@ -84,7 +85,15 @@ namespace AJK
                 horizontal = _movementInput.x;
                 vertical = _movementInput.y;
                 moveAmount = Mathf.Clamp01(Mathf.Abs(horizontal) + Mathf.Abs(vertical));
-                mouseX = _cameraInput.x;
+                mouseX = Mathf.Lerp(mouseX, _cameraInput.x, 0.1f);
+                if (Mathf.Abs(mouseX) < 0.01f)
+                {
+                    mouseX = 0;
+                }
+                if (Mathf.Abs(mouseX) > 0.99)
+                {
+                    mouseX = (mouseX > 0) ? 1 : -1;
+                }
                 mouseY = _cameraInput.y;
             }
         }
@@ -105,7 +114,7 @@ namespace AJK
             if (!_manager.canUseStamina)
                 return;
 
-            GetComponent<PlayerLocomotion>().HandleDodge();
+            // GetComponent<PlayerLocomotion>().HandleDodge();
             OnDodgeEvent?.Invoke();
         }
 
@@ -125,6 +134,11 @@ namespace AJK
         private void HintInput(InputAction.CallbackContext context)
         {
             Hint?.Invoke();
+        }
+
+        private void SpecialInput(InputAction.CallbackContext context)
+        {
+            Special?.Invoke();
         }
     }
 }

@@ -9,7 +9,7 @@ using UnityEngine.Rendering.HighDefinition;
 public class PlayerCamera : MonoBehaviour
 {
     [SerializeField] private Transform target;
-    [SerializeField] private Transform cameraTrans;
+    public Transform cameraTrans;
     [SerializeField] private Transform cameraPivot;
     private Transform _myTransform;
     private Vector3 _cameraPos;
@@ -18,7 +18,7 @@ public class PlayerCamera : MonoBehaviour
     private Vector3 _cameraTransformPosition = Vector3.zero;
 
     public static PlayerCamera Singleton;
-    
+
     public float lookSpeed = 0.1f;
     public float followSpeed = 0.1f;
     public float pivotSpeed = 0.03f;
@@ -29,7 +29,7 @@ public class PlayerCamera : MonoBehaviour
     private float _pivotAngle;
     public float minPivot = -35;
     public float maxPivot = 35;
-    
+
     private PlayerControls _controls;
     private Vector2 _mouseDelta;
     private InputHandler _input;
@@ -52,12 +52,22 @@ public class PlayerCamera : MonoBehaviour
         _controls.Main.Look.canceled += context => _mouseDelta = Vector2.zero;
     }
 
+    private void Start()
+    {
+        PF_Generator.Singleton.OnComplete += InitializeCamera;
+    }
+
+    private void InitializeCamera()
+    {
+        target = PlayerManager.Singleton.transform;
+    }
+
     public void FollowTarget(float delta)
     {
         var targetPosition = Vector3.SmoothDamp(_myTransform.position, target.position, ref _cameraFollowVelocity,
             delta / followSpeed);
         _myTransform.position = targetPosition;
-        
+
         HandleCameraCollision(delta);
     }
 
@@ -77,7 +87,7 @@ public class PlayerCamera : MonoBehaviour
         targetRotation = Quaternion.Euler(rotation);
         cameraPivot.localRotation = targetRotation;
     }
-    
+
     private void HandleCameraCollision(float delta)
     {
         _targetPosition = _defaultPosition;
@@ -85,8 +95,8 @@ public class PlayerCamera : MonoBehaviour
         var direction = cameraTrans.position - cameraPivot.position;
         direction.Normalize();
 
-        if (Physics.SphereCast(cameraPivot.position, cameraSphereRadius, direction, out hit, 
-            Mathf.Abs(_targetPosition),_ignoreLayers))
+        if (Physics.SphereCast(cameraPivot.position, cameraSphereRadius, direction, out hit,
+            Mathf.Abs(_targetPosition), _ignoreLayers))
         {
             var dis = Vector3.Distance(cameraPivot.position, hit.point);
             _targetPosition = -(dis - cameraCollisionOffset);
@@ -97,7 +107,7 @@ public class PlayerCamera : MonoBehaviour
             _targetPosition = -minCollisionOffset;
         }
 
-        _cameraTransformPosition.z = Mathf.Lerp(cameraTrans.localPosition.z, _targetPosition, delta / 0.2f);
+        _cameraTransformPosition.z = Mathf.Lerp(cameraTrans.localPosition.z, _targetPosition, delta / 0.05f);
         cameraTrans.localPosition = _cameraTransformPosition;
     }
 }

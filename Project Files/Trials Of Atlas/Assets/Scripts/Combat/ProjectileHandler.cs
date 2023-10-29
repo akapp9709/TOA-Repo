@@ -10,10 +10,14 @@ public class ProjectileHandler : MonoBehaviour
     public Transform hand;
 
     private float _liveTime;
+    private Rigidbody _rb;
     // Start is called before the first frame update
     void Start()
     {
         GetComponent<HitBox>().SetupValues(targetTag, damage);
+        GetComponent<SphereCollider>().enabled = false;
+
+        _rb = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
@@ -27,6 +31,8 @@ public class ProjectileHandler : MonoBehaviour
         if (isLaunched)
         {
             _liveTime += Time.deltaTime;
+            GetComponent<SphereCollider>().enabled = true;
+
             if (_liveTime > lifeTime)
             {
                 Destroy(this.gameObject);

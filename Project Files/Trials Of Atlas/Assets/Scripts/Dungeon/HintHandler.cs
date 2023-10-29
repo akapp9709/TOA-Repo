@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using AJK;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class HintHandler : MonoBehaviour
 {
@@ -14,11 +15,13 @@ public class HintHandler : MonoBehaviour
     void Start()
     {
         _manager = GameManager.Singleton;
-        _input = GetComponent<InputHandler>();
-        _input.Hint += ShowHint;
+
+        var controls = new PlayerControls();
+        controls.PlayerActions.Enable();
+        controls.PlayerActions.Hint.started += ShowHint;
     }
 
-    private void ShowHint()
+    private void ShowHint(InputAction.CallbackContext context)
     {
         if (_coolDown)
             return;

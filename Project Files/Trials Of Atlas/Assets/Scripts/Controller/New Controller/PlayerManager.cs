@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 namespace AJK
 {
@@ -18,11 +20,38 @@ namespace AJK
         [HideInInspector] public float maxStamina, currentStamina, staminaRegen;
         public bool hasStamina, canUseStamina;
 
-        public static PlayerManager singleton;
+        private static PlayerManager singleton;
+        public static PlayerManager Singleton
+        {
+            get { return singleton; }
+            private set { singleton = value; }
+        }
+
+
+        public Action PlayerDeath;
+        public Action StateChange;
+
+        private float strMod, defMod;
+
+        private void OnSceneUnload(Scene current)
+        {
+            PlayerDeath = null;
+            StateChange = null;
+            playerStats.StatChange = null;
+        }
         // Start is called before the first frame update
         void Awake()
         {
-            singleton = this;
+            if (singleton == null)
+            {
+                singleton = this;
+            }
+            else if (this != singleton)
+            {
+                Destroy(gameObject);
+            }
+
+            playerStats.StatChange += UpdateStats;
             maxHealth = playerStats.Health;
             currentHealth = maxHealth;
             maxStamina = playerStats.Stamina;
@@ -30,6 +59,8 @@ namespace AJK
             strength = playerStats.Strength;
             defense = playerStats.Vitality;
             staminaRegen = playerStats.StaminaRegen;
+
+            SceneManager.sceneUnloaded += OnSceneUnload;
         }
 
         void Start()
@@ -43,16 +74,16 @@ namespace AJK
             canUseStamina = true;
 
             _inputHandler.Interact += GainEffect;
+
+            //GameManager.Singleton.DungeonClear += playerStats.CompleteRun;
         }
 
         // Update is called once per frame
         void Update()
         {
-
-
             if (_inputHandler.isSprinting)
             {
-                currentStamina -= playerStats.staminaDepletion * Time.deltaTime;
+                UseStamina(playerStats.staminaDepletion * Time.deltaTime);
                 currentStamina = Mathf.Clamp(currentStamina, 0, maxStamina);
             }
             else
@@ -69,16 +100,36 @@ namespace AJK
 
             _inputHandler.isInteracting = _animator.GetBool("IsInteracting");
             _inputHandler.dodgeFlag = false;
+            StateChange?.Invoke();
+        }
+
+        private void UpdateStats()
+        {
+            strength = playerStats.Strength * (1 + strMod);
+            defense = playerStats.Vitality * (1 + defMod);
+            maxStamina = playerStats.Stamina;
+            staminaRegen = playerStats.StaminaRegen;
+            maxHealth = playerStats.Health;
+
+            GetComponentInChildren<HitBox>().UpdateValue(strength);
         }
 
         public void TakeDamage(float damage)
         {
             currentHealth -= (damage - defense);
+            playerStats.GainXP(PlayerSO.Skill.Vitality, damage);
+
+            if (currentHealth <= 0)
+            {
+                Debug.Log("Player has Died");
+                PlayerDeath?.Invoke();
+            }
         }
 
         public void UseStamina(float amount)
         {
             currentStamina -= amount;
+            playerStats.GainXP(PlayerSO.Skill.Endurance, amount);
         }
 
         private void Dodge()
@@ -95,6 +146,8 @@ namespace AJK
 
         public void GainEffect()
         {
+            if (FindAnyObjectByType<Reward>() == null)
+                return;
             Reward rew = FindAnyObjectByType<Reward>();
 
             if (Vector3.Distance(rew.transform.position, transform.position) > 2f)
@@ -103,17 +156,16 @@ namespace AJK
             switch (rew.type)
             {
                 case Reward.RewardType.Heal:
-                    currentHealth += rew.amount;
+                    currentHealth += (rew.amount / 100) * maxHealth;
                     break;
                 case Reward.RewardType.DamageUp:
-                    strength += rew.amount;
-                    GetComponentInChildren<HitBox>().UpdateValue(strength);
+                    strMod += rew.amount / 100;
                     break;
                 case Reward.RewardType.DefenseUp:
-                    defense += rew.amount;
+                    defMod += rew.amount / 100;
                     break;
             }
-
+            UpdateStats();
             rew.PickUp();
         }
     }
