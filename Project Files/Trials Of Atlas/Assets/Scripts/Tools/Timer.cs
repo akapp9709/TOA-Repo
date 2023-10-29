@@ -1,5 +1,6 @@
 
 using System;
+using System.Diagnostics;
 
 public class Timer
 {
@@ -21,7 +22,7 @@ public class Timer
     public Timer(float timeToComplete, Action complete = null, Action<float> tick = null)
     {
         this.timeToComplete = timeToComplete;
-        onComplete += onComplete;
+        onComplete += complete;
         onTick += tick;
         currentTime = timeToComplete;
         IsComplete = false;
