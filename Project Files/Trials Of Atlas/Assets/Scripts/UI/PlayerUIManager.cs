@@ -11,6 +11,8 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] private RectTransform staminaBar;
     [SerializeField] private TextMeshProUGUI attackStat;
     [SerializeField] private TextMeshProUGUI defenseStat;
+    [SerializeField] private RectTransform gameOverScreen;
+    [SerializeField] private RectTransform victoryScreen;
 
     private PlayerManager playerManager;
     private bool isReady = false;
@@ -23,9 +25,11 @@ public class PlayerUIManager : MonoBehaviour
 
     private void InitilaizeUI()
     {
-        playerManager = PlayerManager.singleton;
+        playerManager = PlayerManager.Singleton;
         loadingScreen.gameObject.SetActive(false);
         isReady = true;
+        playerManager.PlayerDeath += GameOver;
+        GameManager.Singleton.DungeonClear += Victory;
     }
 
     // Update is called once per frame
@@ -33,28 +37,15 @@ public class PlayerUIManager : MonoBehaviour
     {
         if (!isReady)
             return;
-        UpdateAttackValue();
-        UpdateDefenseValue();
-        UpdateHealthValue();
-        UpdateStaminaValue();
     }
 
-    private void UpdateAttackValue()
+    private void GameOver()
     {
-        attackStat.SetText($"Attack: {playerManager.strength}");
+        gameOverScreen.gameObject.SetActive(true);
     }
 
-    private void UpdateHealthValue()
+    private void Victory()
     {
-        healthBar.GetComponent<ProgressBar>().SetValues(playerManager.currentHealth / playerManager.maxHealth);
-    }
-
-    private void UpdateStaminaValue()
-    {
-        staminaBar.GetComponent<ProgressBar>().SetValues(playerManager.currentStamina / playerManager.maxStamina);
-    }
-    private void UpdateDefenseValue()
-    {
-        defenseStat.SetText($"Defense: {playerManager.defense}");
+        victoryScreen.gameObject.SetActive(true);
     }
 }
