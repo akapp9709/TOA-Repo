@@ -8,6 +8,7 @@ Main Notes
 		- Keeping plausibility while in a fictional environment.
 - The undeniable popularity of video games as a method of increasing engagement with historical studies and to increase the public knowledge on the topic.
 	- Held back by historians' reservations on studying video games.
+- MacCallum- Stewart and Parsler’s genre of historical games - Definitions
 
 Included readings
 - Chapman
@@ -24,4 +25,6 @@ Lit Reviews
 - Juice 
 - Structure
 - Signposting
-	 
+
+Presentation Notes
+- 

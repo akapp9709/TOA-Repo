@@ -1,6 +1,8 @@
 - Gameplay
+	- Shorten Last Attack Animation
+	- Disable Homing Missiles
+	- Brute AI and Model
 	- Pickups
-		- Convert to percentages
 		- Stamina Regen
 	- Special Attack
 		- Start Dash
@@ -8,11 +10,8 @@
 		- Finish Attack
 	- Dodge tuning***
 	- Skills
-		- Progress
-		- Level Up
 		- Communicate
 - Player Death
-	- Event
 	- Stop Enemies
 	- Delayed Game over screen
 - Playtest
@@ -35,6 +34,7 @@
 	- Coordinated attacks
 - UI
 	- Damage Numbers***
+	- Progress Icon
 
 Playtest Concerns
 - Camera smoothness
