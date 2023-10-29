@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1780719843269479414
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2801250216436788801}
+  m_Layer: 0
+  m_Name: RewardPnt
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2801250216436788801
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1780719843269479414}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 19.98}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3862096043089417561}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2321459904445343243
 GameObject:
   m_ObjectHideFlags: 0
@@ -162,6 +193,7 @@ Transform:
   - {fileID: 8642813287421565741}
   - {fileID: 2729715333188276588}
   - {fileID: 5990470648432377655}
+  - {fileID: 2801250216436788801}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -288,3 +320,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 714244bab38aefb44a21b532d4ef4320, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemies: []
+  rewardSpawner: {fileID: 2801250216436788801}
+  rewards:
+  - {fileID: 4190174648898712213, guid: aabb06a420d50b44886cc3dfae3e0d98, type: 3}
+  - {fileID: 1170587360319447464, guid: 0f1a0512a0db9c540b81f2bc7a415b03, type: 3}
+  - {fileID: 5289175914547250718, guid: b290d7ea85e82254fbd95c90060e061a, type: 3}
