@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using AJK;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
@@ -19,7 +20,7 @@ public class Enemy : MonoBehaviour
 
     private void OnDestroy()
     {
-        SendMessageUpwards("RemoveEnemy", this);
+
     }
 
     public void StartEnemyFSM()
@@ -35,21 +36,28 @@ public class Enemy : MonoBehaviour
         {
             return;
         }
-
-
-
     }
 
     public void TakeDamage(float damage)
     {
         _rb.isKinematic = false;
-        _rb.AddForce(transform.forward * -5f, ForceMode.Impulse);
+        var dir = PlayerManager.Singleton.transform.position - transform.position;
+        dir.Normalize();
+        _rb.AddForce(dir * -5f, ForceMode.Impulse);
         enemyHealth -= damage;
+        PlayerManager.Singleton.playerStats.GainXP(PlayerSO.Skill.Strength, damage);
         StartCoroutine(KnockBackTimer());
         if (enemyHealth <= 0)
         {
-            Destroy(this.gameObject);
+            KillEnemy();
         }
+    }
+
+    private void KillEnemy()
+    {
+        SendMessageUpwards("RemoveEnemy", this);
+        GameObject.FindObjectOfType<BitCurrencyHandler>().PickupBits(enemySO.DropBits());
+        Destroy(this.gameObject);
     }
 
     private IEnumerator KnockBackTimer()

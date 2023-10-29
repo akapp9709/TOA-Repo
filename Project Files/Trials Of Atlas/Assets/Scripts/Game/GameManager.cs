@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,6 +12,7 @@ public class GameManager : MonoBehaviour
 
     public delegate void ProgressUpdate();
     public ProgressUpdate OnUpdate;
+    public Action DungeonClear;
 
     private void Awake()
     {
@@ -48,6 +50,7 @@ public class GameManager : MonoBehaviour
         if (roomsRemaining == 0)
         {
             Debug.Log("Dungeon Cleared!");
+            DungeonClear?.Invoke();
         }
 
         rooms.Remove(obj);

@@ -12,6 +12,8 @@ public class RangedBehavior : EnemyBehavior
     private int _actionCount;
     private GameObject _projectileObj;
 
+    public GameObject aimingLine;
+
     // Start is called before the first frame update
     protected override void Start()
     {
@@ -30,6 +32,11 @@ public class RangedBehavior : EnemyBehavior
     protected override void Update()
     {
         _brain.UpdateFSM(this);
+
+        if (aimingLine != null)
+        {
+            aimingLine.GetComponent<LineRenderer>().SetPosition(1, transform.position + transform.forward * 20f + Vector3.up);
+        }
     }
 
     private void MakeADecision()
@@ -56,4 +63,16 @@ public class RangedBehavior : EnemyBehavior
             _actionCount = 0;
         }
     }
+
+    public void ActivateAimingLine()
+    {
+        aimingLine.SetActive(true);
+        aimingLine.GetComponent<LineRenderer>().SetPosition(0, transform.position + Vector3.up);
+    }
+
+    public void DeactivateAimingLine()
+    {
+        aimingLine.SetActive(false);
+    }
+
 }

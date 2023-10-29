@@ -1,9 +1,5 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
 using EnemyAI;
-using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 using UnityEngine.AI;
 using Random = System.Random;
@@ -37,16 +33,16 @@ public class RangeEnemyStates
 
         public void UpdateState(EnemyBehavior controller)
         {
-            var player = _machine.GetValue("Player Target");
-            if (player == null || player.GetType() != typeof(GameObject)) return;
+            // var player = _machine.GetValue("Player Target");
+            // if (player == null || player.GetType() != typeof(GameObject)) return;
 
-            var playerGO = player as GameObject;
-            var playerTrans = playerGO.transform;
+            // var playerGO = player as GameObject;
+            // var playerTrans = playerGO.transform;
 
-            var targetFwd = playerTrans.position - _trans.position;
-            var targetRot = Quaternion.LookRotation(targetFwd);
+            // var targetFwd = playerTrans.position - _trans.position;
+            // var targetRot = Quaternion.LookRotation(targetFwd);
 
-            _trans.rotation = Quaternion.Slerp(_trans.rotation, targetRot, 0.01f);
+            // _trans.rotation = Quaternion.Slerp(_trans.rotation, targetRot, 0.01f);
         }
 
         public void ExitState(EnemyBehavior controller)
