@@ -21,6 +21,7 @@ public class Hint : MonoBehaviour
 
     public void EndHint()
     {
+        FindObjectOfType<NewHintHandler>().EndHint();
         Destroy(this.gameObject);
     }
 }

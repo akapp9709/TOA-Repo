@@ -1,18 +1,18 @@
-using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
-using Unity.VisualScripting.ReorderableList;
 using UnityEngine;
 
 public class SpecialAttackAnimHandler : MonoBehaviour
 {
-    private SpecialAttackHandler _handler;
+    private MultiSpecialHandler _handler;
     private Transform _trans;
     public int numEnemies;
     private int _enemyIndex;
     private List<Transform> _enemies;
     public float stopDistance = 1;
     private Animator _anim;
+
+    private Timer _timer1;
 
     private void OnDrawGizmos()
     {
@@ -21,47 +21,76 @@ public class SpecialAttackAnimHandler : MonoBehaviour
 
     private void Start()
     {
-        _handler = GetComponentInParent<SpecialAttackHandler>();
+        _handler = GetComponentInParent<MultiSpecialHandler>();
         _trans = _handler.transform;
         _anim = GetComponent<Animator>();
 
+
+    }
+
+    private void Update()
+    {
+        TickTimer(_portTimer, Time.deltaTime);
+        TickTimer(_timer1, Time.deltaTime);
+    }
+
+    private void TickTimer(Timer timer, float delta)
+    {
+        if (timer != null)
+            timer.Tick(delta);
     }
 
     public void StartSpecialAttack()
     {
-        _enemies = _handler.enemiesInRange;
 
-        numEnemies = _enemies.Count;
-        _enemyIndex = -1;
-
-        _anim.SetTrigger("Special Attack");
-        _anim.SetBool("SPInProgress", true);
     }
 
     public void MoveToNextTarget(float tweenTime)
     {
-        _enemyIndex++;
-        if (_enemyIndex >= numEnemies)
+        var targetPos = _handler.FindEnemyInRange(8);
+        if (targetPos == Vector3.zero)
         {
-            MoveToCenter(tweenTime);
-            return;
+            targetPos = _trans.position;
+            _anim.SetBool("SPInProgress", false);
         }
 
-        var targetPos = _enemies[_enemyIndex].position;
-        var targetDir = targetPos - _trans.position;
-        targetDir.Normalize();
-        var dist = Vector3.Distance(targetPos, _trans.position);
-        _trans.LookAt(targetPos);
-        // _trans.position + targetDir * (dist - stopDistance)
-        _trans.DOMove(targetPos, tweenTime);
-        Debug.Log("Teleporting");
+        var dir = targetPos - _trans.position;
+        dir.Normalize();
+        var dist = Vector3.Distance(targetPos, _trans.position) - 1;
+
+
+        _trans.DOLookAt(targetPos, tweenTime / 3);
+        _trans.DOMove(_trans.position + dir * dist, tweenTime).SetEase(Ease.InCirc);
     }
 
-    public void MoveToCenter(float tweenTime)
+    private Timer _portTimer;
+    public void TeleportToTarget(float tweenTime)
     {
-        _trans.DOMove(_handler.centerPos, tweenTime);
+        var target = _handler.FindCentreTarget();
 
+        if (target == null) return;
+
+        var dir = target.position - _trans.position;
+        dir.Normalize();
+        var dist = Vector3.Distance(target.position, _trans.position) - 1;
+
+        _trans.LookAt(target);
+        _trans.DOMove(_trans.position + dir * dist, tweenTime).SetEase(Ease.InQuart).OnComplete(() => EndPort());
+        _anim.speed = 0;
+    }
+
+    public void EndPort()
+    {
+        _anim.speed = 1;
+    }
+
+    public void Endattack()
+    {
         _anim.SetBool("SPInProgress", false);
+    }
 
+    public void StartTimer(float duration)
+    {
+        _timer1 = new Timer(duration, () => { _anim.SetBool("SPInProgress", false); });
     }
 }

@@ -21,6 +21,7 @@ public class RoomBehavior : MonoBehaviour
         {
             enemies.Add(obj);
         }
+        PlayerEntry += RoomStart;
     }
 
     // Update is called once per frame
@@ -29,16 +30,12 @@ public class RoomBehavior : MonoBehaviour
 
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void RoomStart()
     {
-        if (!other.CompareTag("Player"))
-            return;
-
         foreach (var enemy in enemies)
         {
             enemy.StartEnemyFSM();
         }
-        PlayerEntry?.Invoke();
     }
 
     private void RemoveEnemy(Enemy obj)

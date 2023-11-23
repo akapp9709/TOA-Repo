@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using AJK;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerUIManager : MonoBehaviour
 {
@@ -42,10 +43,16 @@ public class PlayerUIManager : MonoBehaviour
     private void GameOver()
     {
         gameOverScreen.gameObject.SetActive(true);
+        playerManager.inputHandler.DisableMainInput();
+        playerManager.inputHandler.DisableMainPlayerActions();
+        gameOverScreen.GetComponentInChildren<Button>().Select();
     }
 
     private void Victory()
     {
         victoryScreen.gameObject.SetActive(true);
+        playerManager.inputHandler.DisableMainInput();
+        playerManager.inputHandler.DisableMainPlayerActions();
+        victoryScreen.GetComponentInChildren<Button>().Select();
     }
 }

@@ -20,7 +20,7 @@ MonoBehaviour:
     x: 670
     y: -190
     width: 695
-    height: 2213
+    height: 2233
 --- !u!114 &114350483966674976
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2452,7 +2452,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: UnityEditor.VFX.TSphere, Unity.VisualEffectGraph.Editor,
           Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-      m_SerializableObject: '{"transform":{"position":{"x":0.0,"y":-7.332088470458984,"z":0.0},"angles":{"x":0.0,"y":0.0,"z":0.0},"scale":{"x":2.0,"y":1.0,"z":2.0}},"radius":5.948324203491211}'
+      m_SerializableObject: '{"transform":{"position":{"x":0.0,"y":0.6069270372390747,"z":0.0},"angles":{"x":0.0,"y":0.0,"z":0.0},"scale":{"x":2.0,"y":1.0,"z":2.0}},"radius":5.948324203491211}'
     m_Space: 0
   m_Property:
     name: sphere

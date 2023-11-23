@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class BruteBehavior : EnemyBehavior
 {
@@ -9,12 +10,15 @@ public class BruteBehavior : EnemyBehavior
     [SerializeField] private float maxChaseDist, maxChaseTime = 5f, delayTime;
 
     public Transform warningDecal;
+    private Transform _playerTrans;
     // Start is called before the first frame update
     protected override void Start()
     {
         base.Start();
+        _playerTrans = GameObject.FindGameObjectWithTag("Player").transform;
+
         _brain = new BruteBrain();
-        _brain.AddToDictionary("target", GameObject.FindGameObjectWithTag("Player"));
+        _brain.AddToDictionary("target", _playerTrans.gameObject);
         _brain.AddToDictionary("Stagger Time", staggerTime);
         _brain.AddToDictionary("Max Chase Time", maxChaseTime);
         _brain.AddToDictionary("Max Chase Distance", maxChaseDist);
@@ -63,5 +67,20 @@ public class BruteBehavior : EnemyBehavior
     public void DecoupleDecal()
     {
         warningDecal.parent = null;
+    }
+
+    public Vector3 GetTargetPosition()
+    {
+        Vector3 outVec;
+
+        var navHit = new NavMeshHit();
+        if (NavMesh.SamplePosition(_playerTrans.position, out navHit, 0.5f, NavMesh.AllAreas))
+        {
+            outVec = _playerTrans.position;
+        }
+        else
+            outVec = Vector3.zero;
+
+        return outVec;
     }
 }

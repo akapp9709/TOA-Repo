@@ -9,7 +9,7 @@ namespace AJK
 {
     public class PlayerManager : MonoBehaviour
     {
-        private InputHandler _inputHandler;
+        public PlayerInputCLass inputHandler;
 
         private Animator _animator;
 
@@ -27,17 +27,23 @@ namespace AJK
             private set { singleton = value; }
         }
 
+        private PlayerLocomotion _move;
+
 
         public Action PlayerDeath;
         public Action StateChange;
 
         private float strMod, defMod;
 
+        private bool _canTakeDamage = true;
+
         private void OnSceneUnload(Scene current)
         {
             PlayerDeath = null;
             StateChange = null;
             playerStats.StatChange = null;
+            inputHandler = null;
+            SceneManager.sceneUnloaded -= OnSceneUnload;
         }
         // Start is called before the first frame update
         void Awake()
@@ -50,6 +56,7 @@ namespace AJK
             {
                 Destroy(gameObject);
             }
+            inputHandler = new PlayerInputCLass();
 
             playerStats.StatChange += UpdateStats;
             maxHealth = playerStats.Health;
@@ -61,27 +68,33 @@ namespace AJK
             staminaRegen = playerStats.StaminaRegen;
 
             SceneManager.sceneUnloaded += OnSceneUnload;
+            _move = GetComponent<PlayerLocomotion>();
         }
 
         void Start()
         {
-            _inputHandler = GetComponent<InputHandler>();
+            inputHandler.EnableMainInput();
+            inputHandler.EnableMainPlayerActions();
             _animator = GetComponentInChildren<Animator>();
 
             GetComponentInChildren<HitBox>().SetupValues("Enemy", strength);
 
-            _inputHandler.OnDodgeEvent += Dodge;
             canUseStamina = true;
 
-            _inputHandler.Interact += GainEffect;
+            inputHandler.DodgeAction += Dodge;
 
-            //GameManager.Singleton.DungeonClear += playerStats.CompleteRun;
+            GameManager.Singleton.DungeonClear += playerStats.CompleteRun;
+        }
+
+        public void InitializePlayerControls()
+        {
+
         }
 
         // Update is called once per frame
         void Update()
         {
-            if (_inputHandler.isSprinting)
+            if (_move.isSprinting)
             {
                 UseStamina(playerStats.staminaDepletion * Time.deltaTime);
                 currentStamina = Mathf.Clamp(currentStamina, 0, maxStamina);
@@ -95,11 +108,9 @@ namespace AJK
             if (currentStamina < 1)
             {
                 StartCoroutine(StaminaCoolDown());
-                _inputHandler.isSprinting = false;
+                _move.isSprinting = false;
             }
 
-            _inputHandler.isInteracting = _animator.GetBool("IsInteracting");
-            _inputHandler.dodgeFlag = false;
             StateChange?.Invoke();
         }
 
@@ -116,6 +127,13 @@ namespace AJK
 
         public void TakeDamage(float damage)
         {
+            if (!_canTakeDamage)
+                return;
+
+            _canTakeDamage = false;
+            StartCoroutine(ResetTriggerTimer());
+
+
             currentHealth -= (damage - defense);
             playerStats.GainXP(PlayerSO.Skill.Vitality, damage);
 
@@ -134,6 +152,9 @@ namespace AJK
 
         private void Dodge()
         {
+            if (!canUseStamina)
+                return;
+
             UseStamina(playerStats.dodgeCost);
         }
 
@@ -144,15 +165,8 @@ namespace AJK
             canUseStamina = true;
         }
 
-        public void GainEffect()
+        public void GainEffect(Reward rew)
         {
-            if (FindAnyObjectByType<Reward>() == null)
-                return;
-            Reward rew = FindAnyObjectByType<Reward>();
-
-            if (Vector3.Distance(rew.transform.position, transform.position) > 2f)
-                return;
-
             switch (rew.type)
             {
                 case Reward.RewardType.Heal:
@@ -167,6 +181,12 @@ namespace AJK
             }
             UpdateStats();
             rew.PickUp();
+        }
+
+        private IEnumerator ResetTriggerTimer()
+        {
+            yield return new WaitForSeconds(0.1f);
+            _canTakeDamage = true;
         }
     }
 }

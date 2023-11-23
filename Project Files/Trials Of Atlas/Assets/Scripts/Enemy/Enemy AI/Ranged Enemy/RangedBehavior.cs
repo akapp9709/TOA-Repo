@@ -13,6 +13,9 @@ public class RangedBehavior : EnemyBehavior
     private GameObject _projectileObj;
 
     public GameObject aimingLine;
+    private Vector3 _directionToPlayer;
+    private Transform _playerTrans;
+    public LayerMask playerLayer;
 
     // Start is called before the first frame update
     protected override void Start()
@@ -20,7 +23,8 @@ public class RangedBehavior : EnemyBehavior
         base.Start();
         OnTick = MakeADecision;
         _brain = new RangedBrain();
-        _brain.AddToDictionary("target", GameObject.FindGameObjectWithTag("Player"));
+        _playerTrans = GameObject.FindGameObjectWithTag("Player").transform;
+        _brain.AddToDictionary("target", _playerTrans.gameObject);
         _brain.enemyStats = enemySO;
 
         _brain.StartFSM("Idle", this);
@@ -33,10 +37,8 @@ public class RangedBehavior : EnemyBehavior
     {
         _brain.UpdateFSM(this);
 
-        if (aimingLine != null)
-        {
-            aimingLine.GetComponent<LineRenderer>().SetPosition(1, transform.position + transform.forward * 20f + Vector3.up);
-        }
+        _directionToPlayer = _playerTrans.position - transform.position;
+        _directionToPlayer.Normalize();
     }
 
     private void MakeADecision()
@@ -59,7 +61,7 @@ public class RangedBehavior : EnemyBehavior
         {
             var prRB = _projectileObj.GetComponent<Rigidbody>();
             _projectileObj.GetComponent<ProjectileHandler>().isLaunched = true;
-            prRB.velocity = transform.forward.normalized * projectileSpeed;
+            prRB.velocity = transform.forward * projectileSpeed;
             _actionCount = 0;
         }
     }
@@ -75,4 +77,16 @@ public class RangedBehavior : EnemyBehavior
         aimingLine.SetActive(false);
     }
 
+    public void SetAimingLineDirection()
+    {
+        aimingLine.GetComponent<LineRenderer>().SetPosition(1, _playerTrans.position + Vector3.up);
+    }
+
+    public bool LineOfSight()
+    {
+        var hit = new RaycastHit();
+        var ray = Physics.Raycast(transform.position, _directionToPlayer, out hit);
+
+        return hit.collider == _playerTrans.GetComponent<Collider>();
+    }
 }

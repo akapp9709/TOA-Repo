@@ -41,9 +41,11 @@ public class RangeAimBehavior : StateMachineBehaviour
 
         var targetPos = _player.position;
         var targetDir = targetPos - _trans.position;
+        targetDir.y = 0f;
         var targetRot = Quaternion.LookRotation(targetDir);
 
         _trans.rotation = Quaternion.Slerp(_trans.rotation, targetRot, 0.1f);
+        _range.SetAimingLineDirection();
 
     }
 

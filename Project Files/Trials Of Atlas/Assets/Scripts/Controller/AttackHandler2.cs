@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 
 public class AttackHandler2 : MonoBehaviour
 {
-    private PlayerControls _input;
+    private PlayerInputCLass _input;
     private Animator _anim;
     public PlayerSO playerStats;
     private HitBox _hitBox;
@@ -30,27 +30,25 @@ public class AttackHandler2 : MonoBehaviour
         Gizmos.DrawWireSphere(pos, playerStats.attackRange);
     }
 
+    private void Awake()
+    {
+        _anim = null;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
         _anim = GetComponentInChildren<Animator>();
 
-        var controls = new PlayerControls();
-        controls.PlayerActions.Enable();
-        controls.PlayerActions.MainAttack.started += Attack;
-        controls.Main.Enable();
-        controls.Main.Move.performed += context =>
-        {
-            _inVec = context.ReadValue<Vector2>();
-        };
-
+        _input = GetComponentInChildren<PlayerManager>().inputHandler;
+        _input.AttackAction = Attack;
     }
 
     // Update is called once per frame
     void Update()
     {
-        inX = _inVec.x;
-        inY = _inVec.y;
+        inX = _input.inputVector.x;
+        inY = _input.inputVector.z;
 
         _inputDirection = inX * cameraTransform.right + inY * cameraTransform.forward;
         _inputDirection.y = 0;
@@ -112,7 +110,7 @@ public class AttackHandler2 : MonoBehaviour
         return target.transform;
     }
 
-    private void Attack(InputAction.CallbackContext context)
+    private void Attack()
     {
         _lastAttackTime = Time.time;
         _attackInd++;

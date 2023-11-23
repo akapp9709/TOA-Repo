@@ -18,7 +18,7 @@ public class PlayerSO : ScriptableObject
     [Header("Main Stats")]
     public float walkSpeed = 1.5f;
     public float runSpeed = 6;
-    public float sprintSpeed = 8;
+    public float sprintSpeed = 10;
     public float maxStamina = 25;
     public float health = 100;
     public float strength = 10;
@@ -45,7 +45,7 @@ public class PlayerSO : ScriptableObject
     public float staminaRegen = 0;
     public float staminaDepletion = 5f;
     public float dodgeSpeed = 15f;
-    public float dodgeTime = 0.5f;
+    public float dodgeTime = 0.3f;
     public float dodgeCost = 10f;
 
     public Action StatChange;

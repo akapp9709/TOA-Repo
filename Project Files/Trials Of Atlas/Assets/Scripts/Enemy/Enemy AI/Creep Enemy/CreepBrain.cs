@@ -7,7 +7,7 @@ public class CreepBrain : EnemyBrain
 {
     public CreepBrain()
     {
-        AddState("Idle", new RangeEnemyStates.RangeIdleState(this));
+        AddState("Idle", new CreepEnemyStates.CreepIdleState(this));
         AddState("Move", new RangeEnemyStates.RangeMoveState(this));
         AddState("Attack", new CreepEnemyStates.CreepAttackState(this));
     }

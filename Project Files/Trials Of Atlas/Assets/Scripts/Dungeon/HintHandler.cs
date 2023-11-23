@@ -1,36 +1,45 @@
 using System.Collections;
 using System.Collections.Generic;
 using AJK;
+using Unity.AI.Navigation;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class HintHandler : MonoBehaviour
 {
-    private InputHandler _input;
+    private PlayerInputCLass _input;
     private GameManager _manager;
     public GameObject hintPrefab;
     public float hintCoolDown;
     private bool _coolDown;
 
+    private Timer coolDown;
+
     void Start()
     {
         _manager = GameManager.Singleton;
 
-        var controls = new PlayerControls();
-        controls.PlayerActions.Enable();
-        controls.PlayerActions.Hint.started += ShowHint;
+        GetComponent<PlayerManager>().inputHandler.HintAction += ShowHint;
     }
 
-    private void ShowHint(InputAction.CallbackContext context)
+    private void Update()
+    {
+        if (coolDown != null)
+        {
+            coolDown.Tick(Time.deltaTime);
+        }
+    }
+
+    private void ShowHint()
     {
         if (_coolDown)
             return;
 
         Transform closestRoom = FindClosestRoom();
-        var obj = Instantiate(hintPrefab, this.transform);
-        obj.GetComponent<Hint>().InitializeHint(closestRoom, hintCoolDown / 2);
-
-        StartCoroutine(CoolDown());
+        var obj = Instantiate(hintPrefab, transform.position, Quaternion.identity);
+        obj.GetComponent<NewHintHandler>().InitializeAgent(closestRoom.position);
+        coolDown = new Timer(hintCoolDown, () => _coolDown = false);
+        _coolDown = true;
     }
 
     private Transform FindClosestRoom()
@@ -50,12 +59,5 @@ public class HintHandler : MonoBehaviour
         }
 
         return closestRoom;
-    }
-
-    private IEnumerator CoolDown()
-    {
-        _coolDown = true;
-        yield return new WaitForSeconds(hintCoolDown);
-        _coolDown = false;
     }
 }

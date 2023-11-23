@@ -29,15 +29,28 @@ public class BruteJumpHandler : StateMachineBehaviour
         StateInfo = stateInfo;
         _transform = _brute.transform;
 
-        targetPosition = GameObject.FindGameObjectWithTag("Player").transform.position;
+        targetPosition = SetTargetPosition(animator);
         Debug.Log("Player Position: " + targetPosition);
         _transform.DOLookAt(targetPosition, moveDelay);
         _timer = new Timer(moveDelay, MoveToward, (float x) =>
         {
-            targetPosition = GameObject.FindGameObjectWithTag("Player").transform.position;
+            targetPosition = SetTargetPosition(animator);
             _brute.SetDecalPosition(targetPosition);
         });
         _brute.ActivateDecal(targetPosition);
+    }
+
+    private Vector3 SetTargetPosition(Animator anim)
+    {
+        var targetPos = _brute.GetTargetPosition();
+        if (targetPos == Vector3.zero)
+        {
+            return _transform.position;
+        }
+        else
+        {
+            return targetPos;
+        }
     }
 
     private void MoveToward()

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using AJK;
 using UnityEngine;
 
@@ -10,6 +8,12 @@ public class PlayerStart : MonoBehaviour
     void Start()
     {
         PF_Generator.Singleton.OnComplete += MovePlayerToStart;
+
+        var arr = GetComponentsInChildren<Canvas>();
+        foreach (var obj in arr)
+        {
+            obj.worldCamera = Camera.current;
+        }
     }
 
     private void MovePlayerToStart()

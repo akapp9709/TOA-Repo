@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using EnemyAI;
 using UnityEngine;
 using UnityEngine.AI;
+using Random = System.Random;
 
 public class CreepEnemyStates
 {
@@ -75,6 +76,74 @@ public class CreepEnemyStates
             _attacking = false;
             _controller.Action = null;
             _brain.ChangeState("Move", _controller);
+        }
+    }
+
+    public class CreepIdleState : IState
+    {
+        private EnemyBrain _machine;
+        private Transform _trans;
+        private EnemyStats _stats;
+        private EnemyBehavior _controller;
+
+        public CreepIdleState(EnemyBrain machine)
+        {
+            _machine = machine;
+        }
+
+        public string GetName()
+        {
+            return "Ranged Idle";
+        }
+
+        public void EnterState(EnemyBehavior controller)
+        {
+            _trans = controller.transform;
+            _stats = controller.enemySO;
+            _controller = controller;
+            controller.OnTick = CheckTime;
+        }
+
+        public void UpdateState(EnemyBehavior controller)
+        {
+            if (_machine.isActive)
+            {
+                var player = _machine.GetValue("Player Target");
+                if (player == null || player.GetType() != typeof(GameObject)) return;
+
+                var playerGO = player as GameObject;
+                var playerTrans = playerGO.transform;
+
+                var targetFwd = playerTrans.position - _trans.position;
+                var targetRot = Quaternion.LookRotation(targetFwd);
+
+                _trans.rotation = Quaternion.Slerp(_trans.rotation, targetRot, 0.1f);
+            }
+        }
+
+        public void ExitState(EnemyBehavior controller)
+        {
+            controller.OnTick = null;
+        }
+
+        private void CheckTime()
+        {
+            if (!_machine.isActive)
+            {
+                return;
+            }
+
+            var rnd = new Random();
+            var num = (float)rnd.NextDouble();
+
+            if (num < _stats.aggression)
+            {
+                _machine.ChangeState("Attack", _controller);
+            }
+            else
+            {
+                _machine.ChangeState("Move", _controller);
+            }
         }
     }
 }

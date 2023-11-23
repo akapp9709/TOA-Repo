@@ -1,13 +1,10 @@
-using System.Collections;
 using System.Collections.Generic;
 using AJK;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.SocialPlatforms.GameCenter;
 
 public class SpecialAttackHandler : MonoBehaviour
 {
-    private InputHandler _input;
+    private PlayerInputCLass _input;
     private SpecialAttackAnimHandler _animHandler;
     [HideInInspector] public List<Transform> enemiesInRange = new List<Transform>();
     [HideInInspector] public Vector3 centerPos;
@@ -20,10 +17,8 @@ public class SpecialAttackHandler : MonoBehaviour
     {
         _animHandler = GetComponentInChildren<SpecialAttackAnimHandler>();
 
-        var controls = new PlayerControls();
-        controls.PlayerActions.Enable();
-        controls.PlayerActions.SpecialAttack.started += InitiateSpecialAttack;
-
+        _input = GetComponent<PlayerManager>().inputHandler;
+        // _input.SpecialAction += InitiateSpecialAttack;
     }
 
     // Update is called once per frame
@@ -32,7 +27,7 @@ public class SpecialAttackHandler : MonoBehaviour
 
     }
 
-    private void InitiateSpecialAttack(InputAction.CallbackContext context)
+    private void InitiateSpecialAttack()
     {
         var list = GetEnemiesInRange();
         enemiesInRange = SelectRandomEnemies(list);
@@ -43,7 +38,6 @@ public class SpecialAttackHandler : MonoBehaviour
         {
             Debug.DrawLine(transform.position + Vector3.up, enemy.position + Vector3.up, Color.red, 3f);
         }
-
     }
 
     private List<Transform> GetEnemiesInRange()

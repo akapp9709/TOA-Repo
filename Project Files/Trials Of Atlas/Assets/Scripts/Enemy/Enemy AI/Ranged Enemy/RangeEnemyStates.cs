@@ -33,16 +33,7 @@ public class RangeEnemyStates
 
         public void UpdateState(EnemyBehavior controller)
         {
-            // var player = _machine.GetValue("Player Target");
-            // if (player == null || player.GetType() != typeof(GameObject)) return;
 
-            // var playerGO = player as GameObject;
-            // var playerTrans = playerGO.transform;
-
-            // var targetFwd = playerTrans.position - _trans.position;
-            // var targetRot = Quaternion.LookRotation(targetFwd);
-
-            // _trans.rotation = Quaternion.Slerp(_trans.rotation, targetRot, 0.01f);
         }
 
         public void ExitState(EnemyBehavior controller)
@@ -168,7 +159,7 @@ public class RangeEnemyStates
         private EnemyBrain _machine;
         private Transform _trans;
         private EnemyStats _stats;
-        private EnemyBehavior _controller;
+        private RangedBehavior _controller;
 
         public RangeIdleState(EnemyBrain machine)
         {
@@ -184,7 +175,7 @@ public class RangeEnemyStates
         {
             _trans = controller.transform;
             _stats = controller.enemySO;
-            _controller = controller;
+            _controller = controller as RangedBehavior;
             controller.OnTick = CheckTime;
         }
 
@@ -220,7 +211,7 @@ public class RangeEnemyStates
             var rnd = new Random();
             var num = (float)rnd.NextDouble();
 
-            if (num < _stats.aggression)
+            if (num < _stats.aggression && _controller.LineOfSight())
             {
                 _machine.ChangeState("Attack", _controller);
             }

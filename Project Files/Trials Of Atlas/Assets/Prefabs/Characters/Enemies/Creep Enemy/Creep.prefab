@@ -732,7 +732,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 257
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -840037777384891287, guid: fad8e896f06a9c54dbe146b21455c3cf, type: 3}
+  - {fileID: 2100000, guid: 5645c4bd848edee40afc66b7ecc2d016, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1434,7 +1434,8 @@ MonoBehaviour:
   enemySO: {fileID: 11400000, guid: 0721924d1c0e18a4694931e094e050a0, type: 2}
   agent: {fileID: 146607995}
   anim: {fileID: 8134101151587695174}
-  decisionTime: 2
+  delta: 0
+  decisionTime: 1.5
 --- !u!136 &3723079978726618159
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -3093,6 +3094,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: CreepWeapon
+      objectReference: {fileID: 0}
+    - target: {fileID: 8932259811539442406, guid: 0f2a0097405498c458cd0792ef4177cf,
+        type: 3}
+      propertyPath: m_Layer
+      value: 11
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0f2a0097405498c458cd0792ef4177cf, type: 3}

@@ -28,10 +28,11 @@ Material:
     type: 3}
   m_ValidKeywords:
   - _DISABLE_SSR_TRANSPARENT
+  - _DOUBLESIDED_ON
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
-  m_DoubleSidedGI: 0
+  m_DoubleSidedGI: 1
   m_CustomRenderQueue: 2225
   stringTagMap:
     MotionVector: User
@@ -69,15 +70,19 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Floor_Albedo:
-        m_Texture: {fileID: 2800000, guid: bf35055ddad854d46b764d8fba569e6b, type: 3}
+        m_Texture: {fileID: 2800000, guid: 9f5c3575fa13a004fbf7e6ed271fbfca, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Floor_Height:
-        m_Texture: {fileID: 2800000, guid: 7cf2051c6381ea744bbcbeb49fd63ba9, type: 3}
+        m_Texture: {fileID: 2800000, guid: 38bb08abf2f4e124290316c91d140abd, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Floor_Normal:
-        m_Texture: {fileID: 2800000, guid: 7d1f9d52070d21d4a9fa486676383868, type: 3}
+        m_Texture: {fileID: 2800000, guid: 4270a47528243e54cbe88d6a97a2d880, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Floor_Roughness:
+        m_Texture: {fileID: 2800000, guid: e63cba9162ec0294c9a2990c0641d40d, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
@@ -125,7 +130,15 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Wall_Normal:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: cf72caf2fd480614e89d772f4572a754, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Wall_Roughness:
+        m_Texture: {fileID: 2800000, guid: 938e4bf080a8fb7439330373244ec0d6, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Wall_Texture:
+        m_Texture: {fileID: 2800000, guid: 29d7cbbd11a24a34ea095091323d1395, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
@@ -156,13 +169,13 @@ Material:
     - _ClearCoatSmoothness: 0
     - _ConservativeDepthOffsetEnable: 0
     - _Cull: 2
-    - _CullMode: 2
-    - _CullModeForward: 2
+    - _CullMode: 0
+    - _CullModeForward: 0
     - _Cutoff: 0.5
     - _DepthOffsetEnable: 0
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
-    - _DoubleSidedEnable: 0
+    - _DoubleSidedEnable: 1
     - _DoubleSidedGIMode: 0
     - _DoubleSidedNormalMode: 2
     - _DstBlend: 0
@@ -234,14 +247,14 @@ Material:
     - _DoubleSidedConstants: {r: 1, g: 1, b: 1, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
     - _Emission_Color: {r: 0, g: 0.8884194, b: 1, a: 1}
-    - _Floor_Color: {r: 0.36329654, g: 0.42156208, b: 0.49056602, a: 1}
+    - _Floor_Color: {r: 0.6415094, g: 0.6415094, b: 0.6415094, a: 1}
     - _Floor_Offset: {r: 0, g: 0, b: 0, a: 0}
-    - _Floor_Tiling: {r: 0.5, g: 0.5, b: 0, a: 0}
+    - _Floor_Tiling: {r: 1, g: 1, b: 0, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
-    - _WallColor: {r: 1, g: 1, b: 1, a: 1}
+    - _WallColor: {r: 0.31132078, g: 0.31132078, b: 0.31132078, a: 1}
     - _Wall_Color: {r: 1, g: 1, b: 1, a: 0}
     - _Wall_Offset: {r: 0, g: 0, b: 0, a: 0}
-    - _Wall_Tiling: {r: 0.1, g: 0.1, b: 0, a: 0}
+    - _Wall_Tiling: {r: 0.2, g: 0.2, b: 0, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &4948209883230727932
 MonoBehaviour:
