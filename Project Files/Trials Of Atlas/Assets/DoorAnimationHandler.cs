@@ -12,7 +12,7 @@ public class DoorAnimationHandler : MonoBehaviour
 
     private void OnDestroy()
     {
-        PF_Generator.Singleton.OnComplete -= CheckForHall;
+        FindObjectOfType<DungeonBuilder>().OnComplete -= CheckForHall;
     }
     private void OnDrawGizmos()
     {
@@ -24,13 +24,13 @@ public class DoorAnimationHandler : MonoBehaviour
 
         Gizmos.DrawSphere(hitPos, 1f);
     }
-    private void Start()
+    private void Awake()
     {
         GetComponentInParent<RoomBehavior>().PlayerEntry += CloseDoorAfterSeconds;
         GetComponentInParent<RoomBehavior>().RoomClear += OpenDoorDelay;
 
-        PF_Generator.Singleton.OnComplete += CheckForHall;
-        OpenDoor();
+        FindObjectOfType<DungeonBuilder>().OnComplete += CheckForHall;
+        // OpenDoor();
     }
 
     private void CheckForHall()
@@ -46,7 +46,7 @@ public class DoorAnimationHandler : MonoBehaviour
             CloseDoor();
             _canOpen = false;
         }
-
+        FindObjectOfType<DungeonBuilder>().OnComplete -= CheckForHall;
     }
 
     private void CloseDoorAfterSeconds()

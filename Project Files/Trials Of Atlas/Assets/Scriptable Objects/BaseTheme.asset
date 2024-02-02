@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6719a048311dae5438f1b509ddaaf04b, type: 3}
+  m_Name: BaseTheme
+  m_EditorClassIdentifier: 
+  floor: {fileID: 8288428312317132287, guid: 9c3e27baf444fc0479a065ff0e6801d5, type: 3}
+  corner: {fileID: 238123830369829535, guid: 97d806ed52eca174cacc67176e8ce992, type: 3}
+  wall: {fileID: 6655330473947901605, guid: 70fbe8075ee77654bb7538d97b1ab905, type: 3}
+  material: {fileID: 2100000, guid: 20d189fc733b00d4388857877e454a46, type: 2}

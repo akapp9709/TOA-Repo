@@ -21,53 +21,6 @@ public class PF_Generator : MonoBehaviour
 {
     [SerializeField] public int randomSeed;
     public bool useSeed;
-    [Serializable]
-    private class RoomVariant
-    {
-        public GameObject room;
-        public int formationIndex;
-        public float roomValue, roomBias, shiftedBias;
-    }
-
-    private class RoomSpace
-    {
-        public RectInt bounds;
-        public List<Vector2Int> roomEntrances = new List<Vector2Int>();
-
-        public RoomSpace(Vector2Int location, Vector2Int size)
-        {
-            bounds = new RectInt(location, size);
-        }
-
-        public void AddEntrances(List<Transform> positions)
-        {
-            foreach (var t in positions)
-            {
-                TranslateAndAddPosition(t.position);
-            }
-        }
-
-        public void TranslateAndAddPosition(Vector3 v)
-        {
-            var vec = new Vector2Int((int)v.x, (int)v.z);
-            roomEntrances.Add(vec);
-        }
-
-        public Vector2Int GetClosestEntrance(Vector2Int pos)
-        {
-            var vec = roomEntrances[0];
-
-            foreach (var v in roomEntrances)
-            {
-                if (Vector2Int.Distance(v, pos) <= Vector2Int.Distance(vec, pos))
-                {
-                    vec = v;
-                }
-            }
-
-            return vec;
-        }
-    }
     public enum CellType
     {
         None,
@@ -125,7 +78,6 @@ public class PF_Generator : MonoBehaviour
     public bool showGizmos = true;
     public bool showTriangulation = true;
     public bool showPath = true;
-
     [SerializeField] private List<RoomVariant> variants = new List<RoomVariant>();
     public float minRoomValue, maxRoomValue, roomCount;
     [Range(1, 5)] public float curveWidth;
@@ -1042,65 +994,6 @@ public class PF_Generator : MonoBehaviour
 
 
     private List<LightLine> _lightLines = new List<LightLine>();
-    private class LightLine
-    {
-        public Vector2Int StartPos, EndPos;
-        public static float LightCount;
-        public List<Vector3> Positions = new List<Vector3>();
-
-        public enum LineDirection
-        {
-            SouthToNorth,
-            WestToEast,
-            NorthToSouth,
-            EasttoWest
-        }
-
-        public LineDirection Direction;
-
-        public LightLine(Vector2Int startPos, Vector2Int endPos, LineDirection direction)
-        {
-            StartPos = startPos;
-            EndPos = endPos;
-            Direction = direction;
-        }
-
-        public int NumberOfLights()
-        {
-            var dist = Vector2Int.Distance(StartPos, EndPos);
-            var num = Mathf.RoundToInt(dist * LightCount);
-            return num;
-        }
-
-        public float LightSpacing()
-        {
-            var dist = Vector2Int.Distance(StartPos, EndPos);
-            return dist / NumberOfLights();
-        }
-
-        public Vector3 Midpoint
-        {
-            get
-            {
-                Vector3 vec = new Vector3();
-
-                var p1 = new Vector3(StartPos.x, 0f, StartPos.y);
-                var p2 = new Vector3(EndPos.x, 0f, EndPos.y);
-
-                vec = (p1 + p2) / 2f;
-
-                return vec;
-            }
-        }
-
-        public float LineLength
-        {
-            get
-            {
-                return Vector2.Distance(StartPos, EndPos);
-            }
-        }
-    }
 
     public void PlaceLights()
     {

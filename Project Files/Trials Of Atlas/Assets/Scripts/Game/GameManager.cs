@@ -7,7 +7,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Singleton;
-    private PF_Generator _generator;
+    private DungeonBuilder _generator;
     public int roomsRemaining, numRooms;
     public List<RoomBehavior> rooms;
 
@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _generator = PF_Generator.Singleton;
+        _generator = FindObjectOfType<DungeonBuilder>();
         _generator.OnComplete += InitializeGame;
     }
 

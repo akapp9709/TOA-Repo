@@ -5,9 +5,9 @@ public class PlayerStart : MonoBehaviour
 {
     public Transform startPoint;
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        PF_Generator.Singleton.OnComplete += MovePlayerToStart;
+        FindObjectOfType<DungeonBuilder>().OnComplete += MovePlayerToStart;
 
         var arr = GetComponentsInChildren<Canvas>();
         foreach (var obj in arr)
