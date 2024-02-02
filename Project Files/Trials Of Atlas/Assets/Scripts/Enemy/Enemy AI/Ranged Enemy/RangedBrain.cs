@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class RangedBrain : EnemyBrain
 {
-    
-    
     public RangedBrain()
     {
         AddState("Idle", new RangeEnemyStates.RangeIdleState(this));
