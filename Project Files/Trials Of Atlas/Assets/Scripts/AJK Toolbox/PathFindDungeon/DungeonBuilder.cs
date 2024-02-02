@@ -6,24 +6,20 @@ using Random = UnityEngine.Random;
 
 public class DungeonBuilder : MonoBehaviour
 {
+    [SerializeField] private PlayerSO playerStats;
     public List<GameObject> content = new List<GameObject>();
     private List<RoomSpace> _placed = new List<RoomSpace>();
     private List<PF_Delauney.Edge> _edges;
     private HashSet<Prim.Edge> _pEdges = new HashSet<Prim.Edge>();
     private GridBuilder _grid;
-
     public AssetPack themePack;
-
     public Action OnComplete;
-public int numberOfRooms => _placed.Count;
+    public int numberOfRooms => _placed.Count;
+    private List<RoomVariant> roomVariants;
+
+    private int initialLength;
     void OnDrawGizmos()
     {
-        foreach (var obj in _placed)
-        {
-            var pos = new Vector3(obj.bounds.position.x, 9f, obj.bounds.position.y);
-            Gizmos.DrawSphere(pos, 1f);
-        }
-
         if(_edges == null)
             return;
 
@@ -41,6 +37,7 @@ public int numberOfRooms => _placed.Count;
     void Start()
     {
         GetComponent<MeshRenderer>().material = themePack.material;
+        initialLength = content.Count;
 
         GetContent();
         CreateAbstraction();
@@ -51,6 +48,7 @@ public int numberOfRooms => _placed.Count;
         PlaceTiles();
         OnComplete?.Invoke();
 
+        PopulateRooms();
         GenerateLights();
     }
 
@@ -60,6 +58,11 @@ public int numberOfRooms => _placed.Count;
         foreach (var comp in holders)
         {
             content.AddRange(comp.ChooseContent());
+            // if(comp.GetType() == typeof(RoomManager))
+            // {
+            //     var thing = (RoomManager)comp;
+            //     roomVariants.AddRange(thing.variants);
+            // }
         }
     }
 
@@ -179,4 +182,22 @@ public int numberOfRooms => _placed.Count;
             manager.PlaceLights(_grid.grid);
         }
     }
+
+    private void PopulateRooms()
+    {
+        var manager = GetComponent<RoomManager>();
+        var indices = manager.indices;
+        var rooms = GetComponentsInChildren<PF_Room>();
+        var numExtras = GetComponentsInChildren<PF_Extra>().Length;
+
+        Debug.Log(rooms.Length);
+        for(int i = initialLength; i < rooms.Length-numExtras; i++)
+        {
+            var val = indices[i-initialLength];
+            Debug.Log($"{val} at index {i-initialLength}");
+            rooms[i].transform.position -= new Vector3(0.5f, 0f, 0.5f);
+            rooms[i].PlaceEnemies(manager.variants[val].formationIndex);
+        }
+    }
+
 }
