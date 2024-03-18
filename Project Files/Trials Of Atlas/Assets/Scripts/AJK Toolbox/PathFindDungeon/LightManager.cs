@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class LightManager : MonoBehaviour
@@ -23,6 +24,7 @@ public class LightManager : MonoBehaviour
             Gizmos.DrawSphere(pos1, 0.5f);
             Gizmos.DrawSphere(pos2, 0.5f);
             Gizmos.DrawLine(pos1, pos2);
+            Handles.Label((pos1+pos2)/2f, "\t" + line.directString);
 
             foreach (var pos in line.Positions)
             {
@@ -94,9 +96,6 @@ public class LightManager : MonoBehaviour
                         line.Positions.Add(pos);
                         break;
                     case LightLine.LineDirection.WestToEast:
-                        pos = new Vector3(line.StartPos.x + line.LightSpacing() * i, 0f, line.StartPos.y);
-                        line.Positions.Add(pos);
-                        break;
                     case LightLine.LineDirection.EasttoWest:
                         pos = new Vector3(line.StartPos.x + line.LightSpacing() * i, 0f, line.StartPos.y);
                         line.Positions.Add(pos);
@@ -115,13 +114,19 @@ public class LightManager : MonoBehaviour
         {
             for (int y = 0; y < maxSize.y; y++)
             {
-                if (pos1 == Vector2Int.zero && ((_grid[x, y] is GridBuilder.CellType.CornerOutSW or GridBuilder.CellType.Room && _grid[x, y + 1] == GridBuilder.CellType.WallWest)
-                                            || (_grid[x, y] == GridBuilder.CellType.Hallway && _grid[x - 1, y] is GridBuilder.CellType.WallNorth or GridBuilder.CellType.CornerOutNW)))
+                if (pos1 == Vector2Int.zero 
+                    && ((_grid[x, y] is GridBuilder.CellType.CornerOutSW or GridBuilder.CellType.Room 
+                    && _grid[x, y + 1] == GridBuilder.CellType.WallWest)
+                    || (_grid[x, y] == GridBuilder.CellType.Hallway 
+                    && _grid[x - 1, y] is GridBuilder.CellType.WallNorth or GridBuilder.CellType.CornerOutNW)))
                 {
                     pos1 = new Vector2Int(x, y);
                 }
-                else if (_grid[x, y] == GridBuilder.CellType.CornerOutNW || ((_grid[x, y] is GridBuilder.CellType.Room or GridBuilder.CellType.CornerOutNW && _grid[x, y - 1] == GridBuilder.CellType.WallWest)
-                                                            || (_grid[x, y] == GridBuilder.CellType.Hallway && _grid[x - 1, y] is GridBuilder.CellType.WallSouth or GridBuilder.CellType.CornerOutSW)))
+                else if (_grid[x, y] == GridBuilder.CellType.CornerOutNW 
+                    || ((_grid[x, y] is GridBuilder.CellType.Room or GridBuilder.CellType.CornerOutNW 
+                    && _grid[x, y - 1] == GridBuilder.CellType.WallWest)
+                    || (_grid[x, y] == GridBuilder.CellType.Hallway 
+                    && _grid[x - 1, y] is GridBuilder.CellType.WallSouth or GridBuilder.CellType.CornerOutSW)))
                 {
                     pos2 = new Vector2Int(x, y);
                 }
@@ -139,6 +144,7 @@ public class LightManager : MonoBehaviour
         }
     }
 
+    //Working
     private void MarkLineEast()
     {
         Vector2Int pos1 = Vector2Int.zero, pos2 = Vector2Int.zero;
@@ -154,12 +160,12 @@ public class LightManager : MonoBehaviour
                     && _grid[x + 1, y] is GridBuilder.CellType.WallNorth or GridBuilder.CellType.CornerOutNE)))
                 {
                     pos1 = new Vector2Int(x, y);
-                }
+                } 
                 else if (pos1 != Vector2Int.zero 
                         && ((_grid[x, y] is GridBuilder.CellType.Room or GridBuilder.CellType.CornerOutNE 
-                        && _grid[x, y - 1] == GridBuilder.CellType.WallEast)
+                        && _grid[x, y - 1] is GridBuilder.CellType.WallEast or GridBuilder.CellType.Hallway)
                         || (_grid[x, y] == GridBuilder.CellType.Hallway 
-                        && _grid[x + 1, y] is GridBuilder.CellType.WallSouth or GridBuilder.CellType.CornerOutSE)))
+                        && (_grid[x + 1, y] is GridBuilder.CellType.WallSouth or GridBuilder.CellType.CornerOutSE))))
                 {
                     pos2 = new Vector2Int(x, y);
                 }
@@ -176,6 +182,8 @@ public class LightManager : MonoBehaviour
             pos2 = Vector2Int.zero;
         }
     }
+
+    //Working
     private void MarkLineNorth()
     {
         Vector2Int pos1 = Vector2Int.zero, pos2 = Vector2Int.zero;
@@ -184,13 +192,23 @@ public class LightManager : MonoBehaviour
         {
             for (int x = 0; x < maxSize.x; x++)
             {
-                if (pos1 == Vector2Int.zero && ((_grid[x, y] is GridBuilder.CellType.CornerOutSW or GridBuilder.CellType.Room && _grid[x + 1, y] == GridBuilder.CellType.WallSouth)
-                                            || (_grid[x, y] == GridBuilder.CellType.Hallway && _grid[x, y - 1] is GridBuilder.CellType.WallEast or GridBuilder.CellType.CornerOutSE)))
+                if(_grid[x,y] == GridBuilder.CellType.None)
+                    continue;
+
+
+                if (pos1 == Vector2Int.zero 
+                    && ((_grid[x, y] is GridBuilder.CellType.CornerOutSW or GridBuilder.CellType.Room 
+                    && _grid[x + 1, y] == GridBuilder.CellType.WallSouth)
+                    || (_grid[x, y] == GridBuilder.CellType.Hallway 
+                    && _grid[x, y - 1] is GridBuilder.CellType.WallEast or GridBuilder.CellType.CornerOutSE)))
                 {
                     pos1 = new Vector2Int(x, y);
                 }
-                else if (pos1 != Vector2Int.zero && ((_grid[x, y] is GridBuilder.CellType.CornerOutSE or GridBuilder.CellType.Room && _grid[x - 1, y] is GridBuilder.CellType.WallSouth or GridBuilder.CellType.Hallway)
-                                                    || (_grid[x, y] == GridBuilder.CellType.Hallway && (_grid[x, y - 1] is GridBuilder.CellType.WallWest or GridBuilder.CellType.CornerOutSW))))
+                else if (pos1 != Vector2Int.zero 
+                    && ((_grid[x, y] is GridBuilder.CellType.CornerOutSE or GridBuilder.CellType.Room 
+                    && _grid[x - 1, y] is GridBuilder.CellType.WallSouth or GridBuilder.CellType.Hallway)
+                    || (_grid[x, y] == GridBuilder.CellType.Hallway 
+                    && (_grid[x, y - 1] is GridBuilder.CellType.WallWest or GridBuilder.CellType.CornerOutSW))))
                 {
                     pos2 = new Vector2Int(x, y);
                 }

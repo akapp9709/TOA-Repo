@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
+using Unity.AI.Navigation;
 
 public class DungeonBuilder : MonoBehaviour
 {
@@ -33,23 +34,32 @@ public class DungeonBuilder : MonoBehaviour
         }
     }
 
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
         GetComponent<MeshRenderer>().material = themePack.material;
         initialLength = content.Count;
 
         GetContent();
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
         CreateAbstraction();
-        
+        FinishBuild();
+    }
+
+    private void FinishBuild()
+    {
         CreateGuideStructure();
         TrimStructure();
         BuildConnectors();
         PlaceTiles();
         OnComplete?.Invoke();
 
-        PopulateRooms();
         GenerateLights();
+        Invoke("PopulateRooms", 0.2f);
+        Invoke("BuildNav", 0.2f);
     }
 
     private void GetContent()
@@ -88,7 +98,7 @@ public class DungeonBuilder : MonoBehaviour
         {
             pEdges.Add(new Prim.Edge(edges.U, edges.V));
         }
-
+        Debug.Log(pEdges.Count);
         List<Prim.Edge> mst = Prim.MinimumSpanningTree(pEdges, pEdges[0].U);
 
         _pEdges = new HashSet<Prim.Edge>(mst);
@@ -190,14 +200,18 @@ public class DungeonBuilder : MonoBehaviour
         var rooms = GetComponentsInChildren<PF_Room>();
         var numExtras = GetComponentsInChildren<PF_Extra>().Length;
 
-        Debug.Log(rooms.Length);
+
+        Debug.Log(rooms.Length + "        " + numExtras);
         for(int i = initialLength; i < rooms.Length-numExtras; i++)
         {
             var val = indices[i-initialLength];
-            Debug.Log($"{val} at index {i-initialLength}");
             rooms[i].transform.position -= new Vector3(0.5f, 0f, 0.5f);
             rooms[i].PlaceEnemies(manager.variants[val].formationIndex);
         }
     }
 
+    void BuildNav()
+    {
+        GetComponent<NavMeshSurface>().BuildNavMesh();
+    }
 }

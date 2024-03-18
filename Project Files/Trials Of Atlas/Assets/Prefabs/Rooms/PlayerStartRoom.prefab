@@ -515,6 +515,7 @@ GameObject:
   - component: {fileID: 3643348261627985414}
   - component: {fileID: 8523490278842606000}
   - component: {fileID: 8778806358814893656}
+  - component: {fileID: 1324979784788740029}
   m_Layer: 0
   m_Name: PlayerStartRoom
   m_TagString: Untagged
@@ -696,6 +697,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startPoint: {fileID: 8850353482043756424}
+--- !u!114 &1324979784788740029
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 128481021799812949}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d6003d13f6711d4faabc068a0291c95, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1002242158264123802
 GameObject:
   m_ObjectHideFlags: 0

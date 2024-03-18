@@ -11,7 +11,7 @@ public class HealthBarHandler : MonoBehaviour
 
     private void Start()
     {
-        PF_Generator.Singleton.OnComplete += InitilaizeUI;
+        FindObjectOfType<DungeonBuilder>().OnComplete += InitilaizeUI;
         // Color mainCol = playerMaterial.GetColor("_Main_Color");
         // Color secondaryCol = playerMaterial.GetColor("_Secondary_Color");
     }

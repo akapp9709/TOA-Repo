@@ -112,9 +112,9 @@ public class GridBuilder : MonoBehaviour
         {
             var obj = Instantiate(room, Vector3.zero, Quaternion.identity, this.transform);
             var pos = new Vector3(
-                Random.Range(padding.x/2, maxSize.x-padding.x/2),
+                Random.Range(padding.x, maxSize.x-padding.x),
                 0f,
-                Random.Range(padding.y/2, maxSize.y-padding.y/2)
+                Random.Range(padding.y, maxSize.y-padding.y)
             );
 
             obj.transform.position = pos;
@@ -142,6 +142,7 @@ public class GridBuilder : MonoBehaviour
             else{
                 Destroy(obj);
             }
+            Debug.Log("Placed");
         }
     }
 

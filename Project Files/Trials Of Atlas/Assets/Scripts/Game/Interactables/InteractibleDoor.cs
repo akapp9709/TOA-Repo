@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,6 +6,7 @@ using UnityEngine;
 public class InteractibleDoor : InteractibleBehaivor
 {
     private Animator _animator;
+    public Action DoorOpen;
     // Start is called before the first frame update
     protected override void Start()
     {
@@ -26,5 +28,6 @@ public class InteractibleDoor : InteractibleBehaivor
             return;
 
         _animator.SetBool("isOpen", true);
+        DoorOpen?.Invoke();
     }
 }

@@ -7,6 +7,30 @@ public class LightLine
         public Vector2Int StartPos, EndPos;
         public static float LightCount;
         public List<Vector3> Positions = new List<Vector3>();
+        public string directString
+        {
+            get{
+                string output = "";
+
+                switch (Direction)
+                {
+                    case LineDirection.SouthToNorth:
+                        output = "West";
+                        break;
+                    case LineDirection.NorthToSouth:
+                        output = "East";
+                        break;
+                    case LineDirection.WestToEast:
+                        output = "South";
+                        break;                   
+                    case LineDirection.EasttoWest:
+                        output = "North";
+                        break;
+                }
+
+                return output;
+            }
+        }
 
         public enum LineDirection
         {

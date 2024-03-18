@@ -10,10 +10,6 @@ public class DoorAnimationHandler : MonoBehaviour
     public Vector3 hitPos;
     private bool _canOpen = true;
 
-    private void OnDestroy()
-    {
-        FindObjectOfType<DungeonBuilder>().OnComplete -= CheckForHall;
-    }
     private void OnDrawGizmos()
     {
         var pos = transform.position;

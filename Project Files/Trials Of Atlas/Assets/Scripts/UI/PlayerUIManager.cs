@@ -21,7 +21,7 @@ public class PlayerUIManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        PF_Generator.Singleton.OnComplete += InitilaizeUI;
+        FindObjectOfType<DungeonBuilder>().OnComplete += InitilaizeUI;
     }
 
     private void InitilaizeUI()

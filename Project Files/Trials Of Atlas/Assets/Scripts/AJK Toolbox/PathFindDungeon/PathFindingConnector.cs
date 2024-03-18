@@ -43,14 +43,15 @@ public class PathFindingConnector : ConnecterBuilder
 
                 foreach (var pos in path)
                 {
-                    for (int i = 1; i < hallRadius; i++)
+                    for (int i = 0; i <= 2*hallRadius; i++)
                     {
-                        foreach(var offset in surroundingPositions)
+                        for (int j = 0; j <= 2*hallRadius; j++)
                         {
-                            var curPos = layout[pos + (offset*i)];
-                            if(curPos != GridBuilder.CellType.Room && layout.InBounds(pos + (offset*i)))
+                            var v = pos + new Vector2Int(i-hallRadius,j-hallRadius);
+                            var curPos = layout[v];
+                            if(curPos != GridBuilder.CellType.Room && layout.InBounds(v))
                             {
-                                layout[pos + offset*i] = GridBuilder.CellType.Hallway;
+                                layout[v] = GridBuilder.CellType.Hallway;
                             }
                         }
                     }

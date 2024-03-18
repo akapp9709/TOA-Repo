@@ -62,5 +62,4 @@ public class EnemyBehavior : MonoBehaviour
         var player = GameObject.FindGameObjectWithTag("Player");
         _brain.AddToDictionary("Player Target", player);
     }
-
 }
