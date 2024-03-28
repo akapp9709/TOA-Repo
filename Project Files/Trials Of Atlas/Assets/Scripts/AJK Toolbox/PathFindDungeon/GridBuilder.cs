@@ -28,19 +28,19 @@ public class GridBuilder : MonoBehaviour
         CornerInSE,
         CornerInSW
     }
-    public PF_Grid<CellType> grid {get; private set;}
+    public PF_Grid<CellType> grid { get; private set; }
     public Vector2Int maxSize, padding, offset, buffer;
     private Vector2Int _bufferOffset;
     public float cellSize = 1;
 
-    public List<RoomSpace> Spaces {get; private set;}
+    public List<RoomSpace> Spaces { get; private set; }
 
 
     private List<RectInt> testRects = new List<RectInt>();
 
     void OnDrawGizmos()
     {
-        if(grid == null)
+        if (grid == null)
         {
             return;
         }
@@ -50,14 +50,15 @@ public class GridBuilder : MonoBehaviour
             for (int j = 0; j < maxSize.y; j++)
             {
                 var pos = new Vector3(i, 0f, j);
-                switch (grid[i, j]){
+                switch (grid[i, j])
+                {
                     // case CellType.Buffer:
                     //     Gizmos.color = Color.white;
                     //     Gizmos.DrawSphere(pos, cellSize/6f);
                     //     break;
                     case CellType.Hallway:
                         Gizmos.color = Color.red;
-                        Gizmos.DrawSphere(pos, cellSize/4f);
+                        Gizmos.DrawSphere(pos, cellSize / 4f);
                         break;
                     // case CellType.WallEast:
                     // case CellType.WallWest:
@@ -71,25 +72,25 @@ public class GridBuilder : MonoBehaviour
                     case CellType.CornerOutSE:
                     case CellType.CornerOutSW:
                         Gizmos.color = Color.magenta;
-                        Gizmos.DrawSphere(pos, cellSize/1.5f);
+                        Gizmos.DrawSphere(pos, cellSize / 1.5f);
                         break;
                     case CellType.CornerInNE:
                     case CellType.CornerInNW:
                     case CellType.CornerInSE:
                     case CellType.CornerInSW:
                         Gizmos.color = Color.magenta;
-                        Gizmos.DrawSphere(pos, cellSize/1.5f);
+                        Gizmos.DrawSphere(pos, cellSize / 1.5f);
                         break;
 
-                } 
+                }
             }
         }
-    
-        foreach(var rect in testRects)
+
+        foreach (var rect in testRects)
         {
-            var pos = new Vector3((rect.position + rect.size/2).x, 0f, (rect.position + rect.size/2).y);
+            var pos = new Vector3((rect.position + rect.size / 2).x, 0f, (rect.position + rect.size / 2).y);
             Gizmos.DrawWireCube(pos, new Vector3(rect.size.x, 0f, rect.size.y));
-            Handles.Label(pos + Vector3.up*5, rect.size.ToString());
+            Handles.Label(pos + Vector3.up * 5, rect.size.ToString());
         }
     }
 
@@ -98,7 +99,7 @@ public class GridBuilder : MonoBehaviour
         grid = new PF_Grid<CellType>(maxSize, offset);
         Spaces = new List<RoomSpace>();
 
-        foreach(var obj in objects)
+        foreach (var obj in objects)
         {
             PlaceRoom(obj);
         }
@@ -107,29 +108,33 @@ public class GridBuilder : MonoBehaviour
     public void PlaceRoom(GameObject room)
     {
         var placed = false;
-        
-        while(!placed)
+
+        while (!placed)
         {
             var obj = Instantiate(room, Vector3.zero, Quaternion.identity, this.transform);
             var pos = new Vector3(
-                Random.Range(padding.x, maxSize.x-padding.x),
+                Random.Range(padding.x, maxSize.x - padding.x),
                 0f,
-                Random.Range(padding.y, maxSize.y-padding.y)
+                Random.Range(padding.y, maxSize.y - padding.y)
             );
 
+            // obj.transform.position -= new Vector3(0.5f, 0f, 0.5f);
             obj.transform.position = pos;
             RotateContent(obj);
             var objVar = obj.GetComponent<PF_Room>();
             var rect = new RectInt(objVar.Location2D, objVar.Size2D);
 
-            if(CheckRoomInBounds(rect) && CheckInsersect(rect)){
+            if (CheckRoomInBounds(rect) && CheckInsersect(rect))
+            {
                 AddBuffer(rect);
-                foreach(var x in rect.allPositionsWithin)
+                foreach (var x in rect.allPositionsWithin)
                 {
-                    if(objVar.GetType() == typeof(PF_Room)){
+                    if (objVar.GetType() == typeof(PF_Room))
+                    {
                         grid[x] = CellType.Room;
                     }
-                    else if (objVar.GetType() == typeof(PF_Extra)){
+                    else if (objVar.GetType() == typeof(PF_Extra))
+                    {
                         grid[x] = CellType.Hallway;
                     }
                 }
@@ -139,7 +144,8 @@ public class GridBuilder : MonoBehaviour
                 Spaces.Add(space);
                 placed = true;
             }
-            else{
+            else
+            {
                 Destroy(obj);
             }
             Debug.Log("Placed");
@@ -148,16 +154,16 @@ public class GridBuilder : MonoBehaviour
 
     private void AddBuffer(RectInt area)
     {
-        var size  = area.size;
+        var size = area.size;
         var pos = area.position;
 
         testRects.Add(area);
 
-        for(int i = 0; i < Mathf.Abs(size.y); i++)
+        for (int i = 0; i < Mathf.Abs(size.y); i++)
         {
             for (int p = 1; p < buffer.x; p++)
             {
-                var y = size.y >= 0 ? i:-i;
+                var y = size.y >= 0 ? i : -i;
 
                 var xPos = pos + new Vector2Int(p, y);
                 var xPos2 = pos - new Vector2Int(p, -y);
@@ -171,11 +177,11 @@ public class GridBuilder : MonoBehaviour
             }
         }
 
-        for(int i = 0; i < Mathf.Abs(size.x); i++)
+        for (int i = 0; i < Mathf.Abs(size.x); i++)
         {
             for (int p = 1; p < buffer.y; p++)
             {
-                var y = size.x >= 0 ? i:-i;
+                var y = size.x >= 0 ? i : -i;
 
                 var xPos = pos + new Vector2Int(y, p);
                 var xPos2 = pos - new Vector2Int(-y, p);
@@ -192,9 +198,9 @@ public class GridBuilder : MonoBehaviour
 
     private bool CheckRoomInBounds(RectInt area)
     {
-        foreach(var x in area.allPositionsWithin)
+        foreach (var x in area.allPositionsWithin)
         {
-            if(!grid.InBounds(x))
+            if (!grid.InBounds(x))
             {
                 return false;
             }
@@ -206,7 +212,7 @@ public class GridBuilder : MonoBehaviour
     {
         foreach (var pos in area.allPositionsWithin)
         {
-            if(grid[pos] is CellType.Room or CellType.Buffer)
+            if (grid[pos] is CellType.Room or CellType.Buffer)
             {
                 return false;
             }
@@ -218,7 +224,7 @@ public class GridBuilder : MonoBehaviour
     private void RotateContent(GameObject obj)
     {
         int rotVal = Random.Range(0, 4);
-        var rotQ = Quaternion.Euler(0f, 90*rotVal, 0f);
+        var rotQ = Quaternion.Euler(0f, 90 * rotVal, 0f);
 
         obj.transform.rotation *= rotQ;
 
@@ -227,7 +233,7 @@ public class GridBuilder : MonoBehaviour
         var currentOffset = roomComp.roomSizeOffset;
 
         var newSize = rotQ * currentSize;
-        currentOffset = newSize/2f;
+        currentOffset = newSize / 2f;
 
         roomComp.roomSize = newSize;
 

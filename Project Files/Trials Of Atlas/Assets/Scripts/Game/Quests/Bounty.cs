@@ -26,7 +26,4 @@ public class Bounty : ScriptableObject
     public enemyType enemy = enemyType.Any;
 }
 
-[CustomEditor(typeof(Bounty))]
-public class BountyEditor : Editor
-{
-}
+

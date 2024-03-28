@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   floor: {fileID: 8288428312317132287, guid: 9c3e27baf444fc0479a065ff0e6801d5, type: 3}
   corner: {fileID: 238123830369829535, guid: 97d806ed52eca174cacc67176e8ce992, type: 3}
-  wall: {fileID: 6655330473947901605, guid: 70fbe8075ee77654bb7538d97b1ab905, type: 3}
-  material: {fileID: 2100000, guid: 20d189fc733b00d4388857877e454a46, type: 2}
+  wall: {fileID: 2709187685787561703, guid: 370337063ee724644bb61593db942cc1, type: 3}
+  floorMat: {fileID: 2100000, guid: 483ee0150f9490c45b32943c021e47ba, type: 2}
+  wallMat: {fileID: 2100000, guid: 483ee0150f9490c45b32943c021e47ba, type: 2}

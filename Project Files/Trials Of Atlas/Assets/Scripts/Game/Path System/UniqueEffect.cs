@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor.Animations;
 using UnityEditor;
 
 
@@ -12,9 +11,5 @@ public class UniqueEffect : ScriptableObject
     public CombatEventManager.CombatEventType CombatEvent;
 }
 
-[CustomEditor(typeof(UniqueEffect))]
-public class UniqueEffectEditor : Editor
-{
-    
-}
+
 

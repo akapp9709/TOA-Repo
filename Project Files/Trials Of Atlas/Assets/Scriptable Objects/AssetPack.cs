@@ -7,5 +7,5 @@ using UnityEngine;
 public class AssetPack : ScriptableObject
 {
     public GameObject floor, corner, wall;
-    public Material material;
+    public Material floorMat, wallMat;
 }
